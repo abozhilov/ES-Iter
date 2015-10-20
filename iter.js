@@ -12,7 +12,7 @@ if (typeof iter == 'undefined') {
     }
     
     iter.iterFrom = function (obj, genMethod) {
-        genMethod = genMethod || Symbol.prototype;
+        genMethod = genMethod || Symbol.iterator;
         return obj[genMethod]();
     } 
     
