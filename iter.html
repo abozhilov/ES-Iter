@@ -1,0 +1,11 @@
+<script src="iter.js"></script>
+<script>
+
+function f(x, y, z) {
+    return [x, y];
+}
+
+for (var v of iter.map(f, [1, 2, 3, 4], [1, 2])) {
+    console.log(v);
+}
+</script>
