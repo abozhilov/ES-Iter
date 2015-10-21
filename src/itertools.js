@@ -1,22 +1,23 @@
 
+export function getIterator (obj) {
+    return obj[Symbol.iterator]();
+}
+
 export function isIterable (obj) {
     return (obj != null && typeof obj[Symbol.iterator] == 'function');
+}
+
+export function isMultiIterable (obj) {
+    return isIterable(obj) && getIterator(obj) !== obj;
 }
 
 export function isIterator (obj) {
     return (obj != null && typeof obj.next == 'function');
 }
 
-export function toIterator (obj) {
-    if (!isIterator(obj)) {
-        return obj[Symbol.iterator]();
-    }
-    return obj;
+export function isClosable (iter) {
+    return (iter != null && typeof iter.return == 'function');
 }
-
-export function iterFrom (obj, genMethod = Symbol.iterator) {
-    return obj[genMethod]();
-} 
 
 export function toArray(...iters) {
     var res = [];
@@ -54,7 +55,7 @@ export function * range (start, end, step) {
 export function * zip (...iters) {
     var iterators = [];
     for (var it of iters) {
-        iterators.push(toIterator(it));
+        iterators.push(getIterator(it));
     }
     while (true) {
         var res = [];
@@ -70,13 +71,10 @@ export function * zip (...iters) {
 }
 
 export function * longestZip (...iters) {
-    var iterators = [],
-        count = 0,
-        map;
-    for (var it of iters) {
-        iterators.push(toIterator(it));
-    }
-    map = new Map(zip(iterators, repeat(false)));
+    var iterators = [...map(getIterator, ...iters)],
+        map       = new Map(zip(iterators, repeat(false))),
+        count     = 0;
+        
     while (true) {
         var res = [];
         for (var it of iterators) {
@@ -117,7 +115,7 @@ export function * repeat (val, times) {
 }
 
 export function * enumerate (iterable, start) {
-    yield* iter.zip(iter.count(start), iterable);
+    yield* zip(count(start), iterable);
 }
 
 export function * chain (...iters) {
@@ -127,27 +125,38 @@ export function * chain (...iters) {
 }
 
 export function * cycle(iterable) {
-    let arr = [...iterable];
-    while (true) {
-        yield* arr;
+    if (isMultiIterable(iterable)) {
+        while (true) { 
+            yield* iterable;
+        }
+    }
+    else {
+        let arr = [];
+        for (let v of iterable) {
+            yield v;
+            arr.push(v);
+        }
+        while (true) {
+            yield* arr;
+        }
     }
 }
 
 export function * map (callback, ...iters) {
-    for (let arr of longestZip(...iters)) {
+    for (let arr of zip(...iters)) {
         yield callback(...arr);
     }
 }
 
-export function * iMap (callback, ...iters) {
-    for (let arr of zip(...iters)) {
+export function * longestMap (callback, ...iters) {
+    for (let arr of longestZip(...iters)) {
         yield callback(...arr);
     }
 }
 
 export function * compress (data, selectors) {
     for (let [v, s] of zip(data, selectors)) {
-        if (s) yield v
+        if (s) yield v;
     }
 }
 
