@@ -1,3 +1,4 @@
-import * as iter from '../src/itertools.js';
+import * as itertools from '../src/itertools.js';
+
 
 

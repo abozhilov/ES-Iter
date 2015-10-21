@@ -1,10 +1,17 @@
 
-export function isIter (obj) {
-    return {}.toString.call(obj).slice(-9, -1) === 'Iterator';
+export function isIterable (obj) {
+    return (obj != null && typeof obj[Symbol.iterator] == 'function');
 }
 
-export function toIter (obj) {
-    return obj[Symbol.iterator]();
+export function isIterator (obj) {
+    return (obj != null && typeof obj.next == 'function');
+}
+
+export function toIterator (obj) {
+    if (!isIterator(obj)) {
+        return obj[Symbol.iterator]();
+    }
+    return obj;
 }
 
 export function iterFrom (obj, genMethod = Symbol.iterator) {
@@ -47,7 +54,7 @@ export function * range (start, end, step) {
 export function * zip (...iters) {
     var iterators = [];
     for (var it of iters) {
-        iterators.push(isIter(it) ? it : toIter(it));
+        iterators.push(toIterator(it));
     }
     while (true) {
         var res = [];
@@ -67,7 +74,7 @@ export function * longestZip (...iters) {
         count = 0,
         map;
     for (var it of iters) {
-        iterators.push(isIter(it) ? it : toIter(it));
+        iterators.push(toIterator(it));
     }
     map = new Map(zip(iterators, repeat(false)));
     while (true) {
@@ -138,3 +145,32 @@ export function * iMap (callback, ...iters) {
     }
 }
 
+export function * compress (data, selectors) {
+    for (let [v, s] of zip(data, selectors)) {
+        if (s) yield v
+    }
+}
+
+export function * dropWhile (callback, iterable) {
+    let iter = toIterator(iterable);
+    for (let v of iter) {
+        if (!callback(v)) {
+            yield v;
+            break;
+        }
+    }
+    for (let v of iter) {
+        yield v;
+    }
+}
+
+export function * takeWhile (callback, iterable) {
+    for (let v of iterable) {
+        if (callback(v)) {
+            yield v;
+        }
+        else {
+            break;
+        }
+    }
+}
