@@ -3,20 +3,35 @@ export function getIterator (obj) {
     return obj[Symbol.iterator]();
 }
 
+export function iterFrom(gen, ...args) {
+    return {
+        [Symbol.iterator]() {
+            return gen(...args);
+        }
+    }
+}
+
 export function isIterable (obj) {
     return (obj != null && typeof obj[Symbol.iterator] == 'function');
 }
 
 export function isMultiIterable (obj) {
-    return isIterable(obj) && getIterator(obj) !== obj;
+    return (isIterable(obj) && getIterator(obj) !== obj);
 }
 
 export function isIterator (obj) {
-    return (obj != null && typeof obj.next == 'function');
+    return (isIterable(obj) && typeof obj.next == 'function');
 }
 
 export function isClosable (iter) {
-    return (iter != null && typeof iter.return == 'function');
+    return (isIterable(iter) && typeof iter.return == 'function');
+}
+
+export function closeIterator (iter) {
+    if (isClosable(iter)) {
+        return iter.return().done;
+    }
+    return false;
 }
 
 export function toArray(...iters) {
@@ -59,9 +74,12 @@ export function * zip (...iters) {
     }
     while (true) {
         var res = [];
-        for (var it of iterators) {
+        for (it of iterators) {
             var curr = it.next();
             if (curr.done) {
+                for (it of iterators) {
+                    closeIterator(it);
+                }
                 return;
             }
             res.push(curr.value);
@@ -71,7 +89,7 @@ export function * zip (...iters) {
 }
 
 export function * longestZip (...iters) {
-    var iterators = [...map(getIterator, ...iters)],
+    var iterators = iters.map(getIterator),
         map       = new Map(zip(iterators, repeat(false))),
         count     = 0;
         
@@ -124,6 +142,21 @@ export function * chain (...iters) {
     }
 }
 
+export function * groupBy(iterable, key = (x)=> x) {
+    var k = {},
+        arr = [];
+    for (var val of iterable) {
+        var res = key(val);
+        if (res !== k) {
+            if (arr.length) yield [arr[0], arr];
+            k = res;
+            arr = [];
+        }
+        arr.push(val);
+    }
+    yield [arr[0], arr];
+}
+
 export function * cycle(iterable) {
     if (isMultiIterable(iterable)) {
         while (true) { 
@@ -154,9 +187,42 @@ export function * longestMap (callback, ...iters) {
     }
 }
 
+export function * starMap (callback, iterable) {
+    for (let arr of iterable) {
+        yield callback(...arr);
+    }
+}
+
 export function * compress (data, selectors) {
     for (let [v, s] of zip(data, selectors)) {
         if (s) yield v;
+    }
+}
+
+export function * take(iterable, n) {
+    let count = n >>> 0;
+    
+    if (typeof n == 'undefined') {
+        yield* iterable;
+    }
+    else {
+        for (var v of iterable) {
+            if (!count--) {
+                break;
+            }
+            yield v;
+        }
+    }
+}
+
+export function * drop(iterable, n = 0) {
+    let count = n >>> 0;
+    
+    for (var v of iterable) {
+        if (count-- > 0) {
+            continue;
+        }
+        yield v;
     }
 }
 
@@ -183,3 +249,5 @@ export function * takeWhile (callback, iterable) {
         }
     }
 }
+
+
