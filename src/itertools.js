@@ -199,23 +199,18 @@ export function * compress (data, selectors) {
     }
 }
 
-export function * take(iterable, n) {
+export function * take(n, iterable) {
     let count = n >>> 0;
     
-    if (typeof n == 'undefined') {
-        yield* iterable;
-    }
-    else {
-        for (var v of iterable) {
-            if (!count--) {
-                break;
-            }
-            yield v;
+    for (var v of iterable) {
+        if (!count--) {
+            break;
         }
+        yield v;
     }
 }
 
-export function * drop(iterable, n = 0) {
+export function * drop(n, iterable) {
     let count = n >>> 0;
     
     for (var v of iterable) {
