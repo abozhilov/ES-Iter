@@ -74,11 +74,11 @@ export function * zip (...iters) {
     }
     while (true) {
         var res = [];
-        for (it of iterators) {
+        for (var it of iterators) {
             var curr = it.next();
             if (curr.done) {
-                for (it of iterators) {
-                    closeIterator(it);
+                for (var i of iterators) {
+                    if (i !== it) closeIterator(i);
                 }
                 return;
             }
@@ -187,7 +187,7 @@ export function * longestMap (callback, ...iters) {
     }
 }
 
-export function * starMap (callback, iterable) {
+export function * spreadMap (callback, iterable) {
     for (let arr of iterable) {
         yield callback(...arr);
     }
