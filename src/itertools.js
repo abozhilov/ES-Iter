@@ -203,7 +203,7 @@ export function * take(n, iterable) {
     let count = n >>> 0;
     
     for (var v of iterable) {
-        if (!count--) {
+        if (count-- > 0) {
             break;
         }
         yield v;
