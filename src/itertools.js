@@ -1,3 +1,16 @@
+function toInteger(n) {
+    if (n < 0) {
+        return Math.ceil(n);
+    }
+    return Math.floor(n);
+}
+
+function toPositiveInteger(n) {
+    if (n < 0) {
+        return 0;
+    }
+    return Math.floor(n);
+}
 
 export function getIterator (obj) {
     return obj[Symbol.iterator]();
@@ -23,35 +36,41 @@ export function isIterator (obj) {
     return (isIterable(obj) && typeof obj.next == 'function');
 }
 
-export function isClosable (iter) {
-    return (isIterable(iter) && typeof iter.return == 'function');
+export function isClosable (iterator) {
+    return (isIterable(iterator) && typeof iterator.return == 'function');
 }
 
-export function closeIterator (iter) {
-    if (isClosable(iter)) {
-        return iter.return().done;
+export function closeIterator (iterator) {
+    if (isClosable(iterator)) {
+        return iterator.return().done;
     }
     return false;
 }
 
-export function toArray(...iters) {
-    var res = [];
-    for (var it of iters) {
+export function closeAllIterators(...iterators) {
+    for (let it of iterators) {
+        closeIterator(it);
+    }
+}
+
+export function toArray(...iterables) {
+    let res = [];
+    for (let it of iterables) {
         res.push(...it);
     }
     return res;
 }
 
-export function * range (start, end, step) {
-    let s = start | 0,
-        e = end   | 0;
+export function* range (start, end, step) {
+    let s = toInteger(start),
+        e = toInteger(end);
         
     if (typeof end == 'undefined') {
         e = s;
         s = 0;
     }
     
-    let k = (step | 0) || (s < e ? 1 : -1)
+    let k = toInteger(step) || (s < e ? 1 : -1)
     
     if (k > 0) {
         while (s < e) {
@@ -67,97 +86,65 @@ export function * range (start, end, step) {
     } 
 }
 
-export function * zip (...iters) {
-    var iterators = [];
-    for (var it of iters) {
-        iterators.push(getIterator(it));
-    }
-    while (true) {
-        var res = [];
-        for (var it of iterators) {
-            var curr = it.next();
-            if (curr.done) {
-                for (var i of iterators) {
-                    if (i !== it) closeIterator(i);
+export function* zip (...iterables) {
+    let iterators = iterables.map(getIterator);
+    
+    try {
+        while (true) {
+            let res = [];
+            for (let it of iterators) {
+                let curr = it.next();
+                if (curr.done) {
+                    for (let i of iterators) {
+                        if (i !== it) closeIterator(i);
+                    }
+                    return;
                 }
-                return;
+                res.push(curr.value);
             }
-            res.push(curr.value);
+            yield res;
         }
-        yield res;
+    } finally {
+        closeAllIterators(...iterators);
     }
 }
 
-export function * longestZip (...iters) {
-    var iterators = iters.map(getIterator),
+export function* longestZip (...iterables) {
+    let iterators = iterables.map(getIterator),
         map       = new Map(zip(iterators, repeat(false))),
         count     = 0;
         
-    while (true) {
-        var res = [];
-        for (var it of iterators) {
-            var curr = it.next();
-            if (curr.done && !map.get(it)) {
-                map.set(it, true);
-                count++;
+    try {    
+        while (true) {
+            let res = [];
+            for (let it of iterators) {
+                let curr = it.next();
+                if (curr.done && !map.get(it)) {
+                    map.set(it, true);
+                    count++;
+                }
+                res.push(curr.value);
             }
-            res.push(curr.value);
+            if (count >= iterators.length) {
+                return;
+            } 
+            yield res;
         }
-        if (count >= iterators.length) {
-            return;
-        } 
-        yield res;
+    } finally {
+        closeAllIterators(...iterators);
     }
 }
 
-export function * count (start, step) {
-    let s = (start | 0) || 0,
-        k = (step  | 0) || 1;
+export function* count (start, step) {
+    let s = toInteger(start) || 0,
+        k = toInteger(step) || 1;
     while (true) {
         yield s;
         s += k;
     }
 }
 
-export function * repeat (val, times) {
-    if (typeof times == 'undefined') {
-        while (true) {
-            yield val;
-        }
-    }
-    else {
-        for (var i of range(times)) {
-            yield val;
-        }
-    }
-}
-
-export function * enumerate (iterable, start) {
-    yield* zip(count(start), iterable);
-}
-
-export function * chain (...iters) {
-    for (let it of iters) {
-        yield* it;
-    }
-}
-
-export function * groupBy(iterable, key = (x)=> x) {
-    var k = {},
-        arr = [];
-    for (var val of iterable) {
-        var res = key(val);
-        if (res !== k) {
-            if (arr.length) yield [arr[0], arr];
-            k = res;
-            arr = [];
-        }
-        arr.push(val);
-    }
-    yield [arr[0], arr];
-}
-
-export function * cycle(iterable) {
+export function* cycle(iterable) {
     if (isMultiIterable(iterable)) {
         while (true) { 
             yield* iterable;
@@ -175,45 +162,84 @@ export function * cycle(iterable) {
     }
 }
 
-export function * map (callback, ...iters) {
-    for (let arr of zip(...iters)) {
+export function* repeat (val, times) {
+    if (typeof times == 'undefined') {
+        while (true) {
+            yield val;
+        }
+    }
+    else {
+        for (let i of range(times)) {
+            yield val;
+        }
+    }
+}
+
+export function* enumerate (iterable, start) {
+    yield* zip(count(start), iterable);
+}
+
+export function* chain (...iterables) {
+    for (let it of iterables) {
+        yield* it;
+    }
+}
+
+export function* groupBy(iterable, key = (x)=> x) {
+    let k = {},
+        arr = [];
+    for (let val of iterable) {
+        let res = key(val);
+        if (res !== k) {
+            if (arr.length) yield [arr[0], arr];
+            k = res;
+            arr = [];
+        }
+        arr.push(val);
+    }
+    yield [arr[0], arr];
+}
+
+export function* map (callback, ...iterables) {
+    for (let arr of zip(...iterables)) {
         yield callback(...arr);
     }
 }
 
-export function * longestMap (callback, ...iters) {
-    for (let arr of longestZip(...iters)) {
+export function* longestMap (callback, ...iterables) {
+    for (let arr of longestZip(...iterables)) {
         yield callback(...arr);
     }
 }
 
-export function * spreadMap (callback, iterable) {
+export function* spreadMap (callback, iterable) {
     for (let arr of iterable) {
         yield callback(...arr);
     }
 }
 
-export function * compress (data, selectors) {
+export function* compress (data, selectors) {
     for (let [v, s] of zip(data, selectors)) {
         if (s) yield v;
     }
 }
 
-export function * take(n, iterable) {
-    let count = n >>> 0;
+export function* take(n, iterable) {
+    let count = toPositiveInteger(n);
     
-    for (var v of iterable) {
+    for (let v of iterable) {
         if (count-- > 0) {
-            break;
+            yield v;
+            continue;
         }
-        yield v;
+        break;
     }
 }
 
-export function * drop(n, iterable) {
-    let count = n >>> 0;
+export function* drop(n, iterable) {
+    let count = toPositiveInteger(n);
     
-    for (var v of iterable) {
+    for (let v of iterable) {
         if (count-- > 0) {
             continue;
         }
@@ -221,20 +247,18 @@ export function * drop(n, iterable) {
     }
 }
 
-export function * dropWhile (callback, iterable) {
-    let iter = toIterator(iterable);
+export function* dropWhile (callback, iterable) {
+    let iter = getIterator(iterable);
     for (let v of iter) {
         if (!callback(v)) {
             yield v;
+            yield* iter;
             break;
         }
     }
-    for (let v of iter) {
-        yield v;
-    }
 }
 
-export function * takeWhile (callback, iterable) {
+export function* takeWhile (callback, iterable) {
     for (let v of iterable) {
         if (callback(v)) {
             yield v;
@@ -244,5 +268,40 @@ export function * takeWhile (callback, iterable) {
         }
     }
 }
+
+export function* filter (callback = Boolean, iterable) {
+    for (let v of iterable) {
+        if (callback(v)) {
+            yield v;
+        }
+    }
+}
+
+export function* filterFalse (callback = Boolean, iterable) {
+    for (let v of iterable) {
+        if (!callback(v)) {
+            yield v;
+        }
+    }
+}
+
+export function* accumulate(iterable, callback = (x, y) => x + y) {
+    let it = getIterator(iterable);
+    
+    try {
+        let next = it.next(),
+            acc = next.value;
+        if (!next.done) {
+            yield acc;
+        }
+        while (!( next = it.next() ).done) {
+            acc = callback(acc, next.value);
+            yield acc;
+        }
+    } finally {
+        closeIterator(it);
+    }
+}
+
 
 
