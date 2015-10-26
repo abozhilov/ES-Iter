@@ -345,3 +345,22 @@ export function* permutations(iterable, r) {
     yield* gen(); 
 }
 
+export function* combinations(iterable, r) {
+    let arr = toArray(iterable),
+        len = Math.min(toPositiveInteger(r), arr.length),
+        res = [];
+        
+    function* gen(idx = 0, start = 0) {
+        if (idx >= len) {
+            yield res;
+            return;
+        }
+        for (let i = start, l = arr.length; i < l; i++) {
+            res[idx] = arr[i];
+            yield* gen(idx + 1, i + 1);
+        }
+    }
+    
+    yield* gen();
+}
+
