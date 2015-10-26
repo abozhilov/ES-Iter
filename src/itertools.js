@@ -303,5 +303,45 @@ export function* accumulate(iterable, callback = (x, y) => x + y) {
     }
 }
 
+export function* product(...iterables) {
+    let arr = iterables.map((it) => isMultiIterable(it) ? it : toArray(it)),
+        len = arr.length,
+        res = [];
+        
+    function* gen(idx = 0) {
+        if (idx >= len) {
+            yield res;
+            return;
+        }
+        for (let v of arr[idx]) {
+            res[idx] = v;
+            yield* gen(idx + 1);
+        }
+    }
+    yield* gen();
+}
 
+export function* permutations(iterable, r) {
+    let arr = toArray(iterable),
+        map = new Map(),
+        len =  Math.min(toPositiveInteger(r) || arr.length, arr.length),
+        res = [];
+    
+    function* gen(idx = 0) {
+        if (idx >= len) {
+            yield res;
+            return;
+        }
+        for (let [i, v] of enumerate(arr)) {
+            if (!map.has(i)) {
+                map.set(i, true);
+                res[idx] = v;
+                yield* gen(idx + 1);
+                map.delete(i);
+            }
+        }
+    }
+    
+    yield* gen(); 
+}
 
