@@ -1,0 +1,35 @@
+{
+  "name": "IterJS",
+  "version": "0.7.0",
+  "description": "Itertools for JavaScript",
+  "main": "src/itertools.js",
+  "devDependencies": {
+    "babel-jest": "*",
+    "jest-cli": "*"
+  },
+  "jest": {
+    "scriptPreprocessor": "<rootDir>/node_modules/babel-jest",
+    "testFileExtensions": ["js"],
+    "moduleFileExtensions": ["js", "json"],
+    "testDirectoryName": "tests"
+  },
+  "scripts": {
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/abozhilov/IterJS.git"
+  },
+  "keywords": [
+    "itertools",
+    "iterator",
+    "generator",
+    "ES6"
+  ],
+  "author": "Asen Bozhilov <asen.bozhilov@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/abozhilov/IterJS/issues"
+  },
+  "homepage": "https://github.com/abozhilov/IterJS"
+}

@@ -12,16 +12,13 @@ function toPositiveInteger(n) {
     return Math.floor(n);
 }
 
+/**
+ * Gets an iterator from object which implements Iterator protocol
+ * @param {Object} obj
+ * @returns {Iterator}
+ */
 export function getIterator (obj) {
     return obj[Symbol.iterator]();
-}
-
-export function iterFrom(gen, ...args) {
-    return {
-        [Symbol.iterator]() {
-            return gen(...args);
-        }
-    }
 }
 
 export function isIterable (obj) {
