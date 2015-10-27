@@ -64,11 +64,15 @@ itertools.getIterator(Object.create(null)) //TypeError: obj[Symbol.iterator] is 
 #####`isClosable(iterator)`
 
 
+##Author
+
+Asen Bozhilov
+
+##Credits 
+
+Axel Rauschmayer and his excellent book [Exploring ES6](http://exploringjs.com/)
+
 ##License
 
 **MIT**  
 
-
-##Author
-
-Asen Bozhilov
