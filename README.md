@@ -4,17 +4,16 @@
 Itertools for JavaScript.
 
 ##API
----
 
-###`getIterator(obj)`
+#####`getIterator(obj)`
 
-###`isIterator(obj)`
+#####`isIterator(obj)`
 
-###`isIterable(obj)`
+#####`isIterable(obj)`
 
-###`isMultiIterable(obj)` 
+#####`isMultiIterable(obj)` 
 
-###`isClosable(iterator)`
+#####`isClosable(iterator)`
 
 
 ##License
