@@ -6,7 +6,7 @@ Itertools for JavaScript.
 
 #####`getIterator(obj)`
 
-Return an [iterator]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Iteration_protocols#iterator object.
+Return an [iterator](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Iteration_protocols#iterator) object.
 
 ```javascript
 let iter = itertools.getIterator([1, 2, 3]);
