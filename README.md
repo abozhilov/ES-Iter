@@ -1,5 +1,4 @@
 #IterJS v.0.7.0
-===========
 
 Itertools for JavaScript.
 
@@ -17,12 +16,10 @@ Itertools for JavaScript.
 
 
 ##License
--------
 
 **MIT**  
 
 
 ##Author
-------
 
 Asen Bozhilov
