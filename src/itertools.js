@@ -12,17 +12,12 @@ function toPositiveInteger(n) {
     return Math.floor(n);
 }
 
-/**
- * Gets an iterator from object which implements Iterator protocol
- * @param {Object} obj
- * @returns {Iterator}
- */
 export function getIterator (obj) {
     return obj[Symbol.iterator]();
 }
 
-export function isIterable (obj) {
-    return (obj != null && typeof obj[Symbol.iterator] == 'function');
+export function isIterable (obj = null) {
+    return (obj !== null && typeof obj[Symbol.iterator] === 'function');
 }
 
 export function isMultiIterable (obj) {
@@ -30,11 +25,11 @@ export function isMultiIterable (obj) {
 }
 
 export function isIterator (obj) {
-    return (isIterable(obj) && typeof obj.next == 'function');
+    return (isIterable(obj) && typeof obj.next === 'function');
 }
 
 export function isClosable (iterator) {
-    return (isIterable(iterator) && typeof iterator.return == 'function');
+    return (isIterator(iterator) && typeof iterator.return === 'function');
 }
 
 export function closeIterator (iterator) {

@@ -1,19 +1,29 @@
-IterJS v.0.0.1
+#IterJS v.0.7.0
 ===========
 
 Itertools for JavaScript.
 
-API Doc
--------
+##API
+---
+
+###`getIterator(obj)`
+
+###`isIterator(obj)`
+
+###`isIterable(obj)`
+
+###`isMultiIterable(obj)` 
+
+###`isClosable(iterator)`
 
 
-License
+##License
 -------
 
 **MIT**  
 
 
-Author
+##Author
 ------
 
 Asen Bozhilov
