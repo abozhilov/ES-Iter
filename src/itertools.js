@@ -16,16 +16,16 @@ export function getIterator (obj) {
     return obj[Symbol.iterator]();
 }
 
+export function isIterator (obj) {
+    return (isIterable(obj) && typeof obj.next === 'function');
+}
+
 export function isIterable (obj = null) {
     return (obj !== null && typeof obj[Symbol.iterator] === 'function');
 }
 
 export function isMultiIterable (obj) {
     return (isIterable(obj) && getIterator(obj) !== obj);
-}
-
-export function isIterator (obj) {
-    return (isIterable(obj) && typeof obj.next === 'function');
 }
 
 export function isClosable (iterator) {
@@ -39,13 +39,13 @@ export function closeIterator (iterator) {
     return false;
 }
 
-export function closeAllIterators(...iterators) {
+export function closeAllIterators (...iterators) {
     for (let it of iterators) {
         closeIterator(it);
     }
 }
 
-export function toArray(...iterables) {
+export function toArray (...iterables) {
     let res = [];
     for (let it of iterables) {
         res.push(...it);
