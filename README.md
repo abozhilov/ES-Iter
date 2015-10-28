@@ -53,7 +53,8 @@ iter.next() //{ value: undefined, done: true }
 Throws TypeError if object does not implement Iterator protocol (not iterable)
 
 ```javascript
-itertools.getIterator(Object.create(null)) //TypeError: obj[Symbol.iterator] is not a function
+//TypeError: obj[Symbol.iterator] is not a function
+itertools.getIterator(Object.create(null)) 
 ```
 
 #####`isIterator(obj)`
