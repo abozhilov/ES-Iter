@@ -11,6 +11,7 @@
     "scriptPreprocessor": "<rootDir>/node_modules/babel-jest",
     "testFileExtensions": ["js"],
     "moduleFileExtensions": ["js", "json"],
+    "testPathIgnorePatterns": ["/node_modules/", "auto_mock_off.js"],
     "testDirectoryName": "tests"
   },
   "scripts": {

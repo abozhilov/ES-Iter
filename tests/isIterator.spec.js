@@ -1,4 +1,4 @@
-import '../auto_mock_off';
+import './auto_mock_off';
 import 'babel/polyfill';
 import {isIterator} from '../src/itertools';
 

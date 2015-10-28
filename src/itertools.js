@@ -154,16 +154,9 @@ export function* cycle(iterable) {
     }
 }
 
-export function* repeat (val, times) {
-    if (typeof times == 'undefined') {
-        while (true) {
-            yield val;
-        }
-    }
-    else {
-        for (let i of range(times)) {
-            yield val;
-        }
+export function* repeat (val, times = Infinity) {
+    for (let i of range(toPositiveInteger(times))) {
+        yield val;
     }
 }
 

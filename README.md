@@ -6,11 +6,12 @@ Itertools for JavaScript.
 
 #### Terminology
 
-* *Iterable*
+* **Iterable**
 An iterable is a data structure that wants to make its elements accessible to the public. It does so by implementing a method whose key is Symbol.iterator. That method is a factory for iterators.
 
-* *Iterator*
+* **Iterator**
 A pointer for traversing the elements of a data structure (think cursors in databases).
+
 Note: Following the built-in API every Iterator must be also and iterable. 
 
 Follow this pattern for iterables: 
@@ -49,7 +50,7 @@ iter.next() //{ value: 3, done: false }
 iter.next() //{ value: undefined, done: true } 
 ```
 
-Throws TypeError if object does not implement Iterator protocol (is not iterable)
+Throws TypeError if object does not implement Iterator protocol (not iterable)
 
 ```javascript
 itertools.getIterator(Object.create(null)) //TypeError: obj[Symbol.iterator] is not a function
