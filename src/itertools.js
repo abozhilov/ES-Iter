@@ -131,7 +131,7 @@ export function* enumerate (iterable, start) {
     yield* zip(count(start), iterable);
 }
 
-export function* accumulate(iterable, callback = (x, y) => x + y) {
+export function* accumulate (iterable, callback = (x, y) => x + y) {
     let it = getIterator(iterable);
     
     try {
@@ -161,7 +161,7 @@ export function* compress (data, selectors) {
     }
 }
 
-export function* groupBy(iterable, key = (x)=> x) {
+export function* groupBy (iterable, key = (x)=> x) {
     let k = {},
         arr = [];
     for (let val of iterable) {
@@ -194,7 +194,7 @@ export function* spreadMap (callback, iterable) {
     }
 }
 
-export function* take(n, iterable) {
+export function* take (n, iterable) {
     let count = toPositiveInteger(n);
     
     for (let v of iterable) {
@@ -206,7 +206,7 @@ export function* take(n, iterable) {
     }
 }
 
-export function* drop(n, iterable) {
+export function* drop (n, iterable) {
     let count = toPositiveInteger(n);
     
     for (let v of iterable) {
@@ -264,7 +264,7 @@ export function* count (start, step) {
     }
 }
 
-export function* cycle(iterable) {
+export function* cycle (iterable) {
     if (isMultiIterable(iterable)) {
         while (true) { 
             yield* iterable;
@@ -288,7 +288,7 @@ export function* repeat (val, times = Infinity) {
     }
 }
 
-export function* product(...iterables) {
+export function* product (...iterables) {
     let arr = iterables.map((it) => isMultiIterable(it) ? it : toArray(it)),
         len = arr.length,
         res = [];
@@ -306,7 +306,7 @@ export function* product(...iterables) {
     yield* gen();
 }
 
-export function* permutations(iterable, r) {
+export function* permutations (iterable, r) {
     let arr = toArray(iterable),
         map = new Map(),
         len =  Math.min(toPositiveInteger(r) || arr.length, arr.length),
@@ -330,7 +330,7 @@ export function* permutations(iterable, r) {
     yield* gen(); 
 }
 
-export function* combinations(iterable, r) {
+export function* combinations (iterable, r) {
     let arr = toArray(iterable),
         len = Math.min(toPositiveInteger(r), arr.length),
         res = [];

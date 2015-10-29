@@ -161,47 +161,47 @@ itertools.isClosable(iter) //false
 
 #####`toArray(...iterables)`
 
-#####`range (start, end, step)`
+#####`range(start, end, step)`
 
-#####`zip (...iterables)`
+#####`zip(...iterables)`
 
-#####`longestZip (...iterables)`
+#####`longestZip(...iterables)`
 
-#####`enumerate (iterable, start)`
+#####`enumerate(iterable, start)`
 
 #####`accumulate(iterable, callback = (x, y) => x + y)`
 
-#####`chain (...iterables)`
+#####`chain(...iterables)`
 
-#####`compress (data, selectors)`
+#####`compress(data, selectors)`
 
-#####`groupBy(iterable, key = (x)=> x)`
+#####`groupBy(iterable, key = (x) => x)`
 
-#####`map (callback, ...iterables)`
+#####`map(callback, ...iterables)`
 
-#####`longestMap (callback, ...iterables)`
+#####`longestMap(callback, ...iterables)`
 
-#####`spreadMap (callback, iterable)`
+#####`spreadMap(callback, iterable)`
 
 #####`take(n, iterable)`
 
 #####`drop(n, iterable)`
 
-#####`dropWhile (callback, iterable)`
+#####`dropWhile(callback, iterable)`
 
-#####`takeWhile (callback, iterable)`
+#####`takeWhile(callback, iterable)`
 
-#####`filter (callback = Boolean, iterable)`
+#####`filter(callback = Boolean, iterable)`
 
-#####`filterFalse (callback = Boolean, iterable)`
+#####`filterFalse(callback = Boolean, iterable)`
 
 #### Infinite generators
 
-#####`count (start, step)`
+#####`count(start, step)`
 
 #####`cycle(iterable)`
 
-#####`repeat (val, times = Infinity)`
+#####`repeat(val, times = Infinity)`
 
 #### Combinatoric generators
 
