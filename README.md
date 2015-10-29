@@ -106,7 +106,9 @@ for (let v of arr) {
 for (let v of arr) { 
     console.log(v) //1 2 3 4
 }
+```
 
+```javascript
 let iterArr = itertools.getIterator([1, 2, 3, 4])
 itertools.isMultiIterable(iterArr) //false
 
@@ -133,7 +135,6 @@ let iter = {
         return {value: true, done: false}
     },
     return() {
-        console.log('Clean up iterator logic')
         return {done: true}
     }
 }
@@ -160,45 +161,49 @@ itertools.isClosable(iter) //false
 
 #####`toArray(...iterables)`
 
-#####`range(start, end, step)`
+#####`range (start, end, step)`
 
-#####`zip(...iterables)`
+#####`zip (...iterables)`
 
-#####`longestZip(...iterables)`
+#####`longestZip (...iterables)`
 
-#####`count(start, step)`
+#####`enumerate (iterable, start)`
 
-#####`cycle(iterable)`
+#####`accumulate(iterable, callback = (x, y) => x + y)`
 
-#####`repeat(val, times = Infinity)`
+#####`chain (...iterables)`
 
-#####`enumerate(iterable, start)`
+#####`compress (data, selectors)`
 
-#####`chain(...iterables)`
+#####`groupBy(iterable, key = (x)=> x)`
 
-#####`groupBy(iterable, key = (x) => x)`
+#####`map (callback, ...iterables)`
 
-#####`map(callback, ...iterables)`
+#####`longestMap (callback, ...iterables)`
 
-#####`longestMap(callback, ...iterables)`
-
-#####`spreadMap(callback, iterable)`
-
-#####`compress(data, selectors)`
+#####`spreadMap (callback, iterable)`
 
 #####`take(n, iterable)`
 
 #####`drop(n, iterable)`
 
-#####`dropWhile(callback, iterable)`
+#####`dropWhile (callback, iterable)`
 
-#####`takeWhile(callback, iterable)`
+#####`takeWhile (callback, iterable)`
 
-#####`filter(callback = Boolean, iterable)`
+#####`filter (callback = Boolean, iterable)`
 
-#####`filterFalse(callback = Boolean, iterable)`
+#####`filterFalse (callback = Boolean, iterable)`
 
-#####`accumulate(iterable, callback = (x, y) => x + y)`
+#### Infinite generators
+
+#####`count (start, step)`
+
+#####`cycle(iterable)`
+
+#####`repeat (val, times = Infinity)`
+
+#### Combinatoric generators
 
 #####`product(...iterables)`
 

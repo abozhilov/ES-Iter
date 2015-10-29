@@ -34,7 +34,7 @@ export function isClosable (iterator) {
 
 export function closeIterator (iterator) {
     if (isClosable(iterator)) {
-        return iterator.return().done;
+        return Boolean(iterator.return().done);
     }
     return false;
 }
@@ -127,46 +127,37 @@ export function* longestZip (...iterables) {
     }
 }
 
-export function* count (start, step) {
-    let s = toInteger(start) || 0,
-        k = toInteger(step) || 1;
-    while (true) {
-        yield s;
-        s += k;
-    }
-}
-
-export function* cycle(iterable) {
-    if (isMultiIterable(iterable)) {
-        while (true) { 
-            yield* iterable;
-        }
-    }
-    else {
-        let arr = [];
-        for (let v of iterable) {
-            yield v;
-            arr.push(v);
-        }
-        while (true) {
-            yield* arr;
-        }
-    }
-}
-
-export function* repeat (val, times = Infinity) {
-    for (let i of range(toPositiveInteger(times))) {
-        yield val;
-    }
-}
-
 export function* enumerate (iterable, start) {
     yield* zip(count(start), iterable);
+}
+
+export function* accumulate(iterable, callback = (x, y) => x + y) {
+    let it = getIterator(iterable);
+    
+    try {
+        let next = it.next(),
+            acc = next.value;
+        if (!next.done) {
+            yield acc;
+        }
+        while (!( next = it.next() ).done) {
+            acc = callback(acc, next.value);
+            yield acc;
+        }
+    } finally {
+        closeIterator(it);
+    }
 }
 
 export function* chain (...iterables) {
     for (let it of iterables) {
         yield* it;
+    }
+}
+
+export function* compress (data, selectors) {
+    for (let [v, s] of zip(data, selectors)) {
+        if (s) yield v;
     }
 }
 
@@ -200,12 +191,6 @@ export function* longestMap (callback, ...iterables) {
 export function* spreadMap (callback, iterable) {
     for (let arr of iterable) {
         yield callback(...arr);
-    }
-}
-
-export function* compress (data, selectors) {
-    for (let [v, s] of zip(data, selectors)) {
-        if (s) yield v;
     }
 }
 
@@ -270,21 +255,36 @@ export function* filterFalse (callback = Boolean, iterable) {
     }
 }
 
-export function* accumulate(iterable, callback = (x, y) => x + y) {
-    let it = getIterator(iterable);
-    
-    try {
-        let next = it.next(),
-            acc = next.value;
-        if (!next.done) {
-            yield acc;
+export function* count (start, step) {
+    let s = toInteger(start) || 0,
+        k = toInteger(step) || 1;
+    while (true) {
+        yield s;
+        s += k;
+    }
+}
+
+export function* cycle(iterable) {
+    if (isMultiIterable(iterable)) {
+        while (true) { 
+            yield* iterable;
         }
-        while (!( next = it.next() ).done) {
-            acc = callback(acc, next.value);
-            yield acc;
+    }
+    else {
+        let arr = [];
+        for (let v of iterable) {
+            yield v;
+            arr.push(v);
         }
-    } finally {
-        closeIterator(it);
+        while (true) {
+            yield* arr;
+        }
+    }
+}
+
+export function* repeat (val, times = Infinity) {
+    for (let i of range(toPositiveInteger(times))) {
+        yield val;
     }
 }
 
