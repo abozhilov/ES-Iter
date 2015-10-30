@@ -190,7 +190,12 @@ export function* longestZipMap (arrOfIterables, callback) {
 
 export function* spreadMap (iterable, callback) {
     for (let arr of iterable) {
-        yield callback(...arr);
+        if (isIterable(arr)) {
+            yield callback(...arr);
+        }
+        else {
+            yield callback(arr);
+        }
     }
 }
 
