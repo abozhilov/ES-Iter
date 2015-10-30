@@ -177,9 +177,9 @@ itertools.isClosable(iter) //false
 
 #####`groupBy(iterable, key = (x) => x)`
 
-#####`map(callback, ...iterables)`
+#####`zipMap(arrOfIterables, callback)`
 
-#####`longestMap(callback, ...iterables)`
+#####`longestZipMap(arrOfIterables, callback)`
 
 #####`spreadMap(callback, iterable)`
 
@@ -187,13 +187,13 @@ itertools.isClosable(iter) //false
 
 #####`drop(n, iterable)`
 
-#####`dropWhile(callback, iterable)`
+#####`dropWhile(iterable, callback = Boolean)`
 
-#####`takeWhile(callback, iterable)`
+#####`takeWhile(iterable, callback = Boolean)`
 
-#####`filter(callback = Boolean, iterable)`
+#####`filter(iterable, callback = Boolean)`
 
-#####`filterFalse(callback = Boolean, iterable)`
+#####`filterFalse(iterable, callback = Boolean)`
 
 #### Infinite generators
 

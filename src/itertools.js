@@ -176,19 +176,19 @@ export function* groupBy (iterable, key = (x)=> x) {
     yield [arr[0], arr];
 }
 
-export function* map (callback, ...iterables) {
-    for (let arr of zip(...iterables)) {
+export function* zipMap (arrOfIterables, callback) {
+    for (let arr of zip(...arrOfIterables)) {
         yield callback(...arr);
     }
 }
 
-export function* longestMap (callback, ...iterables) {
-    for (let arr of longestZip(...iterables)) {
+export function* longestZipMap (arrOfIterables, callback) {
+    for (let arr of longestZip(...arrOfIterables)) {
         yield callback(...arr);
     }
 }
 
-export function* spreadMap (callback, iterable) {
+export function* spreadMap (iterable, callback) {
     for (let arr of iterable) {
         yield callback(...arr);
     }
@@ -217,7 +217,7 @@ export function* drop (n, iterable) {
     }
 }
 
-export function* dropWhile (callback, iterable) {
+export function* dropWhile (iterable, callback = Boolean) {
     let iter = getIterator(iterable);
     for (let v of iter) {
         if (!callback(v)) {
@@ -228,7 +228,7 @@ export function* dropWhile (callback, iterable) {
     }
 }
 
-export function* takeWhile (callback, iterable) {
+export function* takeWhile (iterable, callback = Boolean) {
     for (let v of iterable) {
         if (callback(v)) {
             yield v;
@@ -239,7 +239,7 @@ export function* takeWhile (callback, iterable) {
     }
 }
 
-export function* filter (callback = Boolean, iterable) {
+export function* filter (iterable, callback = Boolean) {
     for (let v of iterable) {
         if (callback(v)) {
             yield v;
@@ -247,7 +247,7 @@ export function* filter (callback = Boolean, iterable) {
     }
 }
 
-export function* filterFalse (callback = Boolean, iterable) {
+export function* filterFalse (iterable, callback = Boolean) {
     for (let v of iterable) {
         if (!callback(v)) {
             yield v;
