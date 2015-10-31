@@ -48,7 +48,9 @@ export function closeAllIterators (...iterators) {
 export function toArray (...iterables) {
     let res = [];
     for (let it of iterables) {
-        res.push(...it);
+        //Babel doesn't throw TypeError for `...nonIterable`
+        //so call getIterator explicitly
+        res.push(...getIterator(it)); 
     }
     return res;
 }
@@ -79,10 +81,11 @@ export function* range (start, end, step) {
 }
 
 export function* zip (...iterables) {
-    let iterators = iterables.map(getIterator);
+    let iterators = iterables.map(getIterator),
+        len = iterators.length;
     
     try {
-        while (true) {
+        while (len > 0) {
             let res = [];
             for (let it of iterators) {
                 let curr = it.next();
@@ -176,26 +179,21 @@ export function* groupBy (iterable, key = (x)=> x) {
     yield [arr[0], arr];
 }
 
-export function* zipMap (arrOfIterables, callback) {
-    for (let arr of zip(...arrOfIterables)) {
+export function* zipMap (callback, ...iterables) {
+    for (let arr of zip(...iterables)) {
         yield callback(...arr);
     }
 }
 
-export function* longestZipMap (arrOfIterables, callback) {
-    for (let arr of longestZip(...arrOfIterables)) {
+export function* longestZipMap (callback, ...iterables) {
+    for (let arr of longestZip(...iterables)) {
         yield callback(...arr);
     }
 }
 
 export function* spreadMap (iterable, callback) {
     for (let arr of iterable) {
-        if (isIterable(arr)) {
-            yield callback(...arr);
-        }
-        else {
-            yield callback(arr);
-        }
+        yield callback(...arr);
     }
 }
 

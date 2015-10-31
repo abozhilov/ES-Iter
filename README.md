@@ -177,9 +177,9 @@ itertools.isClosable(iter) //false
 
 #####`groupBy(iterable, key = (x) => x)`
 
-#####`zipMap(arrOfIterables, callback)`
+#####`zipMap(callback, ...iterables)`
 
-#####`longestZipMap(arrOfIterables, callback)`
+#####`longestZipMap(callback, ...iterables)`
 
 #####`spreadMap(callback, iterable)`
 
