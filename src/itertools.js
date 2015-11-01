@@ -48,8 +48,6 @@ export function closeAllIterators (...iterators) {
 export function toArray (...iterables) {
     let res = [];
     for (let it of iterables) {
-        //Babel doesn't throw TypeError for `...nonIterable`
-        //so call getIterator explicitly
         res.push(...getIterator(it)); 
     }
     return res;
@@ -82,10 +80,10 @@ export function* range (start, end, step) {
 
 export function* zip (...iterables) {
     let iterators = iterables.map(getIterator),
-        len = iterators.length;
+        done = iterators.length;
     
     try {
-        while (len > 0) {
+        while (done) {
             let res = [];
             for (let it of iterators) {
                 let curr = it.next();
@@ -107,10 +105,11 @@ export function* zip (...iterables) {
 export function* longestZip (...iterables) {
     let iterators = iterables.map(getIterator),
         map       = new Map(zip(iterators, repeat(false))),
-        count     = 0;
+        count     = 0,
+        done      = iterators.length;
         
     try {    
-        while (true) {
+        while (done) {
             let res = [];
             for (let it of iterators) {
                 let curr = it.next();

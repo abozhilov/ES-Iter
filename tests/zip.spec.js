@@ -21,6 +21,11 @@ describe('zip', () => {
         expect(arr.length).toBe(0);        
     })
     
+    it('does not yield anything with zero length iterable', () => {
+        let arr = [...zip([])];
+        expect(arr.length).toBe(0);
+    })
+    
     it('stops when shortest iterable is exhausted', () => {
         let arr = [...zip(gen(3), gen(10))];
         
@@ -51,5 +56,16 @@ describe('zip', () => {
             
         expect(res1.length).toBe(0);
         expect(res2.length).toBe(0);        
+    })
+    
+    it('throws TypeError if argument is not iterable', () => {
+        var err = {};
+        
+        try {
+            [...zip([], null, 1234)]
+        } catch (e) {
+            err = e;
+        }
+        expect(err instanceof TypeError).toBe(true);
     })
 })

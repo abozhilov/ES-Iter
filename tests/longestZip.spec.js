@@ -1,0 +1,50 @@
+import './auto_mock_off';
+import 'babel/polyfill';
+import {longestZip} from '../src/itertools';
+
+describe('longestZip', () => {
+    function* gen(n) {
+        for (let i = 0; i < n; i++) {
+            yield n;
+        }
+    }
+    
+    it('packs array with length equal to number of iterables', () => {
+        let arr = [...longestZip([1], [2], [3])];
+        
+        expect(Array.isArray(arr[0])).toBe(true);
+        expect(arr[0].length).toBe(3);
+    })
+    
+    it('does not yield anything with no arguments', () => {
+        let arr = [...longestZip()];
+        expect(arr.length).toBe(0);        
+    })
+    
+    it('stops when longest iterable is exhausted', () => {
+        let arr = [...longestZip(gen(3), gen(10))];
+        
+        expect(arr.length).toBe(10);
+    })
+    
+    it('yields undefined if shorter iterator is exhausted', () => {
+        for (let [i, v] of longestZip(gen(0), gen(10))) {
+            expect(i).toBe(undefined);
+        }
+    })
+    
+    it('closes all iterators on abrupt exits', () => {
+        let iter1 = gen(4),
+            iter2 = gen(20);
+        
+        for (let [i, j] of longestZip(iter1, iter2)) {
+            break;
+        }
+        
+        let res1 = [...iter1],
+            res2 = [...iter2];
+            
+        expect(res1.length).toBe(0);
+        expect(res2.length).toBe(0);        
+    })
+})
