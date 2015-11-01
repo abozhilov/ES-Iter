@@ -157,10 +157,14 @@ export function accumulate (iterable, callback = (x, y) => x + y) {
     })();
 }
 
-export function* chain (...iterables) {
-    for (let it of iterables) {
-        yield* it;
-    }
+export function chain (...iterables) {
+    let iterators = iterables.map(getIterator);
+    
+    return (function* () {
+        for (let it of iterators) {
+            yield* it;
+        }
+    })();
 }
 
 export function* compress (data, selectors) {
