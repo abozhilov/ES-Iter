@@ -38,4 +38,12 @@ describe('chain', () => {
         
         expect([...iter].length).toBe(0);
     })
+    
+    it('iterates over every argument', () => {
+        let res1 = [...chain([1, 2, 3], 'ABC', new Set([1, 2, 3]))],
+            res2 = [...chain([[1, 2, 3]], ['ABC'], new Set([[1, 2, 3]]))];
+        
+        expect(res1.length).toBe(9);
+        expect(res2.length).toBe(3);
+    })
 })
