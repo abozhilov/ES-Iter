@@ -21,6 +21,18 @@ describe('enumerate', () => {
         expect(err instanceof TypeError).toBe(true);
     })
     
+    it('Throws TypeError with non iterable', () => {
+        let err = {};
+        
+        try {
+            enumerate(545);
+        }catch(e) {
+            err = e;
+        }
+        
+        expect(err instanceof TypeError).toBe(true);        
+    })
+    
     it('always yields tupples [integer, value]', () => {
         let res = [...enumerate([1, 2, 3])];
         
