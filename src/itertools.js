@@ -78,77 +78,83 @@ export function* range (start, end, step) {
     } 
 }
 
-export function* zip (...iterables) {
+export function zip (...iterables) {
     let iterators = iterables.map(getIterator),
         done = iterators.length;
     
-    try {
-        while (done) {
-            let res = [];
-            for (let it of iterators) {
-                let curr = it.next();
-                if (curr.done) {
-                    for (let i of iterators) {
-                        if (i !== it) closeIterator(i);
+    return (function* () {
+        try {
+            while (done) {
+                let res = [];
+                for (let it of iterators) {
+                    let curr = it.next();
+                    if (curr.done) {
+                        for (let i of iterators) {
+                            if (i !== it) closeIterator(i);
+                        }
+                        return;
                     }
-                    return;
+                    res.push(curr.value);
                 }
-                res.push(curr.value);
+                yield res;
             }
-            yield res;
+        } finally {
+            closeAllIterators(...iterators);
         }
-    } finally {
-        closeAllIterators(...iterators);
-    }
+    })();
 }
 
-export function* longestZip (...iterables) {
+export function longestZip (...iterables) {
     let iterators = iterables.map(getIterator),
         map       = new Map(zip(iterators, repeat(false))),
         count     = 0,
         done      = iterators.length;
-        
-    try {    
-        while (done) {
-            let res = [];
-            for (let it of iterators) {
-                let curr = it.next();
-                if (curr.done && !map.get(it)) {
-                    map.set(it, true);
-                    count++;
+    
+    return (function* () {    
+        try {    
+            while (done) {
+                let res = [];
+                for (let it of iterators) {
+                    let curr = it.next();
+                    if (curr.done && !map.get(it)) {
+                        map.set(it, true);
+                        count++;
+                    }
+                    res.push(curr.value);
                 }
-                res.push(curr.value);
+                if (count >= iterators.length) {
+                    return;
+                } 
+                yield res;
             }
-            if (count >= iterators.length) {
-                return;
-            } 
-            yield res;
+        } finally {
+            closeAllIterators(...iterators);
         }
-    } finally {
-        closeAllIterators(...iterators);
-    }
+    })();
 }
 
-export function* enumerate (iterable, start) {
-    yield* zip(count(start), iterable);
+export function enumerate (iterable, start) {
+    return zip(count(start), iterable);
 }
 
-export function* accumulate (iterable, callback = (x, y) => x + y) {
+export function accumulate (iterable, callback = (x, y) => x + y) {
     let it = getIterator(iterable);
     
-    try {
-        let next = it.next(),
-            acc = next.value;
-        if (!next.done) {
-            yield acc;
+    return (function* () {
+        try {
+            let next = it.next(),
+                acc = next.value;
+            if (!next.done) {
+                yield acc;
+            }
+            while (!( next = it.next() ).done) {
+                acc = callback(acc, next.value);
+                yield acc;
+            }
+        } finally {
+            closeIterator(it);
         }
-        while (!( next = it.next() ).done) {
-            acc = callback(acc, next.value);
-            yield acc;
-        }
-    } finally {
-        closeIterator(it);
-    }
+    })();
 }
 
 export function* chain (...iterables) {

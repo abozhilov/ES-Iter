@@ -32,7 +32,7 @@ describe('zip', () => {
         expect(arr.length).toBe(3);
     }) 
     
-    it('closes all iterators when is determinated shortest iterable', () => {
+    it('closes all closable iterators when is determinated shortest iterable', () => {
         let iter1 = gen(4),
             iter2 = gen(20),
             zipRes = [...zip(iter1, iter2)],
@@ -43,7 +43,7 @@ describe('zip', () => {
         expect(res2.length).toBe(0);
     })
     
-    it('closes all iterators on abrupt exits', () => {
+    it('closes all closable iterators on abrupt exits', () => {
         let iter1 = gen(4),
             iter2 = gen(20);
         
@@ -62,7 +62,7 @@ describe('zip', () => {
         var err = {};
         
         try {
-            [...zip([], null, 1234)]
+            zip([], null, 1234)
         } catch (e) {
             err = e;
         }

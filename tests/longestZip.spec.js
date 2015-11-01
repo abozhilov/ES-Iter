@@ -33,7 +33,7 @@ describe('longestZip', () => {
         }
     })
     
-    it('closes all iterators on abrupt exits', () => {
+    it('closes all closable iterators on abrupt exits', () => {
         let iter1 = gen(4),
             iter2 = gen(20);
         
@@ -46,5 +46,16 @@ describe('longestZip', () => {
             
         expect(res1.length).toBe(0);
         expect(res2.length).toBe(0);        
+    })
+    
+    it('throws TypeError if argument is not iterable', () => {
+        var err = {};
+        
+        try {
+            longestZip([], null, 1234)
+        } catch (e) {
+            err = e;
+        }
+        expect(err instanceof TypeError).toBe(true);
     })
 })
