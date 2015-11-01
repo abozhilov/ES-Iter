@@ -138,21 +138,21 @@ export function enumerate (iterable, start) {
 }
 
 export function accumulate (iterable, callback = (x, y) => x + y) {
-    let it = getIterator(iterable);
+    let iterator = getIterator(iterable);
     
     return (function* () {
         try {
-            let next = it.next(),
+            let next = iterator.next(),
                 acc = next.value;
             if (!next.done) {
                 yield acc;
             }
-            while (!( next = it.next() ).done) {
+            while (!( next = iterator.next() ).done) {
                 acc = callback(acc, next.value);
                 yield acc;
             }
         } finally {
-            closeIterator(it);
+            closeIterator(iterator);
         }
     })();
 }
@@ -167,10 +167,14 @@ export function chain (...iterables) {
     })();
 }
 
-export function* compress (data, selectors) {
-    for (let [v, s] of zip(data, selectors)) {
-        if (s) yield v;
-    }
+export function compress (data, selectors) {
+    let iterator = zip(data, selectors);
+    
+    return (function* () {
+        for (let [v, s] of iterator) {
+            if (s) yield v;
+        }
+    })();
 }
 
 export function* groupBy (iterable, key = (x)=> x) {
