@@ -177,19 +177,28 @@ export function compress (data, selectors) {
     })();
 }
 
-export function* groupBy (iterable, key = (x)=> x) {
-    let k = {},
-        arr = [];
-    for (let val of iterable) {
-        let res = key(val);
-        if (res !== k) {
-            if (arr.length) yield [arr[0], arr];
-            k = res;
-            arr = [];
+export function groupBy (iterable, key = (x) => x) {
+    let iterator = getIterator(iterable);
+    
+    return (function* () {
+        let k = {};
+        let arr = [];
+        
+        for (let v of iterator) {
+            let res = key(v);
+            if (res !== k) {
+                if (arr.length) {
+                    yield [k, arr];
+                }
+                arr = [];
+                k = res;
+            }
+            arr.push(v);
         }
-        arr.push(val);
-    }
-    yield [arr[0], arr];
+        if (arr.length) {
+            yield [k, arr];
+        }        
+    })();
 }
 
 export function* zipMap (callback, ...iterables) {
