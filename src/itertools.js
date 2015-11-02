@@ -12,6 +12,12 @@ function toPositiveInteger(n) {
     return Math.floor(n);
 }
 
+function throwIfNotCallable(callback) {
+    if (typeof callback != 'function') {
+        throw TypeError(callback + ' is not a function');
+    }
+}
+
 export function getIterator (obj) {
     return obj[Symbol.iterator]();
 }
@@ -201,22 +207,40 @@ export function groupBy (iterable, key = (x) => x) {
     })();
 }
 
-export function* zipMap (callback, ...iterables) {
-    for (let arr of zip(...iterables)) {
-        yield callback(...arr);
-    }
+export function zipMap (callback, ...iterables) {
+    let iterator = zip(...iterables);
+    
+    throwIfNotCallable(callback);
+    
+    return (function* (){
+        for (let arr of iterator) {
+            yield callback(...arr);
+        }
+    })();
 }
 
-export function* longestZipMap (callback, ...iterables) {
-    for (let arr of longestZip(...iterables)) {
-        yield callback(...arr);
-    }
+export function longestZipMap (callback, ...iterables) {
+    let iterator = longestZip(...iterables);
+    
+    throwIfNotCallable(callback);
+    
+    return (function* () {
+        for (let arr of iterator) {
+            yield callback(...arr);
+        }
+    })();
 }
 
-export function* spreadMap (iterable, callback) {
-    for (let arr of iterable) {
-        yield callback(...arr);
-    }
+export function spreadMap (iterable, callback) {
+    let iterator = getIterator(iterable);
+    
+    throwIfNotCallable(callback);
+    
+    return (function* () {
+        for (let arr of iterator) {
+            yield callback(...arr);
+        }
+    })();
 }
 
 export function* take (n, iterable) {
