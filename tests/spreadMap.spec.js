@@ -11,6 +11,13 @@ describe('spreadMap', () => {
         [...spreadMap([[1, 2, 3, 4], [1, 2, 3, 4], [1, 2, 3, 4]], (...args) => expect(args.length).toBe(4))];
     })
     
+    it('yields the returned value of callback', () => {
+        let x = 0;
+        for (let i of spreadMap(['ABC', 'DEF'], () => ++x)) {
+            expect(i).toBe(x);
+        }
+    })
+    
     it('throws TypeError if first argument is missing', () => {
         let err = {};
         try {
@@ -49,5 +56,17 @@ describe('spreadMap', () => {
             err = e;
         }
         expect(err instanceof TypeError).toBe(true);        
+    })
+    
+    it('closes iterator on abrupt exit', () => {
+        let iter = (function* (){
+            for (let i = 10; i--;) yield [i];
+        })();
+        
+        for (let i of spreadMap(iter, (x) => x)) {
+            break;
+        }
+        
+        expect([...iter].length).toBe(0);        
     })
 })
