@@ -207,28 +207,36 @@ export function groupBy (iterable, key = (x) => x) {
     })();
 }
 
-export function zipMap (callback, ...iterables) {
-    let iterator = zip(...iterables);
+export function zipMap (...iterables) {
+    let callback = iterables[iterables.length - 1];
     
-    throwIfNotCallable(callback);
-    
-    return (function* (){
-        for (let arr of iterator) {
-            yield callback(...arr);
-        }
-    })();
+    if (typeof callback != 'function') {
+        return zip(...iterables);
+    }
+    else {
+        let iterator = zip(...iterables.slice(0, -1));
+        return (function* (){
+            for (let arr of iterator) {
+                yield callback(...arr);
+            }
+        })();
+    }
 }
 
-export function longestZipMap (callback, ...iterables) {
-    let iterator = longestZip(...iterables);
+export function longestZipMap (...iterables) {
+    let callback = iterables[iterables.length - 1];
     
-    throwIfNotCallable(callback);
-    
-    return (function* () {
-        for (let arr of iterator) {
-            yield callback(...arr);
-        }
-    })();
+    if (typeof callback != 'function') {
+        return longestZip(...iterables);
+    }
+    else {    
+        let iterator = longestZip(...iterables.slice(0, -1));
+        return (function* () {
+            for (let arr of iterator) {
+                yield callback(...arr);
+            }
+        })();
+    }
 }
 
 export function spreadMap (iterable, callback) {
@@ -243,50 +251,64 @@ export function spreadMap (iterable, callback) {
     })();
 }
 
-export function* take (n, iterable) {
-    let count = toPositiveInteger(n);
+export function take (iterable, n = Infinity) {
+    let iterator = getIterator(iterable);
     
-    for (let v of iterable) {
-        if (count-- > 0) {
-            yield v;
-            continue;
-        }
-        break;
-    }
-}
-
-export function* drop (n, iterable) {
-    let count = toPositiveInteger(n);
-    
-    for (let v of iterable) {
-        if (count-- > 0) {
-            continue;
-        }
-        yield v;
-    }
-}
-
-export function* dropWhile (iterable, callback = Boolean) {
-    let iter = getIterator(iterable);
-    for (let v of iter) {
-        if (!callback(v)) {
-            yield v;
-            yield* iter;
+    return (function* () {
+        let count = toPositiveInteger(n);
+        for (let v of iterator) {
+            if (count-- > 0) {
+                yield v;
+                continue;
+            }
             break;
         }
-    }
+    })();
 }
 
-export function* takeWhile (iterable, callback = Boolean) {
-    for (let v of iterable) {
-        if (callback(v)) {
+export function takeWhile (iterable, callback = Boolean) {
+    let iterator = getIterator(iterable);
+    
+    return (function* () {
+        for (let v of iterator) {
+            if (callback(v)) {
+                yield v;
+            }
+            else {
+                break;
+            }
+        }
+    })();
+}
+
+export function drop (iterable, n = Infinity) {
+    let iterator = getIterator(iterable);
+    
+    return (function* () {
+        let count = toPositiveInteger(n);
+        for (let v of iterator) {
+            if (count-- > 0) {
+                continue;
+            }
             yield v;
         }
-        else {
-            break;
-        }
-    }
+    })();
 }
+
+export function dropWhile (iterable, callback = Boolean) {
+    let iterator = getIterator(iterable);
+    
+    return (function* () {
+        for (let v of iterator) {
+            if (!callback(v)) {
+                yield v;
+                yield* iterator;
+                break;
+            }
+        }
+    })();
+}
+
 
 export function* filter (iterable, callback = Boolean) {
     for (let v of iterable) {
