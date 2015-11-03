@@ -310,20 +310,28 @@ export function dropWhile (iterable, callback = Boolean) {
 }
 
 
-export function* filter (iterable, callback = Boolean) {
-    for (let v of iterable) {
-        if (callback(v)) {
-            yield v;
+export function filter (iterable, callback = Boolean) {
+    let iterator = getIterator(iterable);
+    
+    return (function* () {
+        for (let v of iterator) {
+            if (callback(v)) {
+                yield v;
+            }
         }
-    }
+    })();
 }
 
-export function* filterFalse (iterable, callback = Boolean) {
-    for (let v of iterable) {
-        if (!callback(v)) {
-            yield v;
+export function filterFalse (iterable, callback = Boolean) {
+    let iterator = getIterator(iterable);
+    
+    return (function* () {
+        for (let v of iterator) {
+            if (!callback(v)) {
+                yield v;
+            }
         }
-    }
+    })();
 }
 
 export function* count (start, step) {
