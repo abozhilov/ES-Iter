@@ -343,22 +343,19 @@ export function* count (start, step) {
     }
 }
 
-export function* cycle (iterable) {
-    if (isMultiIterable(iterable)) {
-        while (true) { 
-            yield* iterable;
-        }
-    }
-    else {
+export function cycle (iterable) {
+    let iterator = getIterator(iterable);
+    
+    return (function* () {
         let arr = [];
-        for (let v of iterable) {
+        for (let v of iterator) {
             yield v;
             arr.push(v);
         }
         while (true) {
             yield* arr;
         }
-    }
+    })();
 }
 
 export function* repeat (val, times = Infinity) {
@@ -367,12 +364,12 @@ export function* repeat (val, times = Infinity) {
     }
 }
 
-export function* product (...iterables) {
+export function product (...iterables) {
     let arr = iterables.map((it) => isMultiIterable(it) ? it : toArray(it)),
         len = arr.length,
         res = [];
         
-    function* gen(idx = 0) {
+    return (function* gen(idx = 0) {
         if (idx >= len) {
             yield res;
             return;
@@ -381,17 +378,16 @@ export function* product (...iterables) {
             res[idx] = v;
             yield* gen(idx + 1);
         }
-    }
-    yield* gen();
+    })();
 }
 
-export function* permutations (iterable, r) {
+export function permutations (iterable, r) {
     let arr = toArray(iterable),
         map = new Map(),
         len =  Math.min(toPositiveInteger(r) || arr.length, arr.length),
         res = [];
     
-    function* gen(idx = 0) {
+    return (function* gen(idx = 0) {
         if (idx >= len) {
             yield res;
             return;
@@ -404,17 +400,16 @@ export function* permutations (iterable, r) {
                 map.delete(i);
             }
         }
-    }
-    
-    yield* gen(); 
+    })();
+
 }
 
-export function* combinations (iterable, r) {
+export function combinations (iterable, r) {
     let arr = toArray(iterable),
         len = Math.min(toPositiveInteger(r), arr.length),
         res = [];
         
-    function* gen(idx = 0, start = 0) {
+    return (function* gen(idx = 0, start = 0) {
         if (idx >= len) {
             yield res;
             return;
@@ -423,8 +418,6 @@ export function* combinations (iterable, r) {
             res[idx] = arr[i];
             yield* gen(idx + 1, i + 1);
         }
-    }
-    
-    yield* gen();
+    })();
 }
 
