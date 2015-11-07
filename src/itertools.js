@@ -364,14 +364,14 @@ export function* repeat (val, times = Infinity) {
     }
 }
 
-export function product (...iterables) {
-    let arr = iterables.map((it) => isMultiIterable(it) ? it : toArray(it)),
+export function product (a = [], b = [], ...iterables) {
+    let arr = [a, b, ...iterables].map((it) => isMultiIterable(it) ? it : toArray(it)),
         len = arr.length,
         res = [];
-        
+    
     return (function* gen(idx = 0) {
         if (idx >= len) {
-            yield res;
+            yield res.slice();
             return;
         }
         for (let v of arr[idx]) {
