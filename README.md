@@ -25,10 +25,12 @@ let iterable = {
             },
             
             next() {
-                while(condition) {
+                if(condition) {
                     return {value: value, done: false}
                 }
-                return {done: true}
+                else {
+                    return {done: true}
+                }
             }
         }
         
@@ -42,19 +44,19 @@ let iterable = {
 Return an [iterator](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Iteration_protocols#iterator) object.
 
 ```javascript
-let iter = itertools.getIterator([1, 2, 3])
+let iterator = getIterator([1, 2, 3])
 
-iter.next() //{ value: 1, done: false }
-iter.next() //{ value: 2, done: false }
-iter.next() //{ value: 3, done: false }
-iter.next() //{ value: undefined, done: true } 
+iterator.next() //{ value: 1, done: false }
+iterator.next() //{ value: 2, done: false }
+iterator.next() //{ value: 3, done: false }
+iterator.next() //{ value: undefined, done: true } 
 ```
 
 Throws TypeError if object does not implement Iterator protocol (not iterable)
 
 ```javascript
 //TypeError: obj[Symbol.iterator] is not a function
-itertools.getIterator(Object.create(null)) 
+getIterator(Object.create(null)) 
 ```
 
 #####`isIterator(obj)`
@@ -66,12 +68,12 @@ Note: Iterator must be an **iterable**, otherwise `isIterator` returns **false**
 ```javascript
 let arr = [1, 2, 3];
 
-itertools.isIterator(itertools.getIterator(arr)) //true
-itertools.isIterator(arr[Symbol.iterator]()) //true
+isIterator(getIterator(arr)) //true
+isIterator(arr[Symbol.iterator]()) //true
 
-itertools.isIterator(arr) //false 
-itertools.isIterator({}) //false
-itertools.isIterator(null) //false
+isIterator(arr) //false 
+isIterator({}) //false
+isIterator(null) //false
 ```
 
 
@@ -82,13 +84,13 @@ Returns **true** if `obj` is iterable, otherwise **false**. Object is iterable i
 If object is iterable safely can apply to `for-of` loops, `yield* iterable`, `...iterable`.
 
 ```javascript
-itertools.isIterable([1, 2, 3]) //true
-itertools.isIterable('ABC') //true
-itertools.isIterable(new Map) //true
-itertools.isIterable(new Set) //true
+isIterable([1, 2, 3]) //true
+isIterable('ABC') //true
+isIterable(new Map) //true
+isIterable(new Set) //true
 
-itertools.isIterable({}) //false
-itertools.isIterable(456) //false
+isIterable({}) //false
+isIterable(456) //false
 ```
 
 #####`isMultiIterable(obj)` 
@@ -97,7 +99,7 @@ Test if `obj` can be iterated multiple times using `for-of`. In other words `obj
 
 ```javascript
 let arr = [1, 2, 3, 4]
-itertools.isMultiIterable(arr) //true
+isMultiIterable(arr) //true
 
 for (let v of arr) {
     console.log(v) //1 2 3 4
@@ -109,8 +111,8 @@ for (let v of arr) {
 ```
 
 ```javascript
-let iterArr = itertools.getIterator([1, 2, 3, 4])
-itertools.isMultiIterable(iterArr) //false
+let iterArr = getIterator([1, 2, 3, 4])
+isMultiIterable(iterArr) //false
 
 for (let v of iterArr) {
     console.log(v) //1 2 3 4
@@ -127,7 +129,7 @@ for (let v of iterArr) {
 Returns **true** if `iterator` implements the optional `return` method, otherwise if the object is not `Iterator` or does not implement `return` method returns **false**  
 
 ```javascript
-let iter = {
+let iterator = {
     [Symbol.iterator]() {
         return this
     },
@@ -139,11 +141,11 @@ let iter = {
     }
 }
 
-itertools.isClosable(iter) //true
+isClosable(iterator) //true
 ```
 
 ```javascript
-let iter = {
+let iterator = {
     [Symbol.iterator]() {
         return this
     },
@@ -152,16 +154,58 @@ let iter = {
     }
 }
 
-itertools.isClosable(iter) //false
+isClosable(iterator) //false
 ```
 
 #####`closeIterator(iterator)`
 
+If the iteraror is closable calls its `return` method and returns `done` state of the iterator, otherwise returns **false**.
+
+```javascript
+let iterator = {
+    [Symbol.iterator]() {
+        return this
+    },
+    next() {
+        return {value: true, done: false}
+    },
+    return() {
+        return {done: true}
+    }
+}
+
+closeIterator(iterator); //true
+```
+
+```javascript
+let iterator = {
+    [Symbol.iterator]() {
+        return this
+    },
+    next() {
+        return {value: true, done: false}
+    }
+}
+
+closeIterator(iterator); //false
+```
+
 #####`closeAllIterators(...iterators)`
+
+Calls `closeIterator` for each passed `iterator`.
+
+```javascript
+let iter1 = [1, 2, 3].entries();
+let iter2 = new Map().entries();
+let iter3 = new Set([1, 2, 3]).entries();
+
+closeAllIterators(iter1, iter2, iter3);
+```
 
 #####`toArray(...iterables)`
 
-#####`range(start, end, step)`
+#####`range(end)`
+#####`range(start, end[, step])`
 
 #####`zip(...iterables)`
 
