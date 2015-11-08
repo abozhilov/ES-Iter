@@ -195,14 +195,29 @@ closeIterator(iterator); //false
 Calls `closeIterator` for each passed `iterator`.
 
 ```javascript
-let iter1 = [1, 2, 3].entries();
-let iter2 = new Map().entries();
-let iter3 = new Set([1, 2, 3]).entries();
+let iterator1 = [1, 2, 3].entries();
+let iterator2 = new Map().entries();
+let iterator3 = new Set([1, 2, 3]).entries();
 
-closeAllIterators(iter1, iter2, iter3);
+closeAllIterators(iterator1, iterator2, iterator3);
 ```
 
 #####`toArray(...iterables)`
+
+Consumes each `iterable` argument and returns array with the values. 
+
+```javascript:
+toArray([1, 2, 3], 'ABC', new Set([1, 2, 3])); 
+// [ 1, 2, 3, 'A', 'B', 'C', 1, 2, 3 ] 
+```
+
+It does not consume recursively `iterable`.
+
+```javascript:
+toArray([[0, 'A'],  [1, 'B'], [2, 'C']])); 
+// [[0, 'A'],  [1, 'B'], [2, 'C']] 
+```
+
 
 #####`range(end)`
 #####`range(start, end[, step])`
