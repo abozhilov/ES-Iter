@@ -139,7 +139,7 @@ export function longestZip (...iterables) {
     })();
 }
 
-export function enumerate (iterable, start) {
+export function enumerate (iterable, start = 0) {
     return zip(count(start), iterable);
 }
 

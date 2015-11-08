@@ -252,17 +252,21 @@ The left-to-right evaluation order of the iterables is guaranteed.
 
 Should only be used with unequal length inputs when you don't care about trailing, unmatched values from the longer iterables. If those values are important, use `longestZip()` instead.
 
+```javascript
 zip('ABCD', 'xy'); // [ 'A', 'x' ] [ 'B', 'y' ]
 
 zip(range(10), [1, 2, 3, 4, 5]); // [ 0, 1 ] [ 1, 2 ] [ 2, 3 ] [ 3, 4 ] [ 4, 5 ]
+```
 
 #####`longestZip(...iterables)`
 
 Make a generator that aggregates elements from each of the iterables. If the iterables are of uneven length, missing values are filled-in with `undefined`. Iteration continues until the longest iterable is exhausted.
 
+```javascript
 longestZip('ABCD', 'xy'); // [ 'A', 'x' ] [ 'B', 'y' ] [ 'C', undefined ] [ 'D', undefined ]
 
 longestZip(range(10), [1, 2, 3, 4, 5]); // [ 0, 1 ] [ 1, 2 ] [ 2, 3 ] [ 3, 4 ] [ 4, 5 ] [ 5, undefined ] [ 6, undefined ] [ 7, undefined ] [ 8, undefined ] [ 9, undefined ]
+```
 
 **Note**: If one of the iterables is potentially infinite, then the `longestZip()` function should be wrapped with something that limits the number of calls (for example `take()` or `takeWhile()`).
 
