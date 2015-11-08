@@ -222,7 +222,7 @@ toArray([[0, 'A'],  [1, 'B'], [2, 'C']]));
 #####`range(end)`
 #####`range(start, end[, step])`
 
-This is a versatile function to create iterator of arithmetic progressions. The arguments must be plain integers.
+This is a versatile function to create generator of arithmetic progressions. The arguments must be plain integers.
 With single argument `start` is 0 and `end` is equal to passed value.
 If the `step` argument is omitted, it defaults to 1 or -1 depends on `start` and `end` values.
 
@@ -241,9 +241,20 @@ range(20, 10, 2); //No output
 range(10, 20, -2); //No output
 ```
 
-Note: Unlike Python version of `range` it does not throw error if `step` is 0. If `step` is any falsy value it uses default values 1 or -1 depends on `start` and `end` values. 
+**Note**: Unlike Python version of `range` it does not throw error if `step` is 0. If `step` is any falsy value it uses default values 1 or -1 depends on `start` and `end` values. 
 
 #####`zip(...iterables)`
+
+Make an generator that aggregates elements from each of the iterables. 
+Used for lock-step iteration over several iterables at a time. When no iterables are specified, returns a zero length generator.
+
+The left-to-right evaluation order of the iterables is guaranteed.
+
+Should only be used with unequal length inputs when you don't care about trailing, unmatched values from the longer iterables. If those values are important, use `longestZip()` instead.
+
+zip('ABCD', 'xy'); // [ 'A', 'x' ] [ 'B', 'y' ]
+
+zip(range(10), [1, 2, 3, 4, 5]); // [ 0, 1 ] [ 1, 2 ] [ 2, 3 ] [ 3, 4 ] [ 4, 5 ]
 
 #####`longestZip(...iterables)`
 
