@@ -206,14 +206,14 @@ closeAllIterators(iterator1, iterator2, iterator3);
 
 Consumes each `iterable` argument and returns array with the values. 
 
-```javascript:
+```javascript
 toArray([1, 2, 3], 'ABC', new Set([1, 2, 3])); 
 // [ 1, 2, 3, 'A', 'B', 'C', 1, 2, 3 ] 
 ```
 
 It does not consume recursively `iterable`.
 
-```javascript:
+```javascript
 toArray([[0, 'A'],  [1, 'B'], [2, 'C']])); 
 // [[0, 'A'],  [1, 'B'], [2, 'C']] 
 ```
@@ -221,6 +221,27 @@ toArray([[0, 'A'],  [1, 'B'], [2, 'C']]));
 
 #####`range(end)`
 #####`range(start, end[, step])`
+
+This is a versatile function to create iterator of arithmetic progressions. The arguments must be plain integers.
+With single argument `start` is 0 and `end` is equal to passed value.
+If the `step` argument is omitted, it defaults to 1 or -1 depends on `start` and `end` values.
+
+
+```javascript
+range(10); // 0, 1, 2, 3, 4, 5, 6, 7, 8, 9
+range(-10); // 0, -1, -2, -3, -4, -5, -6, -7, -8, -9
+
+range(1, 11); // 1, 2, 3, 4, 5, 6, 7, 8, 9, 10
+range(11, 1); // 11, 10, 9, 8, 7, 6, 5, 4, 3, 2
+
+range(0, 30, 5); // 0, 5, 10, 15, 20, 25
+range(30, 0, -5); // 30, 25, 20, 15, 10, 5
+
+range(20, 10, 2); //No output 
+range(10, 20, -2); //No output
+```
+
+Note: Unlike Python version of `range` it does not throw error if `step` is 0. If `step` is any falsy value it uses default values 1 or -1 depends on `start` and `end` values. 
 
 #####`zip(...iterables)`
 
