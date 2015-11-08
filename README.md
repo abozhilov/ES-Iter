@@ -1,4 +1,4 @@
-#IterJS v.0.7.0
+#IterJS v.0.8.0
 
 Itertools for JavaScript.
 

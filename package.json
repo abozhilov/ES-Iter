@@ -1,6 +1,6 @@
 {
   "name": "IterJS",
-  "version": "0.7.0",
+  "version": "0.8.0",
   "description": "Itertools for JavaScript",
   "main": "src/itertools.js",
   "devDependencies": {

@@ -384,12 +384,16 @@ export function product (a = [], b = [], ...iterables) {
 export function permutations (iterable, r) {
     let arr = toArray(iterable),
         map = new Map(),
-        len =  Math.min(toPositiveInteger(r) || arr.length, arr.length),
-        res = [];
+        res = [],
+        len =  Math.min(toPositiveInteger(r), arr.length);
+        
+    if (Number.isNaN(len)) {
+        len = arr.length;
+    }
     
     return (function* gen(idx = 0) {
         if (idx >= len) {
-            yield res;
+            yield res.slice();
             return;
         }
         for (let [i, v] of enumerate(arr)) {
@@ -406,12 +410,12 @@ export function permutations (iterable, r) {
 
 export function combinations (iterable, r) {
     let arr = toArray(iterable),
-        len = Math.min(toPositiveInteger(r), arr.length),
+        len = toPositiveInteger(r),
         res = [];
-        
+
     return (function* gen(idx = 0, start = 0) {
         if (idx >= len) {
-            yield res;
+            yield res.slice();
             return;
         }
         for (let i = start, l = arr.length; i < l; i++) {
