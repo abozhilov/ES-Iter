@@ -305,6 +305,12 @@ chain('ABC', 'DEF', 'GHI'); // A B C D E F G H I
 
 #####`compress(data, selectors)`
 
+Make a generator that filters elements from `data` returning only those that have a corresponding element in `selectors` that evaluates to `true`. Stops when either the `data` or `selectors` iterables has been exhausted.
+
+```javascript
+compress('ABCDEF', [1, 0, 1, 0, 1, 1]); //A C E F
+```
+
 #####`groupBy(iterable, key = (x) => x)`
 
 #####`zipMap(...iterables, callback)`
