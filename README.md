@@ -245,7 +245,7 @@ range(10, 20, -2); //No output
 
 #####`zip(...iterables)`
 
-Make a generator that aggregates elements from each of the iterables. 
+Make a generator that aggregates elements from each of the iterables. On each iteration it yields array in form of `[it1i, it2i, it3i, ..., itni]`.
 Used for lock-step iteration over several iterables at a time. When no iterables are specified, returns a zero length generator.
 
 The left-to-right evaluation order of the iterables is guaranteed.
@@ -260,7 +260,7 @@ zip(range(10), [1, 2, 3, 4, 5]); // [ 0, 1 ] [ 1, 2 ] [ 2, 3 ] [ 3, 4 ] [ 4, 5 ]
 
 #####`longestZip(...iterables)`
 
-Make a generator that aggregates elements from each of the iterables. If the iterables are of uneven length, missing values are filled-in with `undefined`. Iteration continues until the longest iterable is exhausted.
+Make a generator that aggregates elements from each of the iterables. On each iteration it yields array in form of `[it1i, it2i, it3i, ..., itni]`. If the iterables are of uneven length, missing values are filled-in with `undefined`. Iteration continues until the longest iterable is exhausted.
 
 ```javascript
 longestZip('ABCD', 'xy'); // [ 'A', 'x' ] [ 'B', 'y' ] [ 'C', undefined ] [ 'D', undefined ]
@@ -271,6 +271,18 @@ longestZip(range(10), [1, 2, 3, 4, 5]); // [ 0, 1 ] [ 1, 2 ] [ 2, 3 ] [ 3, 4 ] [
 **Note**: If one of the iterables is potentially infinite, then the `longestZip()` function should be wrapped with something that limits the number of calls (for example `take()` or `takeWhile()`).
 
 #####`enumerate(iterable, start)`
+
+Make a generator that on each iteration returns an array containing a count (from start which defaults to 0) and the values obtained from iterating over iterable.
+
+```javascript
+enumerate([1, 2, 3, 4]); // [ 0, 1 ] [ 1, 2 ] [ 2, 3 ] [ 3, 4 ]
+enumerate('ABC');        // [ 0, 'A' ] [ 1, 'B' ] [ 2, 'C' ]
+```
+
+```javascript
+enumerate([1, 2, 3, 4], 1); // [ 1, 1 ] [ 2, 2 ] [ 3, 3 ] [ 4, 4 ]
+enumerate('ABC', 1);        // [ 1, 'A' ] [ 2, 'B' ] [ 3, 'C' ]
+```
 
 #####`accumulate(iterable, callback = (x, y) => x + y)`
 
