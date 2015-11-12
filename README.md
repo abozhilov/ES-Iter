@@ -297,6 +297,12 @@ accumulate(data, Math.max); // running max 3 4 6 6 6 9 9 9 9 9
 
 #####`chain(...iterables)`
 
+Make a generator that returns elements from the first `iterable` until it is exhausted, then proceeds to the next `iterable`, until all of the `iterables` are exhausted. Used for treating consecutive sequences as a single sequence.
+
+```javascript
+chain('ABC', 'DEF', 'GHI'); // A B C D E F G H I
+```
+
 #####`compress(data, selectors)`
 
 #####`groupBy(iterable, key = (x) => x)`
