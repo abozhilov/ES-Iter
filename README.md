@@ -286,6 +286,15 @@ enumerate('ABC', 1);        // [ 1, 'A' ] [ 2, 'B' ] [ 3, 'C' ]
 
 #####`accumulate(iterable, callback = (x, y) => x + y)`
 
+Make a generator that returns accumulated sums, or accumulated results of other binary functions (specified via the optional `callback` argument). If `callback` is supplied, it should be a function of two arguments.
+
+```javascript
+let data = [3, 4, 6, 2, 1, 9, 0, 7, 5, 8];
+
+accumulate(data);           // sum 3 7 13 15 16 25 25 32 37 45 
+accumulate(data, Math.max); // running max 3 4 6 6 6 9 9 9 9 9
+```
+
 #####`chain(...iterables)`
 
 #####`compress(data, selectors)`
