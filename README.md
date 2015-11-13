@@ -368,13 +368,37 @@ spreadMap([[2, 5], [3, 2], [10, 3]], Math.pow);
 // 32 9 1000
 ```
 
-#####`take(iterable, n)`
+#####`take(iterable, n = Infinity)`
 
-#####`drop(iterable, n)`
+Make a generator that takes `n` elements from `iterable`.
+
+```javascript
+take([1, 2, 3, 4, 5], 2); // 1 2
+```
+
+#####`drop(iterable, n = Infinity)`
+
+Make a generator that drops `n` elements from `iterable`
+
+```javascript 
+drop([1, 2, 3, 4, 5], 2); // 3 4 5
+```
 
 #####`dropWhile(iterable, callback = Boolean)`
 
+Make a generator that drops elements from the `iterable` as long as the `callback` is true; afterwards, returns every element. Note, the generator does not produce any output until the `callback` first becomes false, so it may have a lengthy start-up time.
+
+```javascript
+dropWhile([1, 2, 3, 4, 5, 6], (x) => x <= 3); // 4 5 6  
+```
+
 #####`takeWhile(iterable, callback = Boolean)`
+
+Make a generator that returns elements from the `iterable` as long as the `callback` is true.
+
+```javascript
+takeWhile([1, 2, 3, 4, 5, 6], (x) => x <= 3); // 1 2 3
+```
 
 #####`filter(iterable, callback = Boolean)`
 
