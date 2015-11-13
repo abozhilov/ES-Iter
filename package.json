@@ -1,5 +1,5 @@
 {
-  "name": "IterJS",
+  "name": "itertools",
   "version": "0.8.0",
   "description": "Itertools for JavaScript",
   "main": "src/itertools.js",

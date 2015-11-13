@@ -253,9 +253,11 @@ The left-to-right evaluation order of the iterables is guaranteed.
 Should only be used with unequal length inputs when you don't care about trailing, unmatched values from the longer iterables. If those values are important, use `longestZip()` instead.
 
 ```javascript
-zip('ABCD', 'xy'); // [ 'A', 'x' ] [ 'B', 'y' ]
+zip('ABCD', 'xy'); 
+// [ 'A', 'x' ] [ 'B', 'y' ]
 
-zip(range(10), [1, 2, 3, 4, 5]); // [ 0, 1 ] [ 1, 2 ] [ 2, 3 ] [ 3, 4 ] [ 4, 5 ]
+zip(range(10), [1, 2, 3, 4, 5]); 
+// [ 0, 1 ] [ 1, 2 ] [ 2, 3 ] [ 3, 4 ] [ 4, 5 ]
 ```
 
 #####`longestZip(...iterables)`
@@ -263,9 +265,11 @@ zip(range(10), [1, 2, 3, 4, 5]); // [ 0, 1 ] [ 1, 2 ] [ 2, 3 ] [ 3, 4 ] [ 4, 5 ]
 Make a generator that aggregates elements from each of the iterables. On each iteration it yields array in form of `[it1i, it2i, it3i, ..., itni]`. If the iterables are of uneven length, missing values are filled-in with `undefined`. Iteration continues until the longest iterable is exhausted.
 
 ```javascript
-longestZip('ABCD', 'xy'); // [ 'A', 'x' ] [ 'B', 'y' ] [ 'C', undefined ] [ 'D', undefined ]
+longestZip('ABCD', 'xy'); 
+// [ 'A', 'x' ] [ 'B', 'y' ] [ 'C', undefined ] [ 'D', undefined ]
 
-longestZip(range(10), [1, 2, 3, 4, 5]); // [ 0, 1 ] [ 1, 2 ] [ 2, 3 ] [ 3, 4 ] [ 4, 5 ] [ 5, undefined ] [ 6, undefined ] [ 7, undefined ] [ 8, undefined ] [ 9, undefined ]
+longestZip(range(10), [1, 2, 3, 4, 5]); 
+// [ 0, 1 ] [ 1, 2 ] [ 2, 3 ] [ 3, 4 ] [ 4, 5 ] [ 5, undefined ] [ 6, undefined ] [ 7, undefined ] [ 8, undefined ] [ 9, undefined ]
 ```
 
 **Note**: If one of the iterables is potentially infinite, then the `longestZip()` function should be wrapped with something that limits the number of calls (for example `take()` or `takeWhile()`).
@@ -275,13 +279,19 @@ longestZip(range(10), [1, 2, 3, 4, 5]); // [ 0, 1 ] [ 1, 2 ] [ 2, 3 ] [ 3, 4 ] [
 Make a generator that on each iteration returns an array containing a count (from start which defaults to 0) and the values obtained from iterating over iterable.
 
 ```javascript
-enumerate([1, 2, 3, 4]); // [ 0, 1 ] [ 1, 2 ] [ 2, 3 ] [ 3, 4 ]
-enumerate('ABC');        // [ 0, 'A' ] [ 1, 'B' ] [ 2, 'C' ]
+enumerate([1, 2, 3, 4]); 
+// [ 0, 1 ] [ 1, 2 ] [ 2, 3 ] [ 3, 4 ]
+
+enumerate('ABC');        
+// [ 0, 'A' ] [ 1, 'B' ] [ 2, 'C' ]
 ```
 
 ```javascript
-enumerate([1, 2, 3, 4], 1); // [ 1, 1 ] [ 2, 2 ] [ 3, 3 ] [ 4, 4 ]
-enumerate('ABC', 1);        // [ 1, 'A' ] [ 2, 'B' ] [ 3, 'C' ]
+enumerate([1, 2, 3, 4], 1); 
+// [ 1, 1 ] [ 2, 2 ] [ 3, 3 ] [ 4, 4 ]
+
+enumerate('ABC', 1);        
+// [ 1, 'A' ] [ 2, 'B' ] [ 3, 'C' ]
 ```
 
 #####`accumulate(iterable, callback = (x, y) => x + y)`
@@ -291,8 +301,12 @@ Make a generator that returns accumulated sums, or accumulated results of other 
 ```javascript
 let data = [3, 4, 6, 2, 1, 9, 0, 7, 5, 8];
 
-accumulate(data);           // sum 3 7 13 15 16 25 25 32 37 45 
-accumulate(data, Math.max); // running max 3 4 6 6 6 9 9 9 9 9
+
+accumulate(data);            
+// sum 3 7 13 15 16 25 25 32 37 45
+
+accumulate(data, Math.max); 
+// running max 3 4 6 6 6 9 9 9 9 9
 ```
 
 #####`chain(...iterables)`
@@ -312,6 +326,20 @@ compress('ABCDEF', [1, 0, 1, 0, 1, 1]); //A C E F
 ```
 
 #####`groupBy(iterable, key = (x) => x)`
+
+Make a generator that returns consecutive keys and groups from the `iterable`. The `key` is a function computing a key value for each element. If not specified or `undefined`, `key` defaults to an identity and returns the element unchanged. Generally, the iterable needs to already be sorted on the same key function.
+
+```javascript
+let arr = [1, 1, 1, 1, 2, 2, 3, 4, 4, 5, 5, 5, 5];
+
+groupBy(arr); 
+// [ 1, [ 1, 1, 1, 1 ] ] [ 2, [ 2, 2 ] ] [ 3, [ 3 ] ] [ 4, [ 4, 4 ] ] [ 5, [ 5, 5, 5, 5 ] ]
+```
+
+```javscript
+groupBy('AAABBBCDEE', (x) => x.charCodeAt());
+// [ 65, [ 'A', 'A', 'A' ] ] [ 66, [ 'B', 'B', 'B' ] ] [ 67, [ 'C' ] ] [ 68, [ 'D' ] ] [ 69, [ 'E', 'E' ] ] 
+```
 
 #####`zipMap(...iterables, callback)`
 
