@@ -341,11 +341,32 @@ groupBy('AAABBBCDEE', (x) => x.charCodeAt());
 // [ 65, [ 'A', 'A', 'A' ] ] [ 66, [ 'B', 'B', 'B' ] ] [ 67, [ 'C' ] ] [ 68, [ 'D' ] ] [ 69, [ 'E', 'E' ] ] 
 ```
 
-#####`zipMap(...iterables, callback)`
+#####`zipMap(...iterables[, callback])`
 
-#####`longestZipMap(...iterables, callback)`
+Make a generator that computes the `callback` using arguments from each of the `iterables`. If `callback` is not specified, then `zipMap()` returns same result as `zip`. It stops when the shortest `iterable` is exhausted.
+
+```javascript
+zipMap([1, 2, 3], [1, 2, 3], Math.pow); 
+// 1 4 27
+```
+
+#####`longestZipMap(...iterables[, callback])`
+
+Make a generator that computes the `callback` using arguments from each of the `iterables`. If `callback` is not specified, then `longestZipMap()` returns same result as `longestZip`. It stops when the longest `iterable` is exhausted, filling in `undefined` for shorter iterables.
+
+```javascript
+longestZipMap([1, 2, 3], [1, 2, 3, 4, 5], (x = 1, y) => Math.pow(x, y)); 
+// 1 4 27 1 1
+```
 
 #####`spreadMap(iterable, callback)`
+
+Make a generator that computes the `callback` using arguments obtained from the `iterable`. Used instead of `zipMap()` when argument parameters are already grouped in a single iterable (the data has been "pre-zipped").
+
+```javascript
+spreadMap([[2, 5], [3, 2], [10, 3]], Math.pow); 
+// 32 9 1000
+```
 
 #####`take(iterable, n)`
 
