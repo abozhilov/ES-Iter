@@ -378,7 +378,7 @@ take([1, 2, 3, 4, 5], 2); // 1 2
 
 #####`drop(iterable, n = Infinity)`
 
-Make a generator that drops `n` elements from `iterable`
+Make a generator that drops `n` elements from `iterable`.
 
 ```javascript 
 drop([1, 2, 3, 4, 5], 2); // 3 4 5
@@ -402,7 +402,19 @@ takeWhile([1, 2, 3, 4, 5, 6], (x) => x <= 3); // 1 2 3
 
 #####`filter(iterable, callback = Boolean)`
 
+Make a generator that filters elements from `iterable` returning only those for which the `callback` is `true`. If `callback` not specified or `undefined`, return the items that are evaluated to `true`.
+
+```javascript
+filter(range(10), (x) => x % 2); // 1 3 5 7 9
+```
+
 #####`filterFalse(iterable, callback = Boolean)`
+
+Make a generator that filters elements from `iterable` returning only those for which the `callback` is `false`. If `callback` not specified or `undefined`, return the items that are evaluated to `false`.
+
+```javascript
+filterFalse(range(10), (x) => x % 2); // 0 2 4 6 8
+```
 
 #### Infinite generators
 
