@@ -452,11 +452,60 @@ repeat(10, 3); // 10 10 10
 
 #### Combinatoric generators
 
-#####`product(...iterables)`
+#####`product(a = [], b = [], ...iterables)`
+
+Cartesian product of `a`, `b` and `iterables`.
+
+```javascript
+product(); // []
+product([1, 2, 3]); // []
+
+product([1, 2, 3], 'AB');
+// [ 1, 'A' ] [ 1, 'B' ] [ 2, 'A' ] [ 2, 'B' ] [ 3, 'A' ] [ 3, 'B' ]
+ 
+```
 
 #####`permutations(iterable, r)`
 
+Return successive `r` length permutations of elements in the `iterable`.
+
+If `r` is not specified or is `undefined`, then `r` defaults to the length of the `iterable` and all possible full-length permutations are generated.
+
+Permutations are emitted in lexicographic sort order. So, if the input `iterable` is sorted, the permutation arrays will be produced in sorted order.
+
+Elements are treated as unique based on their position, not on their value. So if the input elements are unique, there will be no repeat values in each permutation.
+
+```javascript
+permutations('ABCD', 2); 
+// [ 'A', 'B' ] [ 'A', 'C' ] [ 'A', 'D' ] [ 'B', 'A' ] 
+// [ 'B', 'C' ] [ 'B', 'D' ] [ 'C', 'A' ] [ 'C', 'B' ] 
+// [ 'C', 'D' ] [ 'D', 'A' ] [ 'D', 'B' ] [ 'D', 'C' ]
+```
+
+```javascript  
+permutations(range(3));
+// [ 0, 1, 2 ] [ 0, 2, 1 ] [ 1, 0, 2 ] 
+// [ 1, 2, 0 ] [ 2, 0, 1 ] [ 2, 1, 0 ]
+```
+
 #####`combinations(iterable, r)`
+
+Return `r` length subsequences of elements from the input `iterable`.
+
+Combinations are emitted in lexicographic sort order. So, if the input `iterable` is sorted, the combination arrays will be produced in sorted order.
+
+Elements are treated as unique based on their position, not on their value. So if the input elements are unique, there will be no repeat values in each combination.
+
+```javascript
+combinations('ABCD', 2); 
+// [ 'A', 'B' ] [ 'A', 'C' ] [ 'A', 'D' ] 
+// [ 'B', 'C' ] [ 'B', 'D' ] [ 'C', 'D' ]
+```
+
+```javascript
+combinations(range(4), 3);
+// [ 0, 1, 2 ] [ 0, 1, 3 ] [ 0, 2, 3 ] [ 1, 2, 3 ]
+```
 
 ##Author
 
