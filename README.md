@@ -418,11 +418,37 @@ filterFalse(range(10), (x) => x % 2); // 0 2 4 6 8
 
 #### Infinite generators
 
-#####`count(start, step)`
+#####`count(start = 0, step = 1)`
+
+Make a generator that returns evenly spaced values starting with `start`. Often used as an argument to `zipMap()` to generate consecutive data points. Also, used with `zip()` to add sequence numbers.
+
+```javascript
+count(); // 0 1 2 3 4 ....
+
+count(10); // 10 11 12 13 14 ...
+
+count(1, 2); // 1 3 5 7 9 ....
+```
+
+**Note**: It always converts  arguments to integers.
 
 #####`cycle(iterable)`
 
+Make a generator returning elements from the `iterable` and saving a copy of each. When the `iterable` is exhausted, return elements from the saved copy. Repeats indefinitely.
+
+```javascript
+cycle('ABCD'); // A B C D A B C D A B C D ...
+```
+
+**Note**: Highly encourage to pass multi iterable as argument, otherwise it may require significant auxiliary storage (depending on the length of the `iterable`).
+
 #####`repeat(val, times = Infinity)`
+
+Make a generator that returns `val` over and over again. Runs indefinitely unless the `times` argument is specified. Used as argument to `zipMap()` for invariant function parameters. Also used with `zip()` to create constant fields in returned array.
+
+```javascript
+repeat(10, 3); // 10 10 10
+```
 
 #### Combinatoric generators
 
