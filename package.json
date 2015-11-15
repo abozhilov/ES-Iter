@@ -1,8 +1,8 @@
 {
-  "name": "itertools",
+  "name": "ES-Iter",
   "version": "0.9.0",
   "description": "Itertools for JavaScript",
-  "main": "src/itertools.js",
+  "main": "src/Iter.js",
   "devDependencies": {
     "babel-jest": "*",
     "jest-cli": "*"
