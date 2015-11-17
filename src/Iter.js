@@ -12,36 +12,31 @@ function toPositiveInteger(n) {
     return Math.floor(n);
 }
 
-function throwIfNotCallable(callback) {
-    if (typeof callback != 'function') {
-        throw TypeError(callback + ' is not a function');
-    }
-}
-
 export default class Iter {
     constructor (...args) {
-        this[Symbol.iterator] = function() {
-            return args[Symbol.iterator]();
-        }
+        return Iter.fromGenerator(function* () {
+            yield* args;
+        })
     }
     
     static from (iterable) {
         if (!Iter.isIterable(iterable)) {
             throw TypeError(iterable + ' is not an iterable');
         }
-        
-        let iter = Object.create(Iter.prototype);
-        
-        iter[Symbol.iterator] = function() {
-            return iterable[Symbol.iterator]();
-        }
-        
-        return iter;     
+        return Iter.fromGenerator(function* () {
+            yield* iterable;
+        })
     }
     
     static fromGenerator (genFunc) {
-        let iter = Object.create(Iter.prototype);
-        iter[Symbol.iterator] = genFunc;   
+        let iter   = Object.create(Iter.prototype);
+        let genObj = genFunc(); 
+        
+        iter[Symbol.iterator] = genObj[Symbol.iterator];
+        
+        iter.next   = genObj.next.bind(genObj);
+        iter.return = genObj.return.bind(genObj);
+        iter.throw  = genObj.throw.bind(genObj);  
         
         return iter;            
     }
