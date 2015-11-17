@@ -134,7 +134,7 @@ export default class Iter {
 
     static repeat (val, times = Infinity) {
         return Iter.fromGenerator(function* () {
-            for (let i of range(toPositiveInteger(times))) {
+            for (let i of Iter.range(toPositiveInteger(times))) {
                 yield val;
             }
         });
@@ -203,262 +203,252 @@ export default class Iter {
         return Iter.count(start).zip(this);
     }
     
-}
-
-/*
-
-
-export function accumulate (iterable, callback = (x, y) => x + y) {
-    let iterator = getIterator(iterable);
-    
-    return (function* () {
-        try {
-            let next = iterator.next(),
-                acc = next.value;
-            if (!next.done) {
-                yield acc;
-            }
-            while (!( next = iterator.next() ).done) {
-                acc = callback(acc, next.value);
-                yield acc;
-            }
-        } finally {
-            closeIterator(iterator);
-        }
-    })();
-}
-
-export function chain (...iterables) {
-    let iterators = iterables.map(getIterator);
-    
-    return (function* () {
-        for (let it of iterators) {
-            yield* it;
-        }
-    })();
-}
-
-export function compress (data, selectors) {
-    let iterator = zip(data, selectors);
-    
-    return (function* () {
-        for (let [v, s] of iterator) {
-            if (s) yield v;
-        }
-    })();
-}
-
-export function groupBy (iterable, key = (x) => x) {
-    let iterator = getIterator(iterable);
-    
-    return (function* () {
-        let k = {};
-        let arr = [];
+    accumulate (callback = (x, y) => x + y) {
+        let iterator = Iter.getIterator(this);
         
-        for (let v of iterator) {
-            let res = key(v);
-            if (res !== k) {
-                if (arr.length) {
-                    yield [k, arr];
+        return Iter.fromGenerator(function* () {
+            try {
+                let next = iterator.next(),
+                    acc = next.value;
+                if (!next.done) {
+                    yield acc;
                 }
-                arr = [];
-                k = res;
+                while (!( next = iterator.next() ).done) {
+                    acc = callback(acc, next.value);
+                    yield acc;
+                }
+            } finally {
+                Iter.closeIterator(iterator);
             }
-            arr.push(v);
-        }
-        if (arr.length) {
-            yield [k, arr];
-        }        
-    })();
-}
-
-export function zipMap (...iterables) {
-    let callback = iterables[iterables.length - 1];
-    
-    if (typeof callback != 'function') {
-        return zip(...iterables);
+        });
     }
-    else {
-        let iterator = zip(...iterables.slice(0, -1));
-        return (function* (){
-            for (let arr of iterator) {
-                yield callback(...arr);
-            }
-        })();
-    }
-}
-
-export function longestZipMap (...iterables) {
-    let callback = iterables[iterables.length - 1];
     
-    if (typeof callback != 'function') {
-        return longestZip(...iterables);
-    }
-    else {    
-        let iterator = longestZip(...iterables.slice(0, -1));
-        return (function* () {
-            for (let arr of iterator) {
-                yield callback(...arr);
-            }
-        })();
-    }
-}
-
-export function spreadMap (iterable, callback) {
-    let iterator = getIterator(iterable);
-    
-    throwIfNotCallable(callback);
-    
-    return (function* () {
-        for (let arr of iterator) {
-            yield callback(...arr);
-        }
-    })();
-}
-
-export function take (iterable, n = Infinity) {
-    let iterator = getIterator(iterable);
-    
-    return (function* () {
-        let count = toPositiveInteger(n);
-        for (let v of iterator) {
-            if (count-- > 0) {
-                yield v;
-                continue;
-            }
-            break;
-        }
-    })();
-}
-
-export function takeWhile (iterable, callback = Boolean) {
-    let iterator = getIterator(iterable);
-    
-    return (function* () {
-        for (let v of iterator) {
-            if (callback(v)) {
-                yield v;
-            }
-            else {
-                break;
-            }
-        }
-    })();
-}
-
-export function drop (iterable, n = Infinity) {
-    let iterator = getIterator(iterable);
-    
-    return (function* () {
-        let count = toPositiveInteger(n);
-        for (let v of iterator) {
-            if (count-- > 0) {
-                continue;
-            }
-            yield v;
-        }
-    })();
-}
-
-export function dropWhile (iterable, callback = Boolean) {
-    let iterator = getIterator(iterable);
-    
-    return (function* () {
-        for (let v of iterator) {
-            if (!callback(v)) {
-                yield v;
-                yield* iterator;
-                break;
-            }
-        }
-    })();
-}
-
-
-export function filter (iterable, callback = Boolean) {
-    let iterator = getIterator(iterable);
-    
-    return (function* () {
-        for (let v of iterator) {
-            if (callback(v)) {
-                yield v;
-            }
-        }
-    })();
-}
-
-export function filterFalse (iterable, callback = Boolean) {
-    let iterator = getIterator(iterable);
-    
-    return (function* () {
-        for (let v of iterator) {
-            if (!callback(v)) {
-                yield v;
-            }
-        }
-    })();
-}
-
-export function product (a = [], b = [], ...iterables) {
-    let arr = [a, b, ...iterables].map((it) => isMultiIterable(it) ? it : toArray(it)),
-        len = arr.length,
-        res = [];
-    
-    return (function* gen(idx = 0) {
-        if (idx >= len) {
-            yield res.slice();
-            return;
-        }
-        for (let v of arr[idx]) {
-            res[idx] = v;
-            yield* gen(idx + 1);
-        }
-    })();
-}
-
-export function permutations (iterable, r) {
-    let arr = toArray(iterable),
-        map = new Map(),
-        res = [],
-        len =  Math.min(toPositiveInteger(r), arr.length);
+    chain (...iterables) {
+        let iterators = [this, ...iterables].map(Iter.getIterator);
         
-    if (Number.isNaN(len)) {
-        len = arr.length;
+        return Iter.fromGenerator(function* () {
+            for (let it of iterators) {
+                yield* it;
+            }
+        });
     }
     
-    return (function* gen(idx = 0) {
-        if (idx >= len) {
-            yield res.slice();
-            return;
+    compress (selectors) {
+        let iterator = this.zip(selectors);
+        
+        return Iter.fromGenerator(function* () {
+            for (let [v, s] of iterator) {
+                if (s) yield v;
+            }
+        });
+    }
+    
+    groupBy (key = (x) => x) {
+        let iterator = Iter.getIterator(this);
+        
+        return Iter.fromGenerator(function* () {
+            let k = {};
+            let arr = [];
+            
+            for (let v of iterator) {
+                let res = key(v);
+                if (res !== k) {
+                    if (arr.length) {
+                        yield [k, arr];
+                    }
+                    arr = [];
+                    k = res;
+                }
+                arr.push(v);
+            }
+            if (arr.length) {
+                yield [k, arr];
+            }        
+        });
+    }
+    
+    zipMap (...iterables) {
+        let callback = iterables[iterables.length - 1];
+        
+        if (typeof callback != 'function') {
+            return this.zip(...iterables);
         }
-        for (let [i, v] of enumerate(arr)) {
-            if (!map.has(i)) {
-                map.set(i, true);
+        else {
+            let iterator = this.zip(...iterables.slice(0, -1));
+            return Iter.fromGenerator(function* (){
+                for (let arr of iterator) {
+                    yield callback(...arr);
+                }
+            });
+        }
+    }
+    
+    longestZipMap (...iterables) {
+        let callback = iterables[iterables.length - 1];
+        
+        if (typeof callback != 'function') {
+            return this.longestZip(...iterables);
+        }
+        else {    
+            let iterator = this.longestZip(...iterables.slice(0, -1));
+            return Iter.fromGenerator(function* () {
+                for (let arr of iterator) {
+                    yield callback(...arr);
+                }
+            });
+        }
+    }
+    
+    spreadMap (callback) {
+        let iterator = Iter.getIterator(this);
+        
+        return Iter.fromGenerator(function* () {
+            for (let arr of iterator) {
+                yield callback(...arr);
+            }
+        });
+    }
+    
+    take (n = Infinity) {
+        let iterator = Iter.getIterator(this);
+        
+        return Iter.fromGenerator(function* () {
+            let count = toPositiveInteger(n);
+            for (let v of iterator) {
+                if (count-- > 0) {
+                    yield v;
+                    continue;
+                }
+                break;
+            }
+        });
+    }
+    
+    takeWhile (callback = Boolean) {
+        let iterator = Iter.getIterator(this);
+        
+        return Iter.fromGenerator(function* () {
+            for (let v of iterator) {
+                if (callback(v)) {
+                    yield v;
+                }
+                else {
+                    break;
+                }
+            }
+        });
+    }
+    
+    drop (n = Infinity) {
+        let iterator = Iter.getIterator(this);
+        
+        return Iter.fromGenerator(function* () {
+            let count = toPositiveInteger(n);
+            for (let v of iterator) {
+                if (count-- > 0) {
+                    continue;
+                }
+                yield v;
+            }
+        });
+    }
+    
+    dropWhile (callback = Boolean) {
+        let iterator = Iter.getIterator(this);
+        
+        return Iter.fromGenerator(function* () {
+            for (let v of iterator) {
+                if (!callback(v)) {
+                    yield v;
+                    yield* iterator;
+                    break;
+                }
+            }
+        });
+    }
+    
+    filter (callback = Boolean) {
+        let iterator = Iter.getIterator(this);
+        
+        return Iter.fromGenerator(function* () {
+            for (let v of iterator) {
+                if (callback(v)) {
+                    yield v;
+                }
+            }
+        });
+    }
+    
+    filterFalse (callback = Boolean) {
+        let iterator = Iter.getIterator(this);
+        
+        return Iter.fromGenerator(function* () {
+            for (let v of iterator) {
+                if (!callback(v)) {
+                    yield v;
+                }
+            }
+        });
+    }
+    
+    product (a = [], ...iterables) {
+        let arr = [this, a, ...iterables].map((it) => Iter.isMultiIterable(it) ? it : [...it]),
+            len = arr.length,
+            res = [];
+        
+        return Iter.fromGenerator(function* gen(idx = 0) {
+            if (idx >= len) {
+                yield res.slice();
+                return;
+            }
+            for (let v of arr[idx]) {
                 res[idx] = v;
                 yield* gen(idx + 1);
-                map.delete(i);
             }
+        });
+    }
+    
+    permutations (r) {
+        let arr = [...this],
+            map = new Map(),
+            res = [],
+            len =  Math.min(toPositiveInteger(r), arr.length);
+            
+        if (Number.isNaN(len)) {
+            len = arr.length;
         }
-    })();
+        
+        return Iter.fromGenerator(function* gen(idx = 0) {
+            if (idx >= len) {
+                yield res.slice();
+                return;
+            }
+            for (let [i, v] of Iter.from(arr).enumerate(arr)) {
+                if (!map.has(i)) {
+                    map.set(i, true);
+                    res[idx] = v;
+                    yield* gen(idx + 1);
+                    map.delete(i);
+                }
+            }
+        });
+    }
+    
+    combinations (r) {
+        let arr = [...this],
+            len = toPositiveInteger(r),
+            res = [];
 
+        return Iter.fromGenerator(function* gen(idx = 0, start = 0) {
+            if (idx >= len) {
+                yield res.slice();
+                return;
+            }
+            for (let i = start, l = arr.length; i < l; i++) {
+                res[idx] = arr[i];
+                yield* gen(idx + 1, i + 1);
+            }
+        });
+    }
 }
-
-export function combinations (iterable, r) {
-    let arr = toArray(iterable),
-        len = toPositiveInteger(r),
-        res = [];
-
-    return (function* gen(idx = 0, start = 0) {
-        if (idx >= len) {
-            yield res.slice();
-            return;
-        }
-        for (let i = start, l = arr.length; i < l; i++) {
-            res[idx] = arr[i];
-            yield* gen(idx + 1, i + 1);
-        }
-    })();
-}
-* 
-*/
 
