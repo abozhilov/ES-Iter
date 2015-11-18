@@ -113,6 +113,10 @@ export default class Iter {
         });
     }
     
+    toIterator () {
+        return Iter.getIterator(this);
+    } 
+    
     toArray () {
         return [...Iter.getIterator(this)];        
     }

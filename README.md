@@ -54,7 +54,18 @@ let iter = new Iter([1, 2, 3]);
 Get `iterator` from `func` call and returns new `Iter` instance. 
 
 ```javascript
+let iter = new Iter(function* () {
+    let [a, b] = [0, 1];
+    while(true) {
+        yield a;
+        [a, b] = [b, a + b]
+    }
+}); 
 
+// Takes first 10 fibbonacci numbers 
+for (let i of iter.take(10)) {
+    console.log(i);
+}
 ```
 
 
