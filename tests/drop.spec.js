@@ -1,22 +1,22 @@
 import './auto_mock_off';
 import 'babel/polyfill';
-import {drop} from '../src/itertools';
+import Iter from '../src/Iter';
 
 describe('drop', () => {
     
     it('drops N items from iterable', () => {
-        expect([...drop([1, 2, 3, 4, 5], 2)].length).toBe(3);
+        expect([...new Iter([1, 2, 3, 4, 5]).drop(2)].length).toBe(3);
     })
     
     it('drops all items if n is not specified', () => {
-        expect([...drop([1, 2, 3, 4, 5])].length).toBe(0);
+        expect([...new Iter([1, 2, 3, 4, 5]).drop()].length).toBe(0);
     }) 
     
-    it('throws TypeError if argument is not iterable', () => {
+    it('throws TypeError if `this` is not iterable', () => {
         let err = {};
         
         try {
-            drop();
+            Iter.prototype.drop.call(null);
         }catch (e) {
             err = e;
         }
@@ -24,11 +24,11 @@ describe('drop', () => {
     })
     
     it('closes iterator on abrupt exit', () => {
-        let iter = (function* (){
+        let iter = new Iter(function* (){
             for (let i = 10; i--;) yield i;
-        })();
+        });
         
-        for (let i of drop(iter)) {
+        for (let i of iter.drop()) {
             break;
         }
         

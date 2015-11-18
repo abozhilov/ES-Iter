@@ -14,25 +14,9 @@ function toPositiveInteger(n) {
 
 export default class Iter {
     constructor (iterable) {
-        if (!Iter.isIterable(iterable)) {
-            throw TypeError(iterable + ' is not an iterable');
-        }
-        return Iter.fromGenerator(function* () {
-            yield* iterable;
-        })
-    }
-    
-    static fromGenerator (genFunc) {
-        let iter   = Object.create(Iter.prototype);
-        let genObj = genFunc(); 
+        let iterator = Iter.getIterator(typeof iterable === 'function' ? iterable() : iterable);
         
-        iter[Symbol.iterator] = genObj[Symbol.iterator];
-        
-        iter.next   = genObj.next.bind(genObj);
-        iter.return = genObj.return.bind(genObj);
-        iter.throw  = genObj.throw.bind(genObj);  
-        
-        return iter;            
+        this[Symbol.iterator] = () => iterator;
     }
     
     static getIterator (obj) {
@@ -48,7 +32,7 @@ export default class Iter {
     }
 
     static isMultiIterable (obj) {
-        return (Iter.isIterable(obj) && Iter.getIterator(obj) !== obj);
+        return (Iter.isIterable(obj) && Iter.getIterator(obj) !== Iter.getIterator(obj));
     }
 
     static isClosable (iterator) {
@@ -69,7 +53,7 @@ export default class Iter {
     }
     
     static range (start, end, step) {
-        return Iter.fromGenerator(function* () {
+        return new Iter(function* () {
             let s = toInteger(start),
                 e = toInteger(end);
                 
@@ -96,7 +80,7 @@ export default class Iter {
     }
     
     static count (start, step) {
-        return Iter.fromGenerator(function* () {
+        return new Iter(function* () {
             let s = toInteger(start) || 0,
                 k = toInteger(step) || 1;
             while (true) {
@@ -109,7 +93,7 @@ export default class Iter {
     static cycle (iterable) {
         let iterator = Iter.getIterator(iterable);
         
-        return Iter.fromGenerator(function* () {
+        return new Iter(function* () {
             let arr = [];
             for (let v of iterator) {
                 yield v;
@@ -122,7 +106,7 @@ export default class Iter {
     }
 
     static repeat (val, times = Infinity) {
-        return Iter.fromGenerator(function* () {
+        return new Iter(function* () {
             for (let i of Iter.range(toPositiveInteger(times))) {
                 yield val;
             }
@@ -130,14 +114,14 @@ export default class Iter {
     }
     
     toArray () {
-        return [...this];        
+        return [...Iter.getIterator(this)];        
     }
     
     zip (...iterables) {
         let iterators = [this, ...iterables].map(Iter.getIterator),
-            done = iterators.length;
+            done = iterables.length;
         
-        return Iter.fromGenerator(function* () {
+        return new Iter(function* () {
             try {
                 while (done) {
                     let res = [];
@@ -161,11 +145,11 @@ export default class Iter {
     
     longestZip (...iterables) {
         let iterators = [this, ...iterables].map(Iter.getIterator),
-            map       = new Map(Iter.from(iterators).zip(Iter.repeat(false))),
+            map       = new Map(new Iter(iterators).zip(Iter.repeat(false))),
             count     = 0,
             done      = iterators.length;
         
-        return Iter.fromGenerator(function* () {    
+        return new Iter(function* () {    
             try {    
                 while (done) {
                     let res = [];
@@ -195,7 +179,7 @@ export default class Iter {
     accumulate (callback = (x, y) => x + y) {
         let iterator = Iter.getIterator(this);
         
-        return Iter.fromGenerator(function* () {
+        return new Iter(function* () {
             try {
                 let next = iterator.next(),
                     acc = next.value;
@@ -215,7 +199,7 @@ export default class Iter {
     chain (...iterables) {
         let iterators = [this, ...iterables].map(Iter.getIterator);
         
-        return Iter.fromGenerator(function* () {
+        return new Iter(function* () {
             for (let it of iterators) {
                 yield* it;
             }
@@ -225,7 +209,7 @@ export default class Iter {
     compress (selectors) {
         let iterator = this.zip(selectors);
         
-        return Iter.fromGenerator(function* () {
+        return new Iter(function* () {
             for (let [v, s] of iterator) {
                 if (s) yield v;
             }
@@ -235,7 +219,7 @@ export default class Iter {
     groupBy (key = (x) => x) {
         let iterator = Iter.getIterator(this);
         
-        return Iter.fromGenerator(function* () {
+        return new Iter(function* () {
             let k = {};
             let arr = [];
             
@@ -264,7 +248,7 @@ export default class Iter {
         }
         else {
             let iterator = this.zip(...iterables.slice(0, -1));
-            return Iter.fromGenerator(function* (){
+            return new Iter(function* (){
                 for (let arr of iterator) {
                     yield callback(...arr);
                 }
@@ -280,7 +264,7 @@ export default class Iter {
         }
         else {    
             let iterator = this.longestZip(...iterables.slice(0, -1));
-            return Iter.fromGenerator(function* () {
+            return new Iter(function* () {
                 for (let arr of iterator) {
                     yield callback(...arr);
                 }
@@ -291,7 +275,7 @@ export default class Iter {
     spreadMap (callback) {
         let iterator = Iter.getIterator(this);
         
-        return Iter.fromGenerator(function* () {
+        return new Iter(function* () {
             for (let arr of iterator) {
                 yield callback(...arr);
             }
@@ -301,7 +285,7 @@ export default class Iter {
     take (n = Infinity) {
         let iterator = Iter.getIterator(this);
         
-        return Iter.fromGenerator(function* () {
+        return new Iter(function* () {
             let count = toPositiveInteger(n);
             for (let v of iterator) {
                 if (count-- > 0) {
@@ -316,7 +300,7 @@ export default class Iter {
     takeWhile (callback = Boolean) {
         let iterator = Iter.getIterator(this);
         
-        return Iter.fromGenerator(function* () {
+        return new Iter(function* () {
             for (let v of iterator) {
                 if (callback(v)) {
                     yield v;
@@ -331,7 +315,7 @@ export default class Iter {
     drop (n = Infinity) {
         let iterator = Iter.getIterator(this);
         
-        return Iter.fromGenerator(function* () {
+        return new Iter(function* () {
             let count = toPositiveInteger(n);
             for (let v of iterator) {
                 if (count-- > 0) {
@@ -345,7 +329,7 @@ export default class Iter {
     dropWhile (callback = Boolean) {
         let iterator = Iter.getIterator(this);
         
-        return Iter.fromGenerator(function* () {
+        return new Iter(function* () {
             for (let v of iterator) {
                 if (!callback(v)) {
                     yield v;
@@ -359,7 +343,7 @@ export default class Iter {
     filter (callback = Boolean) {
         let iterator = Iter.getIterator(this);
         
-        return Iter.fromGenerator(function* () {
+        return new Iter(function* () {
             for (let v of iterator) {
                 if (callback(v)) {
                     yield v;
@@ -371,7 +355,7 @@ export default class Iter {
     filterFalse (callback = Boolean) {
         let iterator = Iter.getIterator(this);
         
-        return Iter.fromGenerator(function* () {
+        return new Iter(function* () {
             for (let v of iterator) {
                 if (!callback(v)) {
                     yield v;
@@ -385,7 +369,7 @@ export default class Iter {
             len = arr.length,
             res = [];
         
-        return Iter.fromGenerator(function* gen(idx = 0) {
+        return new Iter(function* gen(idx = 0) {
             if (idx >= len) {
                 yield res.slice();
                 return;
@@ -398,7 +382,7 @@ export default class Iter {
     }
     
     permutations (r) {
-        let arr = [...this],
+        let arr = this.toArray(),
             map = new Map(),
             res = [],
             len =  Math.min(toPositiveInteger(r), arr.length);
@@ -407,12 +391,12 @@ export default class Iter {
             len = arr.length;
         }
         
-        return Iter.fromGenerator(function* gen(idx = 0) {
+        return new Iter(function* gen(idx = 0) {
             if (idx >= len) {
                 yield res.slice();
                 return;
             }
-            for (let [i, v] of Iter.from(arr).enumerate(arr)) {
+            for (let [i, v] of new Iter(arr).enumerate(arr)) {
                 if (!map.has(i)) {
                     map.set(i, true);
                     res[idx] = v;
@@ -424,11 +408,11 @@ export default class Iter {
     }
     
     combinations (r) {
-        let arr = [...this],
+        let arr = this.toArray(),
             len = toPositiveInteger(r),
             res = [];
 
-        return Iter.fromGenerator(function* gen(idx = 0, start = 0) {
+        return new Iter(function* gen(idx = 0, start = 0) {
             if (idx >= len) {
                 yield res.slice();
                 return;
