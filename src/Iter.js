@@ -13,13 +13,7 @@ function toPositiveInteger(n) {
 }
 
 export default class Iter {
-    constructor (...args) {
-        return Iter.fromGenerator(function* () {
-            yield* args;
-        })
-    }
-    
-    static from (iterable) {
+    constructor (iterable) {
         if (!Iter.isIterable(iterable)) {
             throw TypeError(iterable + ' is not an iterable');
         }
