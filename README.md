@@ -1,6 +1,6 @@
-#IterJS v.0.9.0
+#ES-Iter v.0.9.5
 
-Itertools for JavaScript.
+`Iter` is ES6 class which provides methods for fast and elegant iteration with `for-of` loop. It is inspired by Python's `itertools` module, but designed for JavaScript developers.  
 
 ##API
 
@@ -38,6 +38,27 @@ let iterable = {
     }
 }
 ```
+
+#### Constructor
+
+#####`Iter(iterable)`
+
+Gets `iterator` from `iterable` argument and returns new `Iter` instance.
+
+```javascript
+let iter = new Iter([1, 2, 3]); 
+```
+
+#####`Iter(func)`
+
+Get `iterator` from `func` call and returns new `Iter` instance. 
+
+```javascript
+
+```
+
+
+#### Static Methods
 
 #####`getIterator(obj)`
 

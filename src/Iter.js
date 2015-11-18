@@ -240,6 +240,16 @@ export default class Iter {
         });
     }
     
+    map (callback = (x) => x) {
+        let iterator = Iter.getIterator(this);
+        
+        return new Iter(function* () {
+            for (let v of iterator) {
+                yield callback(v);
+            }
+        })
+    }
+    
     zipMap (...iterables) {
         let callback = iterables[iterables.length - 1];
         
