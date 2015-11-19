@@ -461,74 +461,73 @@ Creates new `Iter` instance, that returns elements as long as the `callback` is 
 new Iter([1, 2, 3, 4, 5, 6]).takeWhile((x) => x <= 3); // 1 2 3
 ```
 
-#####`filter(iterable, callback = Boolean)`
+#####`filter(callback = Boolean)`
 
-Make a generator that filters elements from `iterable` returning only those for which the `callback` is `true`. If `callback` not specified or `undefined`, return the items that are evaluated to `true`.
+Creates new `Iter` instance, that filters elements returning only those for which the `callback` is `true`. If `callback` not specified or `undefined`, return the items that are evaluated to `true`.
 
 ```javascript
-filter(range(10), (x) => x % 2); // 1 3 5 7 9
+Iter.range(10).filter((x) => x % 2); // 1 3 5 7 9
 ```
 
-#####`filterFalse(iterable, callback = Boolean)`
+#####`filterFalse(callback = Boolean)`
 
-Make a generator that filters elements from `iterable` returning only those for which the `callback` is `false`. If `callback` not specified or `undefined`, return the items that are evaluated to `false`.
+Creates new `Iter` instance, that filters elements returning only those for which the `callback` is `false`. If `callback` not specified or `undefined`, return the items that are evaluated to `false`.
 
 ```javascript
-filterFalse(range(10), (x) => x % 2); // 0 2 4 6 8
+Iter.range(10).filterFalse((x) => x % 2); // 0 2 4 6 8
 ```
 
-#####`product(a = [], b = [], ...iterables)`
+#####`product(b = [], ...iterables)`
 
-Cartesian product of `a`, `b` and `iterables`.
+Creates new `Iter` instance, that generates cartesian product of `this`, `b` and `iterables`.
 
 ```javascript
-product(); // []
-product([1, 2, 3]); // []
+new Iter([1, 2, 3]).product(); // [] product with empty set
 
-product([1, 2, 3], 'AB');
+new Iter([1, 2, 3]).product('AB');
 // [ 1, 'A' ] [ 1, 'B' ] [ 2, 'A' ] [ 2, 'B' ] [ 3, 'A' ] [ 3, 'B' ]
  
 ```
 
-#####`permutations(iterable, r)`
+#####`permutations(r)`
 
-Return successive `r` length permutations of elements in the `iterable`.
+Creates new `Iter` instance, that returns successive `r` length permutations.
 
-If `r` is not specified or is `undefined`, then `r` defaults to the length of the `iterable` and all possible full-length permutations are generated.
+If `r` is not specified or is `undefined`, then `r` defaults to the length of the `this` and all possible full-length permutations are generated.
 
-Permutations are emitted in lexicographic sort order. So, if the input `iterable` is sorted, the permutation arrays will be produced in sorted order.
+Permutations are emitted in lexicographic sort order. So, if the `this` is sorted, the permutation arrays will be produced in sorted order.
 
 Elements are treated as unique based on their position, not on their value. So if the input elements are unique, there will be no repeat values in each permutation.
 
 ```javascript
-permutations('ABCD', 2); 
+new Iter('ABCD').permutations(2); 
 // [ 'A', 'B' ] [ 'A', 'C' ] [ 'A', 'D' ] [ 'B', 'A' ] 
 // [ 'B', 'C' ] [ 'B', 'D' ] [ 'C', 'A' ] [ 'C', 'B' ] 
 // [ 'C', 'D' ] [ 'D', 'A' ] [ 'D', 'B' ] [ 'D', 'C' ]
 ```
 
 ```javascript  
-permutations(range(3));
+Iter.range(3).permutations();
 // [ 0, 1, 2 ] [ 0, 2, 1 ] [ 1, 0, 2 ] 
 // [ 1, 2, 0 ] [ 2, 0, 1 ] [ 2, 1, 0 ]
 ```
 
-#####`combinations(iterable, r)`
+#####`combinations(r)`
 
-Return `r` length subsequences of elements from the input `iterable`.
+Creates new `Iter` instance, that returns `r` length subsequences of elements.
 
-Combinations are emitted in lexicographic sort order. So, if the input `iterable` is sorted, the combination arrays will be produced in sorted order.
+Combinations are emitted in lexicographic sort order. So, if the `this` is sorted, the combination arrays will be produced in sorted order.
 
 Elements are treated as unique based on their position, not on their value. So if the input elements are unique, there will be no repeat values in each combination.
 
 ```javascript
-combinations('ABCD', 2); 
+new Iter('ABCD').combinations(2); 
 // [ 'A', 'B' ] [ 'A', 'C' ] [ 'A', 'D' ] 
 // [ 'B', 'C' ] [ 'B', 'D' ] [ 'C', 'D' ]
 ```
 
 ```javascript
-combinations(range(4), 3);
+Iter.range(4).combinations(3);
 // [ 0, 1, 2 ] [ 0, 1, 3 ] [ 0, 2, 3 ] [ 1, 2, 3 ]
 ```
 
