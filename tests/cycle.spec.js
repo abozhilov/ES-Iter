@@ -1,10 +1,10 @@
 import './auto_mock_off';
 import 'babel/polyfill';
-import {cycle, range, zip} from '../src/itertools';
+import Iter from '../src/Iter';
 
 describe('cycle', () => {
     it('indefinitely yields all of the elements of iterable', () => {
-        let iter = zip(cycle(range(5)), range(25));
+        let iter = Iter.cycle(Iter.range(5)).zip(Iter.range(25));
         
         let j = 0;
         for (let [i, v] of iter) {
@@ -13,9 +13,9 @@ describe('cycle', () => {
     })
     
     it('closes iterator on abrupt exit', () => {
-        let iter = range(20);
+        let iter = Iter.range(20);
         
-        for (let i of cycle(iter)) {
+        for (let i of Iter.cycle(iter)) {
             break;
         }
         

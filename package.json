@@ -1,8 +1,8 @@
 {
-  "name": "itertools",
-  "version": "0.9.0",
+  "name": "ES-Iter",
+  "version": "0.9.5",
   "description": "Itertools for JavaScript",
-  "main": "src/itertools.js",
+  "main": "src/Iter.js",
   "devDependencies": {
     "babel-jest": "*",
     "jest-cli": "*"
@@ -22,6 +22,7 @@
     "url": "https://github.com/abozhilov/IterJS.git"
   },
   "keywords": [
+    "Iter",
     "itertools",
     "iterator",
     "generator",

@@ -1,25 +1,25 @@
 import './auto_mock_off';
 import 'babel/polyfill';
-import {filter} from '../src/itertools';
+import Iter from '../src/Iter';
 
 describe('filter', () => {
     it('filters values for which callback returns false', () => {
-        let res = [...filter([1, 0, 2, 3, 0], (x) => x > 0)];
+        let res = [...new Iter([1, 0, 2, 3, 0]).filter((x) => x > 0)];
         
         expect(res.length).toBe(3);
     })
     
     it('uses Boolean built in if callback is not supplied', () => {
-        let res = [...filter([1, 1, 1, 0, 0])];
+        let res = [...new Iter([1, 1, 1, 0, 0]).filter()];
         
         expect(res.length).toBe(3);        
     })
     
-    it('throws TypeError if argument is not iterable', () => {
+    it('throws TypeError if `this` is not iterable', () => {
         let err = {};
         
         try {
-            filter();
+            Iter.prototype.filter.call(null);
         }catch (e) {
             err = e;
         }
@@ -28,11 +28,11 @@ describe('filter', () => {
 
     
     it('closes iterator on abrupt exit', () => {
-        let iter = (function* (){
+        let iter = new Iter(function* (){
             for (let i = 10; i--;) yield 1;
-        })();
+        });
         
-        for (let i of filter(iter)) {
+        for (let i of iter.filter()) {
             break;
         }
         

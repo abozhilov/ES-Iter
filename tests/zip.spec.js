@@ -1,6 +1,6 @@
 import './auto_mock_off';
 import 'babel/polyfill';
-import {zip} from '../src/itertools';
+import Iter from '../src/Iter';
 
 describe('zip', () => {
     function* gen(n) {
@@ -10,24 +10,24 @@ describe('zip', () => {
     }
     
     it('packs array with length equal to number of iterables', () => {
-        let arr = [...zip([1], [2], [3])];
+        let arr = [...new Iter([1]).zip([2], [3])];
         
         expect(Array.isArray(arr[0])).toBe(true);
         expect(arr[0].length).toBe(3);
     })
     
     it('does not yield anything with no arguments', () => {
-        let arr = [...zip()];
+        let arr = [...new Iter([1]).zip()];
         expect(arr.length).toBe(0);        
     })
     
     it('does not yield anything with zero length iterable', () => {
-        let arr = [...zip([])];
+        let arr = [...Iter.range(10).zip([])];
         expect(arr.length).toBe(0);
     })
     
     it('stops when shortest iterable is exhausted', () => {
-        let arr = [...zip(gen(3), gen(10))];
+        let arr = [...new Iter(gen(3)).zip(gen(10))];
         
         expect(arr.length).toBe(3);
     }) 
@@ -35,7 +35,7 @@ describe('zip', () => {
     it('closes all closable iterators when is determinated shortest iterable', () => {
         let iter1 = gen(4),
             iter2 = gen(20),
-            zipRes = [...zip(iter1, iter2)],
+            zipRes = [...new Iter(iter1).zip(iter2)],
             res1 = [...iter1],
             res2 = [...iter2];
             
@@ -47,7 +47,7 @@ describe('zip', () => {
         let iter1 = gen(4),
             iter2 = gen(20);
         
-        for (let [i, j] of zip(iter1, iter2)) {
+        for (let [i, j] of new Iter(iter1).zip(iter2)) {
             break;
         }
         
@@ -62,7 +62,7 @@ describe('zip', () => {
         var err = {};
         
         try {
-            zip([], null, 1234)
+            new Iter([]).zip(null, 1234)
         } catch (e) {
             err = e;
         }

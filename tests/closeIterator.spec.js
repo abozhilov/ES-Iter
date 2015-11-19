@@ -1,6 +1,6 @@
 import './auto_mock_off';
 import 'babel/polyfill';
-import {closeIterator} from '../src/itertools';
+import Iter from '../src/Iter';
 
 describe('closeIterator', () => {
     let closable = {
@@ -41,27 +41,27 @@ describe('closeIterator', () => {
     }
     
     it('returns `done` property value of `return` method', () => {
-        expect(closeIterator(closable)).toBe(true);
+        expect(Iter.closeIterator(closable)).toBe(true);
     }) 
     
     it('returns false with non-closable iterators', () => {
-        expect(closeIterator(iter)).toBe(false);
+        expect(Iter.closeIterator(iter)).toBe(false);
     })
     
     it('returns false with non-iterators', () => {
-        expect(closeIterator([])).toBe(false);
-        expect(closeIterator('ABC')).toBe(false);
-        expect(closeIterator(1234)).toBe(false);
+        expect(Iter.closeIterator([])).toBe(false);
+        expect(Iter.closeIterator('ABC')).toBe(false);
+        expect(Iter.closeIterator(1234)).toBe(false);
     }) 
     
     it('returns false with no-arguments or null', () => {
-        expect(closeIterator(null)).toBe(false);
-        expect(closeIterator()).toBe(false);
+        expect(Iter.closeIterator(null)).toBe(false);
+        expect(Iter.closeIterator()).toBe(false);
     })
     
     it('throws error if `return` returns null or undefined', () => {
         try {
-            closeIterator(throwIter)
+            Iter.closeIterator(throwIter)
         } catch(e) {
             expect(e instanceof TypeError).toBe(true);
         }

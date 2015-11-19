@@ -1,6 +1,6 @@
 import './auto_mock_off';
 import 'babel/polyfill';
-import {closeAllIterators, getIterator} from '../src/itertools';
+import Iter from '../src/Iter';
 
 describe('closeAllIterators', () => {
     let iterable = {
@@ -23,11 +23,11 @@ describe('closeAllIterators', () => {
     }
     
     it('must be called `return` method of each iterator', () => {
-        let iter1 = getIterator(iterable), 
-            iter2 = getIterator(iterable),
-            iter3 = getIterator(iterable);
+        let iter1 = Iter.getIterator(iterable), 
+            iter2 = Iter.getIterator(iterable),
+            iter3 = Iter.getIterator(iterable);
         
-        closeAllIterators(iter1, iter2, iter3);
+        Iter.closeAllIterators(iter1, iter2, iter3);
         
         expect(iter1.__IS_CLOSED__).toBe(true);
         expect(iter2.__IS_CLOSED__).toBe(true);

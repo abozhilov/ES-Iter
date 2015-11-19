@@ -1,6 +1,6 @@
 import './auto_mock_off';
 import 'babel/polyfill';
-import {isClosable} from '../src/itertools';
+import Iter from '../src/Iter';
 
 describe('isClosable', () => {
     it('returns true if Iterator implements return method', () => {
@@ -11,7 +11,7 @@ describe('isClosable', () => {
             next() {},
             return() {}
         }
-        expect(isClosable(iter)).toBe(true);
+        expect(Iter.isClosable(iter)).toBe(true);
     })
     
     it('returns false with non iterators', () => {
@@ -19,13 +19,13 @@ describe('isClosable', () => {
             next() {},
             return() {}
         }
-        expect(isClosable(nonIter)).toBe(false);
-        expect(isClosable([])).toBe(false);
-        expect(isClosable(545)).toBe(false);
+        expect(Iter.isClosable(nonIter)).toBe(false);
+        expect(Iter.isClosable([])).toBe(false);
+        expect(Iter.isClosable(545)).toBe(false);
     })
     
     it('returns false without arguments or null', () => {
-        expect(isClosable()).toBe(false);
-        expect(isClosable(null)).toBe(false);
+        expect(Iter.isClosable()).toBe(false);
+        expect(Iter.isClosable(null)).toBe(false);
     })
 })

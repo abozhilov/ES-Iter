@@ -1,6 +1,6 @@
 import './auto_mock_off';
 import 'babel/polyfill';
-import {isMultiIterable} from '../src/itertools';
+import Iter from '../src/Iter';
 
 describe('isMultiIterable', () => {
     let obj = {
@@ -25,7 +25,7 @@ describe('isMultiIterable', () => {
     it('returns true if obj[Symbol.iterator]() returns fresh iterator on every call', () => {
         let x = [...obj][0],
             y = [...obj][0];
-        expect(isMultiIterable(obj)).toBe(true);
+        expect(Iter.isMultiIterable(obj)).toBe(true);
         expect(x).toBe(true);
         expect(y).toBe(true);
     });
@@ -35,16 +35,16 @@ describe('isMultiIterable', () => {
             x = [...iter][0],
             y = [...iter][0];
         
-        expect(isMultiIterable(iter)).toBe(false);
+        expect(Iter.isMultiIterable(iter)).toBe(false);
         expect(x).toBe(true);
         expect(y).toBe(undefined);
     });
     
     it('returns false with not iterable object', () => {
-        expect(isMultiIterable(Object.create(null))).toBe(false);
+        expect(Iter.isMultiIterable(Object.create(null))).toBe(false);
     });
     
     it('returns false with no arguments', () => {
-        expect(isMultiIterable()).toBe(false);
+        expect(Iter.isMultiIterable()).toBe(false);
     });
 })

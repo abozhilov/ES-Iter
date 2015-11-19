@@ -1,6 +1,6 @@
-#IterJS v.0.9.0
+#ES-Iter v.0.9.5
 
-Itertools for JavaScript.
+`Iter` is ES6 class which provides methods for efficient iteration within `for-of` loop or using external `Iterator`. It is inspired by Python's `itertools` module, but designed for JavaScript developers.  
 
 ##API
 
@@ -39,12 +39,45 @@ let iterable = {
 }
 ```
 
-#####`getIterator(obj)`
+#### Constructor
+
+#####`Iter(iterable)`
+
+Get `iterator` from `iterable` object and returns new `Iter` instance.
+
+```javascript
+let iter = new Iter([1, 2, 3]); 
+```
+
+#####`Iter(func)`
+
+Get `iterator` from `func` call and returns new `Iter` instance. 
+
+```javascript
+let iter = new Iter(function* () {
+    let [a, b] = [0, 1];
+    while(true) {
+        yield a;
+        [a, b] = [b, a + b]
+    }
+}); 
+
+// Takes first 10 fibbonacci numbers 
+for (let i of iter.take(10)) {
+    console.log(i);
+}
+```
+
+**Note**: `Iter` instances are not multi iterable. It means if it's exhausted or closed cannot be iterated again.   
+
+#### Static Methods
+
+#####`Iter.getIterator(obj)`
 
 Return an [iterator](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Iteration_protocols#iterator) object.
 
 ```javascript
-let iterator = getIterator([1, 2, 3])
+let iterator = Iter.getIterator([1, 2, 3]);
 
 iterator.next() //{ value: 1, done: false }
 iterator.next() //{ value: 2, done: false }
@@ -56,10 +89,10 @@ Throws TypeError if object does not implement Iterator protocol (not iterable)
 
 ```javascript
 //TypeError: obj[Symbol.iterator] is not a function
-getIterator(Object.create(null)) 
+Iter.getIterator(Object.create(null)) 
 ```
 
-#####`isIterator(obj)`
+#####`Iter.isIterator(obj)`
 
 Returns **true** if `obj` implements Iterator protocol.  If `obj` is not an Iterator, `null` or `undefined` returns **false**.
 
@@ -68,38 +101,38 @@ Note: Iterator must be an **iterable**, otherwise `isIterator` returns **false**
 ```javascript
 let arr = [1, 2, 3];
 
-isIterator(getIterator(arr)) //true
-isIterator(arr[Symbol.iterator]()) //true
+Iter.isIterator(Iter.getIterator(arr)) //true
+Iter.isIterator(arr[Symbol.iterator]()) //true
 
-isIterator(arr) //false 
-isIterator({}) //false
-isIterator(null) //false
+Iter.isIterator(arr) //false 
+Iter.isIterator({}) //false
+Iter.isIterator(null) //false
 ```
 
 
-#####`isIterable(obj)`
+#####`Iter.isIterable(obj)`
 
 Returns **true** if `obj` is iterable, otherwise **false**. Object is iterable if it implements method with key `Symbol.iterator`. 
 
 If object is iterable safely can apply to `for-of` loops, `yield* iterable`, `...iterable`.
 
 ```javascript
-isIterable([1, 2, 3]) //true
-isIterable('ABC') //true
-isIterable(new Map) //true
-isIterable(new Set) //true
+Iter.isIterable([1, 2, 3]) //true
+Iter.isIterable('ABC') //true
+Iter.isIterable(new Map) //true
+Iter.isIterable(new Set) //true
 
-isIterable({}) //false
-isIterable(456) //false
+Iter.isIterable({}) //false
+Iter.isIterable(456) //false
 ```
 
-#####`isMultiIterable(obj)` 
+#####`Iter.isMultiIterable(obj)` 
 
 Test if `obj` can be iterated multiple times using `for-of`. In other words `obj[Symbol.iterator]()` returns fresh Iterator on every call.
 
 ```javascript
 let arr = [1, 2, 3, 4]
-isMultiIterable(arr) //true
+Iter.isMultiIterable(arr) //true
 
 for (let v of arr) {
     console.log(v) //1 2 3 4
@@ -111,8 +144,8 @@ for (let v of arr) {
 ```
 
 ```javascript
-let iterArr = getIterator([1, 2, 3, 4])
-isMultiIterable(iterArr) //false
+let iterArr = Iter.getIterator([1, 2, 3, 4]);
+Iter.isMultiIterable(iterArr); //false
 
 for (let v of iterArr) {
     console.log(v) //1 2 3 4
@@ -125,7 +158,7 @@ for (let v of iterArr) {
 ```
 
 
-#####`isClosable(iterator)`
+#####`Iter.isClosable(iterator)`
 Returns **true** if `iterator` implements the optional `return` method, otherwise if the object is not `Iterator` or does not implement `return` method returns **false**  
 
 ```javascript
@@ -141,7 +174,7 @@ let iterator = {
     }
 }
 
-isClosable(iterator) //true
+Iter.isClosable(iterator) //true
 ```
 
 ```javascript
@@ -154,10 +187,10 @@ let iterator = {
     }
 }
 
-isClosable(iterator) //false
+Iter.isClosable(iterator) //false
 ```
 
-#####`closeIterator(iterator)`
+#####`Iter.closeIterator(iterator)`
 
 If the iteraror is closable calls its `return` method and returns `done` state of the iterator, otherwise returns **false**.
 
@@ -174,7 +207,7 @@ let iterator = {
     }
 }
 
-closeIterator(iterator); //true
+Iter.closeIterator(iterator) //true
 ```
 
 ```javascript
@@ -187,65 +220,84 @@ let iterator = {
     }
 }
 
-closeIterator(iterator); //false
+Iter.closeIterator(iterator) //false
 ```
 
-#####`closeAllIterators(...iterators)`
+#####`Iter.closeAllIterators(...iterators)`
 
-Calls `closeIterator` for each passed `iterator`.
+Calls `Iter.closeIterator` for each passed `iterator`.
 
 ```javascript
 let iterator1 = [1, 2, 3].entries();
 let iterator2 = new Map().entries();
 let iterator3 = new Set([1, 2, 3]).entries();
 
-closeAllIterators(iterator1, iterator2, iterator3);
+Iter.closeAllIterators(iterator1, iterator2, iterator3);
 ```
 
-#####`toArray(...iterables)`
+#####`Iter.range(end)`
+#####`Iter.range(start, end[, step])`
 
-Consumes each `iterable` argument and returns array with the values. 
-
-```javascript
-toArray([1, 2, 3], 'ABC', new Set([1, 2, 3])); 
-// [ 1, 2, 3, 'A', 'B', 'C', 1, 2, 3 ] 
-```
-
-It does not consume recursively `iterable`.
-
-```javascript
-toArray([[0, 'A'],  [1, 'B'], [2, 'C']])); 
-// [[0, 'A'],  [1, 'B'], [2, 'C']] 
-```
-
-
-#####`range(end)`
-#####`range(start, end[, step])`
-
-This is a versatile function to create generator of arithmetic progressions. The arguments must be plain integers.
-With single argument `start` is 0 and `end` is equal to passed value.
+Creates new `Iter` instance which generates arithmetic progressions. The arguments must be plain integers.
+With single argument, `start` is 0 and `end` is equal to passed value.
 If the `step` argument is omitted, it defaults to 1 or -1 depends on `start` and `end` values.
 
 
 ```javascript
-range(10); // 0, 1, 2, 3, 4, 5, 6, 7, 8, 9
-range(-10); // 0, -1, -2, -3, -4, -5, -6, -7, -8, -9
+Iter.range(10); // 0, 1, 2, 3, 4, 5, 6, 7, 8, 9
+Iter.range(-10); // 0, -1, -2, -3, -4, -5, -6, -7, -8, -9
 
-range(1, 11); // 1, 2, 3, 4, 5, 6, 7, 8, 9, 10
-range(11, 1); // 11, 10, 9, 8, 7, 6, 5, 4, 3, 2
+Iter.range(1, 11); // 1, 2, 3, 4, 5, 6, 7, 8, 9, 10
+Iter.range(11, 1); // 11, 10, 9, 8, 7, 6, 5, 4, 3, 2
 
-range(0, 30, 5); // 0, 5, 10, 15, 20, 25
-range(30, 0, -5); // 30, 25, 20, 15, 10, 5
+Iter.range(0, 30, 5); // 0, 5, 10, 15, 20, 25
+Iter.range(30, 0, -5); // 30, 25, 20, 15, 10, 5
 
-range(20, 10, 2); //No output 
-range(10, 20, -2); //No output
+Iter.range(20, 10, 2); //No output 
+Iter.range(10, 20, -2); //No output
 ```
 
 **Note**: Unlike Python version of `range` it does not throw error if `step` is 0. If `step` is any falsy value it uses default values 1 or -1 depends on `start` and `end` values. 
 
+
+#####`Iter.count(start = 0, step = 1)`
+
+Creates new `Iter` instance, that generates evenly spaced values starting with `start`. Often used as an argument to `zipMap()` to generate consecutive data points. Also, used with `zip()` to add sequence numbers.
+
+```javascript
+Iter.count(); // 0 1 2 3 4 ....
+
+Iter.count(10); // 10 11 12 13 14 ...
+
+Iter.count(1, 2); // 1 3 5 7 9 ....
+```
+
+**Note**: It always converts  arguments to integers.
+
+#####`Iter.cycle(iterable)`
+
+Creates new `Iter` instance, that generates elements from the `iterable` and saving a copy of each. When the `iterable` is exhausted, return elements from the saved copy. Repeats indefinitely.
+
+```javascript
+Iter.cycle('ABCD'); // A B C D A B C D A B C D ...
+```
+
+**Note**: It may require significant auxiliary storage (depending on the length of the `iterable`).
+
+#####`Iter.repeat(val, times = Infinity)`
+
+Creates new `Iter` instance, that generates `val` over and over again. Runs indefinitely unless the `times` argument is specified. Used as argument to `zipMap()` for invariant function parameters. Also used with `zip()` to create constant fields in returned array.
+
+```javascript
+Iter.repeat(10, 3); // 10 10 10
+```
+
+#### Prototype Methods
+
+
 #####`zip(...iterables)`
 
-Make a generator that aggregates elements from each of the iterables. On each iteration it yields array in form of `[it1i, it2i, it3i, ..., itni]`.
+Creates new `Iter` instance, that aggregates elements from each of the iterables. On each iteration it yields array.
 Used for lock-step iteration over several iterables at a time. When no iterables are specified, returns a zero length generator.
 
 The left-to-right evaluation order of the iterables is guaranteed.
@@ -253,267 +305,261 @@ The left-to-right evaluation order of the iterables is guaranteed.
 Should only be used with unequal length inputs when you don't care about trailing, unmatched values from the longer iterables. If those values are important, use `longestZip()` instead.
 
 ```javascript
-zip('ABCD', 'xy'); 
+new Iter('ABCD').zip('xy'); 
 // [ 'A', 'x' ] [ 'B', 'y' ]
 
-zip(range(10), [1, 2, 3, 4, 5]); 
+Iter.range(10).zip([1, 2, 3, 4, 5]); 
 // [ 0, 1 ] [ 1, 2 ] [ 2, 3 ] [ 3, 4 ] [ 4, 5 ]
 ```
 
 #####`longestZip(...iterables)`
 
-Make a generator that aggregates elements from each of the iterables. On each iteration it yields array in form of `[it1i, it2i, it3i, ..., itni]`. If the iterables are of uneven length, missing values are filled-in with `undefined`. Iteration continues until the longest iterable is exhausted.
+Creates new `Iter` instance, that aggregates elements from each of the iterables. On each iteration it yields array. If the iterables are of uneven length, missing values are filled-in with `undefined`. Iteration continues until the longest iterable is exhausted.
 
 ```javascript
-longestZip('ABCD', 'xy'); 
+new Iter('ABCD').longestZip('xy'); 
 // [ 'A', 'x' ] [ 'B', 'y' ] [ 'C', undefined ] [ 'D', undefined ]
 
-longestZip(range(10), [1, 2, 3, 4, 5]); 
+Iter.range(10).longestZip([1, 2, 3, 4, 5]); 
 // [ 0, 1 ] [ 1, 2 ] [ 2, 3 ] [ 3, 4 ] [ 4, 5 ] [ 5, undefined ] [ 6, undefined ] [ 7, undefined ] [ 8, undefined ] [ 9, undefined ]
 ```
 
-**Note**: If one of the iterables is potentially infinite, then the `longestZip()` function should be wrapped with something that limits the number of calls (for example `take()` or `takeWhile()`).
+**Note**: If one of the iterables is potentially infinite, then the `longestZip()` function should be used with something that limits the number of calls (for example `take()` or `takeWhile()`).
 
-#####`enumerate(iterable, start)`
+#####`enumerate(start)`
 
-Make a generator that on each iteration returns an array containing a count (from start which defaults to 0) and the values obtained from iterating over iterable.
+Creates new `Iter` instance, that on each iteration returns an array containing a count (from start which defaults to 0) and the values obtained from iterating over `this`.
 
 ```javascript
-enumerate([1, 2, 3, 4]); 
+new Iter([1, 2, 3, 4]).enumerate(); 
 // [ 0, 1 ] [ 1, 2 ] [ 2, 3 ] [ 3, 4 ]
 
-enumerate('ABC');        
+new Iter('ABC').enumerate();        
 // [ 0, 'A' ] [ 1, 'B' ] [ 2, 'C' ]
 ```
 
 ```javascript
-enumerate([1, 2, 3, 4], 1); 
+new Iter([1, 2, 3, 4]).enumerate(1); 
 // [ 1, 1 ] [ 2, 2 ] [ 3, 3 ] [ 4, 4 ]
 
-enumerate('ABC', 1);        
+new Iter('ABC').enumerate(1);        
 // [ 1, 'A' ] [ 2, 'B' ] [ 3, 'C' ]
 ```
 
-#####`accumulate(iterable, callback = (x, y) => x + y)`
+#####`accumulate(callback = (x, y) => x + y)`
 
-Make a generator that returns accumulated sums, or accumulated results of other binary functions (specified via the optional `callback` argument). If `callback` is supplied, it should be a function of two arguments.
+Creates new `Iter` instance, that returns accumulated sums, or accumulated results of other binary functions (specified via the optional `callback` argument). If `callback` is supplied, it should be a function of two arguments.
 
 ```javascript
 let data = [3, 4, 6, 2, 1, 9, 0, 7, 5, 8];
 
 
-accumulate(data);            
+new Iter(data).accumulate();            
 // sum 3 7 13 15 16 25 25 32 37 45
 
-accumulate(data, Math.max); 
+new Iter(data).accumulate(Math.max); 
 // running max 3 4 6 6 6 9 9 9 9 9
 ```
 
 #####`chain(...iterables)`
 
-Make a generator that returns elements from the first `iterable` until it is exhausted, then proceeds to the next `iterable`, until all of the `iterables` are exhausted. Used for treating consecutive sequences as a single sequence.
+Creates new `Iter` instance, that returns elements first from `this`, then first `iterable` until it is exhausted, then proceeds to the next `iterable`, until all of the `iterables` are exhausted. Used for treating consecutive sequences as a single sequence.
 
 ```javascript
-chain('ABC', 'DEF', 'GHI'); // A B C D E F G H I
+new Iter('ABC').chain('DEF', 'GHI'); // A B C D E F G H I
 ```
 
-#####`compress(data, selectors)`
+#####`compress(selectors)`
 
-Make a generator that filters elements from `data` returning only those that have a corresponding element in `selectors` that evaluates to `true`. Stops when either the `data` or `selectors` iterables has been exhausted.
+Creates new `Iter` instance, that filters elements returning only those that have a corresponding element in `selectors` that evaluates to `true`. Stops when either the `this` or `selectors` iterables has been exhausted.
 
 ```javascript
-compress('ABCDEF', [1, 0, 1, 0, 1, 1]); //A C E F
+new Iter('ABCDEF').compress([1, 0, 1, 0, 1, 1]); //A C E F
 ```
 
-#####`groupBy(iterable, key = (x) => x)`
+#####`groupBy(key = (x) => x)`
 
-Make a generator that returns consecutive keys and groups from the `iterable`. The `key` is a function computing a key value for each element. If not specified or `undefined`, `key` defaults to an identity and returns the element unchanged. Generally, the iterable needs to already be sorted on the same key function.
+Creates new `Iter` instance, that returns consecutive keys and groups. The `key` is a function computing a key value for each element. If not specified or `undefined`, `key` defaults to an identity and returns the element unchanged. Generally, the iterable needs to already be sorted on the same key function.
 
 ```javascript
 let arr = [1, 1, 1, 1, 2, 2, 3, 4, 4, 5, 5, 5, 5];
 
-groupBy(arr); 
+new Iter(arr).groupBy(); 
 // [ 1, [ 1, 1, 1, 1 ] ] [ 2, [ 2, 2 ] ] [ 3, [ 3 ] ] [ 4, [ 4, 4 ] ] [ 5, [ 5, 5, 5, 5 ] ]
 ```
 
 ```javscript
-groupBy('AAABBBCDEE', (x) => x.charCodeAt());
+new Iter('AAABBBCDEE').groupBy((x) => x.charCodeAt());
 // [ 65, [ 'A', 'A', 'A' ] ] [ 66, [ 'B', 'B', 'B' ] ] [ 67, [ 'C' ] ] [ 68, [ 'D' ] ] [ 69, [ 'E', 'E' ] ] 
+```
+
+#####`map(callback = (x) => x)`
+
+Creates new `Iter` instance, that computes the `callback` using argument from `this`.
+
+```javascript
+new Iter([1, 2, 3]).map((x) => x * x); 
+// 1 4 9
 ```
 
 #####`zipMap(...iterables[, callback])`
 
-Make a generator that computes the `callback` using arguments from each of the `iterables`. If `callback` is not specified, then `zipMap()` returns same result as `zip`. It stops when the shortest `iterable` is exhausted.
+Creates new `Iter` instance, that computes the `callback` using arguments from each of the `iterables`. If `callback` is not specified, then `zipMap()` returns same result as `zip`. It stops when the shortest `iterable` is exhausted.
 
 ```javascript
-zipMap([1, 2, 3], [1, 2, 3], Math.pow); 
+new Iter([1, 2, 3]).zipMap([1, 2, 3], Math.pow); 
 // 1 4 27
 ```
 
 #####`longestZipMap(...iterables[, callback])`
 
-Make a generator that computes the `callback` using arguments from each of the `iterables`. If `callback` is not specified, then `longestZipMap()` returns same result as `longestZip`. It stops when the longest `iterable` is exhausted, filling in `undefined` for shorter iterables.
+Creates new `Iter` instance, that computes the `callback` using arguments from each of the `iterables`. If `callback` is not specified, then `longestZipMap()` returns same result as `longestZip`. It stops when the longest `iterable` is exhausted, filling in `undefined` for shorter iterables.
 
 ```javascript
-longestZipMap([1, 2, 3], [1, 2, 3, 4, 5], (x = 1, y) => Math.pow(x, y)); 
+new Iter([1, 2, 3]).longestZipMap([1, 2, 3, 4, 5], (x = 1, y) => Math.pow(x, y)); 
 // 1 4 27 1 1
 ```
 
-#####`spreadMap(iterable, callback)`
+#####`spreadMap(callback)`
 
-Make a generator that computes the `callback` using arguments obtained from the `iterable`. Used instead of `zipMap()` when argument parameters are already grouped in a single iterable (the data has been "pre-zipped").
+Creates new `Iter` instance, that computes the `callback` using arguments obtained from the `this`. Used instead of `zipMap()` when argument parameters are already grouped in a single iterable (the data has been "pre-zipped").
 
 ```javascript
-spreadMap([[2, 5], [3, 2], [10, 3]], Math.pow); 
+new Iter([[2, 5], [3, 2], [10, 3]]).spreadMap(Math.pow); 
 // 32 9 1000
 ```
 
 #####`take(iterable, n = Infinity)`
 
-Make a generator that takes `n` elements from `iterable`.
+Creates new `Iter` instance, that takes `n` elements.
 
 ```javascript
-take([1, 2, 3, 4, 5], 2); // 1 2
+new Iter([1, 2, 3, 4, 5]).take(2); // 1 2
 ```
 
-#####`drop(iterable, n = Infinity)`
+#####`drop(n = Infinity)`
 
-Make a generator that drops `n` elements from `iterable`.
+Creates new `Iter` instance, that drops `n` elements.
 
 ```javascript 
-drop([1, 2, 3, 4, 5], 2); // 3 4 5
+new Iter([1, 2, 3, 4, 5]).drop(2); // 3 4 5
 ```
 
-#####`dropWhile(iterable, callback = Boolean)`
+#####`dropWhile(callback = Boolean)`
 
-Make a generator that drops elements from the `iterable` as long as the `callback` is true; afterwards, returns every element. Note, the generator does not produce any output until the `callback` first becomes false, so it may have a lengthy start-up time.
+Creates new `Iter` instance, that drops elements as long as the `callback` is true; afterwards, returns every element. Note, it does not produce any output until the `callback` first becomes false, so it may have a lengthy start-up time.
 
 ```javascript
-dropWhile([1, 2, 3, 4, 5, 6], (x) => x <= 3); // 4 5 6  
+new Iter([1, 2, 3, 4, 5, 6]).dropWhile((x) => x <= 3); // 4 5 6  
 ```
 
-#####`takeWhile(iterable, callback = Boolean)`
+#####`takeWhile(callback = Boolean)`
 
-Make a generator that returns elements from the `iterable` as long as the `callback` is true.
+Creates new `Iter` instance, that returns elements as long as the `callback` is true.
 
 ```javascript
-takeWhile([1, 2, 3, 4, 5, 6], (x) => x <= 3); // 1 2 3
+new Iter([1, 2, 3, 4, 5, 6]).takeWhile((x) => x <= 3); // 1 2 3
 ```
 
-#####`filter(iterable, callback = Boolean)`
+#####`filter(callback = Boolean)`
 
-Make a generator that filters elements from `iterable` returning only those for which the `callback` is `true`. If `callback` not specified or `undefined`, return the items that are evaluated to `true`.
+Creates new `Iter` instance, that filters elements returning only those for which the `callback` is `true`. If `callback` not specified or `undefined`, return the items that are evaluated to `true`.
 
 ```javascript
-filter(range(10), (x) => x % 2); // 1 3 5 7 9
+Iter.range(10).filter((x) => x % 2); // 1 3 5 7 9
 ```
 
-#####`filterFalse(iterable, callback = Boolean)`
+#####`filterFalse(callback = Boolean)`
 
-Make a generator that filters elements from `iterable` returning only those for which the `callback` is `false`. If `callback` not specified or `undefined`, return the items that are evaluated to `false`.
+Creates new `Iter` instance, that filters elements returning only those for which the `callback` is `false`. If `callback` not specified or `undefined`, return the items that are evaluated to `false`.
 
 ```javascript
-filterFalse(range(10), (x) => x % 2); // 0 2 4 6 8
+Iter.range(10).filterFalse((x) => x % 2); // 0 2 4 6 8
 ```
 
-#### Infinite generators
+#####`product(b = [], ...iterables)`
 
-#####`count(start = 0, step = 1)`
-
-Make a generator that returns evenly spaced values starting with `start`. Often used as an argument to `zipMap()` to generate consecutive data points. Also, used with `zip()` to add sequence numbers.
+Creates new `Iter` instance, that generates cartesian product of `this`, `b` and `iterables`.
 
 ```javascript
-count(); // 0 1 2 3 4 ....
+new Iter([1, 2, 3]).product(); // [] product with empty set
 
-count(10); // 10 11 12 13 14 ...
-
-count(1, 2); // 1 3 5 7 9 ....
-```
-
-**Note**: It always converts  arguments to integers.
-
-#####`cycle(iterable)`
-
-Make a generator returning elements from the `iterable` and saving a copy of each. When the `iterable` is exhausted, return elements from the saved copy. Repeats indefinitely.
-
-```javascript
-cycle('ABCD'); // A B C D A B C D A B C D ...
-```
-
-**Note**: Highly encourage to pass multi iterable as argument, otherwise it may require significant auxiliary storage (depending on the length of the `iterable`).
-
-#####`repeat(val, times = Infinity)`
-
-Make a generator that returns `val` over and over again. Runs indefinitely unless the `times` argument is specified. Used as argument to `zipMap()` for invariant function parameters. Also used with `zip()` to create constant fields in returned array.
-
-```javascript
-repeat(10, 3); // 10 10 10
-```
-
-#### Combinatoric generators
-
-#####`product(a = [], b = [], ...iterables)`
-
-Cartesian product of `a`, `b` and `iterables`.
-
-```javascript
-product(); // []
-product([1, 2, 3]); // []
-
-product([1, 2, 3], 'AB');
+new Iter([1, 2, 3]).product('AB');
 // [ 1, 'A' ] [ 1, 'B' ] [ 2, 'A' ] [ 2, 'B' ] [ 3, 'A' ] [ 3, 'B' ]
  
 ```
 
-#####`permutations(iterable, r)`
+#####`permutations(r)`
 
-Return successive `r` length permutations of elements in the `iterable`.
+Creates new `Iter` instance, that returns successive `r` length permutations.
 
-If `r` is not specified or is `undefined`, then `r` defaults to the length of the `iterable` and all possible full-length permutations are generated.
+If `r` is not specified or is `undefined`, then `r` defaults to the length of the `this` and all possible full-length permutations are generated.
 
-Permutations are emitted in lexicographic sort order. So, if the input `iterable` is sorted, the permutation arrays will be produced in sorted order.
+Permutations are emitted in lexicographic sort order. So, if the `this` is sorted, the permutation arrays will be produced in sorted order.
 
 Elements are treated as unique based on their position, not on their value. So if the input elements are unique, there will be no repeat values in each permutation.
 
 ```javascript
-permutations('ABCD', 2); 
+new Iter('ABCD').permutations(2); 
 // [ 'A', 'B' ] [ 'A', 'C' ] [ 'A', 'D' ] [ 'B', 'A' ] 
 // [ 'B', 'C' ] [ 'B', 'D' ] [ 'C', 'A' ] [ 'C', 'B' ] 
 // [ 'C', 'D' ] [ 'D', 'A' ] [ 'D', 'B' ] [ 'D', 'C' ]
 ```
 
 ```javascript  
-permutations(range(3));
+Iter.range(3).permutations();
 // [ 0, 1, 2 ] [ 0, 2, 1 ] [ 1, 0, 2 ] 
 // [ 1, 2, 0 ] [ 2, 0, 1 ] [ 2, 1, 0 ]
 ```
 
-#####`combinations(iterable, r)`
+#####`combinations(r)`
 
-Return `r` length subsequences of elements from the input `iterable`.
+Creates new `Iter` instance, that returns `r` length subsequences of elements.
 
-Combinations are emitted in lexicographic sort order. So, if the input `iterable` is sorted, the combination arrays will be produced in sorted order.
+Combinations are emitted in lexicographic sort order. So, if the `this` is sorted, the combination arrays will be produced in sorted order.
 
 Elements are treated as unique based on their position, not on their value. So if the input elements are unique, there will be no repeat values in each combination.
 
 ```javascript
-combinations('ABCD', 2); 
+new Iter('ABCD').combinations(2); 
 // [ 'A', 'B' ] [ 'A', 'C' ] [ 'A', 'D' ] 
 // [ 'B', 'C' ] [ 'B', 'D' ] [ 'C', 'D' ]
 ```
 
 ```javascript
-combinations(range(4), 3);
+Iter.range(4).combinations(3);
 // [ 0, 1, 2 ] [ 0, 1, 3 ] [ 0, 2, 3 ] [ 1, 2, 3 ]
 ```
 
+#####`toIterator()`
+
+Returns external `iterator` usefull for manual iteration. 
+
+```javascript
+let iterator = Iter.range(5).filter(x => x > 2).toIterator();
+
+iterator.next(); // { value: 3, done: false }
+iterator.next(); // { value: 4, done: false }
+iterator.next(); // { value: undefined, done: true }
+```
+
+#####`toArray()`
+
+```javascript
+Iter.range(5).filter(x => x > 2).toArray(); // [ 3, 4 ]
+```
+
+## Browsers Support
+
+Currently there is no browser with full support of ES6, but the library can be used with [Babel](https://babeljs.io/) transpiler.
+
 ##Author
 
-Asen Bozhilov
+Asen Bozhilov - [@abozhilov](https://twitter.com/abozhilov)
 
 ##Credits 
 
-Axel Rauschmayer and his excellent book [Exploring ES6](http://exploringjs.com/)
+[Dr. Axel Rauschmayer](http://www.2ality.com/) and his excellent book [Exploring ES6](http://exploringjs.com/)
 
 ##License
 

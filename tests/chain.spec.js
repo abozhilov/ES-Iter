@@ -1,16 +1,12 @@
 import './auto_mock_off';
 import 'babel/polyfill';
-import {chain} from '../src/itertools';
+import Iter from '../src/Iter';
 
 describe('chain', () => {
     it('does not yield anything if iterable is exhausted', () => {
-        let res = [...chain([])];
-        
-        expect(res.length).toBe(0);
-    })
-    
-    it('does not yield anything without arguments', () => {
-        let res = [...chain()];
+        let r = Iter.range(10);
+        [...r];
+        let res = [...r.chain()];
         
         expect(res.length).toBe(0);
     })
@@ -19,7 +15,7 @@ describe('chain', () => {
         let err = {};
         
         try {
-            chain(545);
+            Iter.prototype.chain.call(545);
         }catch(e) {
             err = e;
         }
@@ -28,11 +24,11 @@ describe('chain', () => {
     })
     
     it('closes iterator on abrupt exit', () => {
-        let iter = (function* gen(n) {
+        let iter = new Iter(function* gen(n) {
             for (let i = 0; i < n; i++) yield i;
-        })(10);
+        }(10));
         
-        for (let i of chain(iter)) {
+        for (let i of iter.chain()) {
             break;
         }
         
@@ -40,8 +36,8 @@ describe('chain', () => {
     })
     
     it('iterates over every argument', () => {
-        let res1 = [...chain([1, 2, 3], 'ABC', new Set([1, 2, 3]))],
-            res2 = [...chain([[1, 2, 3]], ['ABC'], new Set([[1, 2, 3]]))];
+        let res1 = [...Iter.range(1, 4).chain('ABC', new Set([1, 2, 3]))],
+            res2 = [...new Iter([[1, 2, 3]]).chain(['ABC'], new Set([[1, 2, 3]]))];
         
         expect(res1.length).toBe(9);
         expect(res2.length).toBe(3);

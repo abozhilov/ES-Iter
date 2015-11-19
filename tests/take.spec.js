@@ -1,22 +1,22 @@
 import './auto_mock_off';
 import 'babel/polyfill';
-import {take} from '../src/itertools';
+import Iter from '../src/Iter';
 
 describe('take', () => {
     
     it('takes N items from iterable', () => {
-        expect([...take([1, 2, 3, 4, 5], 2)].length).toBe(2);
+        expect([...Iter.range(5).take(2)].length).toBe(2);
     })
     
     it('takes all items if n is not specified', () => {
-        expect([...take([1, 2, 3, 4, 5])].length).toBe(5);
+        expect([...Iter.range(5).take()].length).toBe(5);
     }) 
     
-    it('throws TypeError if argument is not iterable', () => {
+    it('throws TypeError if `this` is not iterable', () => {
         let err = {};
         
         try {
-            take();
+            Iter.prototype.take.call(345);
         }catch (e) {
             err = e;
         }
@@ -24,11 +24,11 @@ describe('take', () => {
     })
     
     it('closes iterator after n items consumed', () => {
-        let iter = (function* (){
+        let iter = new Iter(function* (){
             for (let i = 10; i--;) yield i;
-        })();
+        });
         
-        for (let i of take(iter, 2)) {
+        for (let i of iter.take(2)) {
 
         }
         
@@ -36,11 +36,11 @@ describe('take', () => {
     })
     
     it('closes iterator on abrupt exit', () => {
-        let iter = (function* (){
+        let iter = new Iter(function* (){
             for (let i = 10; i--;) yield i;
-        })();
+        });
         
-        for (let i of take(iter, 2)) {
+        for (let i of iter.take(2)) {
             break;
         }
         

@@ -1,31 +1,19 @@
 import './auto_mock_off';
 import 'babel/polyfill';
-import {enumerate} from '../src/itertools';
+import Iter from '../src/Iter';
 
 describe('enumerate', () => {
     it('does not yield anything if iterable is exhausted', () => {
-        let res = [...enumerate([])];
+        let res = [...new Iter([]).enumerate()];
         
         expect(res.length).toBe(0);
     })
     
-    it('Throws TypeError without arguments', () => {
+    it('Throws TypeError with non iterable `this`', () => {
         let err = {};
         
         try {
-            enumerate();
-        }catch(e) {
-            err = e;
-        }
-        
-        expect(err instanceof TypeError).toBe(true);
-    })
-    
-    it('Throws TypeError with non iterable', () => {
-        let err = {};
-        
-        try {
-            enumerate(545);
+            Iter.prototype.call.enumerate(545);
         }catch(e) {
             err = e;
         }
@@ -34,7 +22,7 @@ describe('enumerate', () => {
     })
     
     it('always yields tupples [integer, value]', () => {
-        let res = [...enumerate([1, 2, 3])];
+        let res = [...new Iter([1, 2, 3]).enumerate()];
         
         expect(res[0][0]).toBe(0);
         expect(res[0][1]).toBe(1);
@@ -47,31 +35,31 @@ describe('enumerate', () => {
     })
     
     it('if `start` is specified', () => {        
-        for (let [i, j] of enumerate([1, 2, 3], 1)) {
+        for (let [i, j] of new Iter([1, 2, 3]).enumerate(1)) {
             expect(i).toBe(j);
         }
     })
     
     it('converts start to integer', () => {
-        for (let [i, j] of enumerate([1, 2, 3], 1.76)) {
+        for (let [i, j] of new Iter([1, 2, 3]).enumerate(1.76)) {
             expect(i).toBe(j);
         }         
     })
     
     it('starts from 0 if toInteger(start) is falsy value', () => {
-        for (let [i, j] of enumerate([0, 1, 2], 'Test')) {
+        for (let [i, j] of new Iter([0, 1, 2]).enumerate('Test')) {
             expect(i).toBe(j);
         }
         
-        for (let [i, j] of enumerate([0, 1, 2], NaN)) {
+        for (let [i, j] of new Iter([0, 1, 2]).enumerate(NaN)) {
             expect(i).toBe(j);
         }
         
-        for (let [i, j] of enumerate([0, 1, 2], false)) {
+        for (let [i, j] of new Iter([0, 1, 2]).enumerate(false)) {
             expect(i).toBe(j);
         }  
         
-        for (let [i, j] of enumerate([0, 1, 2], {})) {
+        for (let [i, j] of new Iter([0, 1, 2]).enumerate({})) {
             expect(i).toBe(j);
         }              
     })  
