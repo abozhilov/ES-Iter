@@ -4,6 +4,8 @@
   "description": "Itertools for JavaScript",
   "main": "src/Iter.js",
   "devDependencies": {
+    "babel-core": ">=6.0.0",
+    "babel-preset-es2015": "*",
     "babel-jest": "*",
     "jest-cli": "*"
   },
