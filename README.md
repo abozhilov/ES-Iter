@@ -1,6 +1,6 @@
 #ES-Iter v.0.9.5
 
-`Iter` is ES6 class which provides methods for fast and elegant iteration with `for-of` loop. It is inspired by Python's `itertools` module, but designed for JavaScript developers.  
+`Iter` is ES6 class which provides methods for efficient iteration within `for-of` loop or using external `Iterator`. It is inspired by Python's `itertools` module, but designed for JavaScript developers.  
 
 ##API
 
@@ -43,7 +43,7 @@ let iterable = {
 
 #####`Iter(iterable)`
 
-Gets `iterator` from `iterable` argument and returns new `Iter` instance.
+Get `iterator` from `iterable` object and returns new `Iter` instance.
 
 ```javascript
 let iter = new Iter([1, 2, 3]); 
@@ -68,15 +68,16 @@ for (let i of iter.take(10)) {
 }
 ```
 
+**Note**: `Iter` instances are not multi iterable. It means if it's exhausted or closed cannot be iterated again.   
 
 #### Static Methods
 
-#####`getIterator(obj)`
+#####`Iter.getIterator(obj)`
 
 Return an [iterator](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Iteration_protocols#iterator) object.
 
 ```javascript
-let iterator = getIterator([1, 2, 3])
+let iterator = Iter.getIterator([1, 2, 3]);
 
 iterator.next() //{ value: 1, done: false }
 iterator.next() //{ value: 2, done: false }
@@ -88,10 +89,10 @@ Throws TypeError if object does not implement Iterator protocol (not iterable)
 
 ```javascript
 //TypeError: obj[Symbol.iterator] is not a function
-getIterator(Object.create(null)) 
+Iter.getIterator(Object.create(null)) 
 ```
 
-#####`isIterator(obj)`
+#####`Iter.isIterator(obj)`
 
 Returns **true** if `obj` implements Iterator protocol.  If `obj` is not an Iterator, `null` or `undefined` returns **false**.
 
@@ -100,38 +101,38 @@ Note: Iterator must be an **iterable**, otherwise `isIterator` returns **false**
 ```javascript
 let arr = [1, 2, 3];
 
-isIterator(getIterator(arr)) //true
-isIterator(arr[Symbol.iterator]()) //true
+Iter.isIterator(Iter.getIterator(arr)) //true
+Iter.isIterator(arr[Symbol.iterator]()) //true
 
-isIterator(arr) //false 
-isIterator({}) //false
-isIterator(null) //false
+Iter.isIterator(arr) //false 
+Iter.isIterator({}) //false
+Iter.isIterator(null) //false
 ```
 
 
-#####`isIterable(obj)`
+#####`Iter.isIterable(obj)`
 
 Returns **true** if `obj` is iterable, otherwise **false**. Object is iterable if it implements method with key `Symbol.iterator`. 
 
 If object is iterable safely can apply to `for-of` loops, `yield* iterable`, `...iterable`.
 
 ```javascript
-isIterable([1, 2, 3]) //true
-isIterable('ABC') //true
-isIterable(new Map) //true
-isIterable(new Set) //true
+Iter.isIterable([1, 2, 3]) //true
+Iter.isIterable('ABC') //true
+Iter.isIterable(new Map) //true
+Iter.isIterable(new Set) //true
 
-isIterable({}) //false
-isIterable(456) //false
+Iter.isIterable({}) //false
+Iter.isIterable(456) //false
 ```
 
-#####`isMultiIterable(obj)` 
+#####`Iter.isMultiIterable(obj)` 
 
 Test if `obj` can be iterated multiple times using `for-of`. In other words `obj[Symbol.iterator]()` returns fresh Iterator on every call.
 
 ```javascript
 let arr = [1, 2, 3, 4]
-isMultiIterable(arr) //true
+Iter.isMultiIterable(arr) //true
 
 for (let v of arr) {
     console.log(v) //1 2 3 4
@@ -143,8 +144,8 @@ for (let v of arr) {
 ```
 
 ```javascript
-let iterArr = getIterator([1, 2, 3, 4])
-isMultiIterable(iterArr) //false
+let iterArr = Iter.getIterator([1, 2, 3, 4]);
+Iter.isMultiIterable(iterArr); //false
 
 for (let v of iterArr) {
     console.log(v) //1 2 3 4
@@ -157,7 +158,7 @@ for (let v of iterArr) {
 ```
 
 
-#####`isClosable(iterator)`
+#####`Iter.isClosable(iterator)`
 Returns **true** if `iterator` implements the optional `return` method, otherwise if the object is not `Iterator` or does not implement `return` method returns **false**  
 
 ```javascript
@@ -173,7 +174,7 @@ let iterator = {
     }
 }
 
-isClosable(iterator) //true
+Iter.isClosable(iterator) //true
 ```
 
 ```javascript
@@ -186,10 +187,10 @@ let iterator = {
     }
 }
 
-isClosable(iterator) //false
+Iter.isClosable(iterator) //false
 ```
 
-#####`closeIterator(iterator)`
+#####`Iter.closeIterator(iterator)`
 
 If the iteraror is closable calls its `return` method and returns `done` state of the iterator, otherwise returns **false**.
 
@@ -206,7 +207,7 @@ let iterator = {
     }
 }
 
-closeIterator(iterator); //true
+Iter.closeIterator(iterator) //true
 ```
 
 ```javascript
@@ -219,20 +220,80 @@ let iterator = {
     }
 }
 
-closeIterator(iterator); //false
+Iter.closeIterator(iterator) //false
 ```
 
-#####`closeAllIterators(...iterators)`
+#####`Iter.closeAllIterators(...iterators)`
 
-Calls `closeIterator` for each passed `iterator`.
+Calls `Iter.closeIterator` for each passed `iterator`.
 
 ```javascript
 let iterator1 = [1, 2, 3].entries();
 let iterator2 = new Map().entries();
 let iterator3 = new Set([1, 2, 3]).entries();
 
-closeAllIterators(iterator1, iterator2, iterator3);
+Iter.closeAllIterators(iterator1, iterator2, iterator3);
 ```
+
+#####`Iter.range(end)`
+#####`Iter.range(start, end[, step])`
+
+Creates new `Iter` instance which generates arithmetic progressions. The arguments must be plain integers.
+With single argument, `start` is 0 and `end` is equal to passed value.
+If the `step` argument is omitted, it defaults to 1 or -1 depends on `start` and `end` values.
+
+
+```javascript
+Iter.range(10); // 0, 1, 2, 3, 4, 5, 6, 7, 8, 9
+Iter.range(-10); // 0, -1, -2, -3, -4, -5, -6, -7, -8, -9
+
+Iter.range(1, 11); // 1, 2, 3, 4, 5, 6, 7, 8, 9, 10
+Iter.range(11, 1); // 11, 10, 9, 8, 7, 6, 5, 4, 3, 2
+
+Iter.range(0, 30, 5); // 0, 5, 10, 15, 20, 25
+Iter.range(30, 0, -5); // 30, 25, 20, 15, 10, 5
+
+Iter.range(20, 10, 2); //No output 
+Iter.range(10, 20, -2); //No output
+```
+
+**Note**: Unlike Python version of `range` it does not throw error if `step` is 0. If `step` is any falsy value it uses default values 1 or -1 depends on `start` and `end` values. 
+
+
+#### Infinite iterators
+
+#####`Iter.count(start = 0, step = 1)`
+
+Creates new `Iter` instance, that generates evenly spaced values starting with `start`. Often used as an argument to `zipMap()` to generate consecutive data points. Also, used with `zip()` to add sequence numbers.
+
+```javascript
+Iter.count(); // 0 1 2 3 4 ....
+
+Iter.count(10); // 10 11 12 13 14 ...
+
+Iter.count(1, 2); // 1 3 5 7 9 ....
+```
+
+**Note**: It always converts  arguments to integers.
+
+#####`Iter.cycle(iterable)`
+
+Creates new `Iter` instance, that generates elements from the `iterable` and saving a copy of each. When the `iterable` is exhausted, return elements from the saved copy. Repeats indefinitely.
+
+```javascript
+Iter.cycle('ABCD'); // A B C D A B C D A B C D ...
+```
+
+**Note**: It may require significant auxiliary storage (depending on the length of the `iterable`).
+
+#####`Iter.repeat(val, times = Infinity)`
+
+Creates new `Iter` instance, that generates `val` over and over again. Runs indefinitely unless the `times` argument is specified. Used as argument to `zipMap()` for invariant function parameters. Also used with `zip()` to create constant fields in returned array.
+
+```javascript
+Iter.repeat(10, 3); // 10 10 10
+```
+
 
 #####`toArray(...iterables)`
 
@@ -249,31 +310,6 @@ It does not consume recursively `iterable`.
 toArray([[0, 'A'],  [1, 'B'], [2, 'C']])); 
 // [[0, 'A'],  [1, 'B'], [2, 'C']] 
 ```
-
-
-#####`range(end)`
-#####`range(start, end[, step])`
-
-This is a versatile function to create generator of arithmetic progressions. The arguments must be plain integers.
-With single argument `start` is 0 and `end` is equal to passed value.
-If the `step` argument is omitted, it defaults to 1 or -1 depends on `start` and `end` values.
-
-
-```javascript
-range(10); // 0, 1, 2, 3, 4, 5, 6, 7, 8, 9
-range(-10); // 0, -1, -2, -3, -4, -5, -6, -7, -8, -9
-
-range(1, 11); // 1, 2, 3, 4, 5, 6, 7, 8, 9, 10
-range(11, 1); // 11, 10, 9, 8, 7, 6, 5, 4, 3, 2
-
-range(0, 30, 5); // 0, 5, 10, 15, 20, 25
-range(30, 0, -5); // 30, 25, 20, 15, 10, 5
-
-range(20, 10, 2); //No output 
-range(10, 20, -2); //No output
-```
-
-**Note**: Unlike Python version of `range` it does not throw error if `step` is 0. If `step` is any falsy value it uses default values 1 or -1 depends on `start` and `end` values. 
 
 #####`zip(...iterables)`
 
@@ -446,40 +482,6 @@ Make a generator that filters elements from `iterable` returning only those for 
 
 ```javascript
 filterFalse(range(10), (x) => x % 2); // 0 2 4 6 8
-```
-
-#### Infinite generators
-
-#####`count(start = 0, step = 1)`
-
-Make a generator that returns evenly spaced values starting with `start`. Often used as an argument to `zipMap()` to generate consecutive data points. Also, used with `zip()` to add sequence numbers.
-
-```javascript
-count(); // 0 1 2 3 4 ....
-
-count(10); // 10 11 12 13 14 ...
-
-count(1, 2); // 1 3 5 7 9 ....
-```
-
-**Note**: It always converts  arguments to integers.
-
-#####`cycle(iterable)`
-
-Make a generator returning elements from the `iterable` and saving a copy of each. When the `iterable` is exhausted, return elements from the saved copy. Repeats indefinitely.
-
-```javascript
-cycle('ABCD'); // A B C D A B C D A B C D ...
-```
-
-**Note**: Highly encourage to pass multi iterable as argument, otherwise it may require significant auxiliary storage (depending on the length of the `iterable`).
-
-#####`repeat(val, times = Infinity)`
-
-Make a generator that returns `val` over and over again. Runs indefinitely unless the `times` argument is specified. Used as argument to `zipMap()` for invariant function parameters. Also used with `zip()` to create constant fields in returned array.
-
-```javascript
-repeat(10, 3); // 10 10 10
 ```
 
 #### Combinatoric generators
