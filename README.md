@@ -346,110 +346,118 @@ new Iter('ABC').enumerate(1);
 // [ 1, 'A' ] [ 2, 'B' ] [ 3, 'C' ]
 ```
 
-#####`accumulate(iterable, callback = (x, y) => x + y)`
+#####`accumulate(callback = (x, y) => x + y)`
 
-Make a generator that returns accumulated sums, or accumulated results of other binary functions (specified via the optional `callback` argument). If `callback` is supplied, it should be a function of two arguments.
+Creates new `Iter` instance, that returns accumulated sums, or accumulated results of other binary functions (specified via the optional `callback` argument). If `callback` is supplied, it should be a function of two arguments.
 
 ```javascript
 let data = [3, 4, 6, 2, 1, 9, 0, 7, 5, 8];
 
 
-accumulate(data);            
+new Iter(data).accumulate();            
 // sum 3 7 13 15 16 25 25 32 37 45
 
-accumulate(data, Math.max); 
+new Iter(data).accumulate(Math.max); 
 // running max 3 4 6 6 6 9 9 9 9 9
 ```
 
 #####`chain(...iterables)`
 
-Make a generator that returns elements from the first `iterable` until it is exhausted, then proceeds to the next `iterable`, until all of the `iterables` are exhausted. Used for treating consecutive sequences as a single sequence.
+Creates new `Iter` instance, that returns elements first from `this`, then first `iterable` until it is exhausted, then proceeds to the next `iterable`, until all of the `iterables` are exhausted. Used for treating consecutive sequences as a single sequence.
 
 ```javascript
-chain('ABC', 'DEF', 'GHI'); // A B C D E F G H I
+new Iter('ABC').chain('DEF', 'GHI'); // A B C D E F G H I
 ```
 
-#####`compress(data, selectors)`
+#####`compress(selectors)`
 
-Make a generator that filters elements from `data` returning only those that have a corresponding element in `selectors` that evaluates to `true`. Stops when either the `data` or `selectors` iterables has been exhausted.
+Creates new `Iter` instance, that filters elements returning only those that have a corresponding element in `selectors` that evaluates to `true`. Stops when either the `this` or `selectors` iterables has been exhausted.
 
 ```javascript
-compress('ABCDEF', [1, 0, 1, 0, 1, 1]); //A C E F
+new Iter('ABCDEF').compress([1, 0, 1, 0, 1, 1]); //A C E F
 ```
 
-#####`groupBy(iterable, key = (x) => x)`
+#####`groupBy(key = (x) => x)`
 
-Make a generator that returns consecutive keys and groups from the `iterable`. The `key` is a function computing a key value for each element. If not specified or `undefined`, `key` defaults to an identity and returns the element unchanged. Generally, the iterable needs to already be sorted on the same key function.
+Creates new `Iter` instance, that returns consecutive keys and groups. The `key` is a function computing a key value for each element. If not specified or `undefined`, `key` defaults to an identity and returns the element unchanged. Generally, the iterable needs to already be sorted on the same key function.
 
 ```javascript
 let arr = [1, 1, 1, 1, 2, 2, 3, 4, 4, 5, 5, 5, 5];
 
-groupBy(arr); 
+new Iter(arr).groupBy(); 
 // [ 1, [ 1, 1, 1, 1 ] ] [ 2, [ 2, 2 ] ] [ 3, [ 3 ] ] [ 4, [ 4, 4 ] ] [ 5, [ 5, 5, 5, 5 ] ]
 ```
 
 ```javscript
-groupBy('AAABBBCDEE', (x) => x.charCodeAt());
+new Iter('AAABBBCDEE').groupBy((x) => x.charCodeAt());
 // [ 65, [ 'A', 'A', 'A' ] ] [ 66, [ 'B', 'B', 'B' ] ] [ 67, [ 'C' ] ] [ 68, [ 'D' ] ] [ 69, [ 'E', 'E' ] ] 
 ```
 
-#####`zipMap(...iterables[, callback])`
+#####`map(callback = (x) => x)`
 
-Make a generator that computes the `callback` using arguments from each of the `iterables`. If `callback` is not specified, then `zipMap()` returns same result as `zip`. It stops when the shortest `iterable` is exhausted.
+Creates new `Iter` instance, that computes the `callback` using argument from `this`.
 
 ```javascript
-zipMap([1, 2, 3], [1, 2, 3], Math.pow); 
+new Iter([1, 2, 3]).map((x) => x * x); 
+// 1 4 9
+
+#####`zipMap(...iterables[, callback])`
+
+Creates new `Iter` instance, that computes the `callback` using arguments from each of the `iterables`. If `callback` is not specified, then `zipMap()` returns same result as `zip`. It stops when the shortest `iterable` is exhausted.
+
+```javascript
+new Iter([1, 2, 3]).zipMap([1, 2, 3], Math.pow); 
 // 1 4 27
 ```
 
 #####`longestZipMap(...iterables[, callback])`
 
-Make a generator that computes the `callback` using arguments from each of the `iterables`. If `callback` is not specified, then `longestZipMap()` returns same result as `longestZip`. It stops when the longest `iterable` is exhausted, filling in `undefined` for shorter iterables.
+Creates new `Iter` instance, that computes the `callback` using arguments from each of the `iterables`. If `callback` is not specified, then `longestZipMap()` returns same result as `longestZip`. It stops when the longest `iterable` is exhausted, filling in `undefined` for shorter iterables.
 
 ```javascript
-longestZipMap([1, 2, 3], [1, 2, 3, 4, 5], (x = 1, y) => Math.pow(x, y)); 
+new Iter([1, 2, 3]).longestZipMap([1, 2, 3, 4, 5], (x = 1, y) => Math.pow(x, y)); 
 // 1 4 27 1 1
 ```
 
-#####`spreadMap(iterable, callback)`
+#####`spreadMap(callback)`
 
-Make a generator that computes the `callback` using arguments obtained from the `iterable`. Used instead of `zipMap()` when argument parameters are already grouped in a single iterable (the data has been "pre-zipped").
+Creates new `Iter` instance, that computes the `callback` using arguments obtained from the `this`. Used instead of `zipMap()` when argument parameters are already grouped in a single iterable (the data has been "pre-zipped").
 
 ```javascript
-spreadMap([[2, 5], [3, 2], [10, 3]], Math.pow); 
+new Iter([[2, 5], [3, 2], [10, 3]]).spreadMap(Math.pow); 
 // 32 9 1000
 ```
 
 #####`take(iterable, n = Infinity)`
 
-Make a generator that takes `n` elements from `iterable`.
+Creates new `Iter` instance, that takes `n` elements.
 
 ```javascript
-take([1, 2, 3, 4, 5], 2); // 1 2
+new Iter([1, 2, 3, 4, 5]).take(2); // 1 2
 ```
 
-#####`drop(iterable, n = Infinity)`
+#####`drop(n = Infinity)`
 
-Make a generator that drops `n` elements from `iterable`.
+Creates new `Iter` instance, that drops `n` elements.
 
 ```javascript 
-drop([1, 2, 3, 4, 5], 2); // 3 4 5
+new Iter([1, 2, 3, 4, 5]).drop(2); // 3 4 5
 ```
 
-#####`dropWhile(iterable, callback = Boolean)`
+#####`dropWhile(callback = Boolean)`
 
-Make a generator that drops elements from the `iterable` as long as the `callback` is true; afterwards, returns every element. Note, the generator does not produce any output until the `callback` first becomes false, so it may have a lengthy start-up time.
+Creates new `Iter` instance, that drops elements as long as the `callback` is true; afterwards, returns every element. Note, it does not produce any output until the `callback` first becomes false, so it may have a lengthy start-up time.
 
 ```javascript
-dropWhile([1, 2, 3, 4, 5, 6], (x) => x <= 3); // 4 5 6  
+new Iter([1, 2, 3, 4, 5, 6]).dropWhile((x) => x <= 3); // 4 5 6  
 ```
 
-#####`takeWhile(iterable, callback = Boolean)`
+#####`takeWhile(callback = Boolean)`
 
-Make a generator that returns elements from the `iterable` as long as the `callback` is true.
+Creates new `Iter` instance, that returns elements as long as the `callback` is true.
 
 ```javascript
-takeWhile([1, 2, 3, 4, 5, 6], (x) => x <= 3); // 1 2 3
+new Iter([1, 2, 3, 4, 5, 6]).takeWhile((x) => x <= 3); // 1 2 3
 ```
 
 #####`filter(iterable, callback = Boolean)`
