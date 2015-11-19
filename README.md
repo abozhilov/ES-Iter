@@ -400,6 +400,7 @@ Creates new `Iter` instance, that computes the `callback` using argument from `t
 ```javascript
 new Iter([1, 2, 3]).map((x) => x * x); 
 // 1 4 9
+```
 
 #####`zipMap(...iterables[, callback])`
 
