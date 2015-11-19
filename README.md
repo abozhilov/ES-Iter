@@ -533,22 +533,33 @@ Iter.range(4).combinations(3);
 
 #####`toIterator()`
 
+Returns external `iterator` usefull for manual iteration. 
+
 ```javascript
+let iterator = Iter.range(5).filter(x => x > 2).toIterator();
+
+iterator.next(); // { value: 3, done: false }
+iterator.next(); // { value: 4, done: false }
+iterator.next(); // { value: undefined, done: true }
 ```
 
 #####`toArray()`
 
 ```javascript
-
+Iter.range(5).filter(x => x > 2).toArray(); // [ 3, 4 ]
 ```
+
+## Browsers Support
+
+Currently there is no browser with full support of ES6, but the library can be used with [Babel](https://babeljs.io/) transpiler.
 
 ##Author
 
-Asen Bozhilov
+Asen Bozhilov - [@abozhilov](https://twitter.com/abozhilov)
 
 ##Credits 
 
-Axel Rauschmayer and his excellent book [Exploring ES6](http://exploringjs.com/)
+[Dr. Axel Rauschmayer](http://www.2ality.com/) and his excellent book [Exploring ES6](http://exploringjs.com/)
 
 ##License
 
