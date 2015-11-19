@@ -260,8 +260,6 @@ Iter.range(10, 20, -2); //No output
 **Note**: Unlike Python version of `range` it does not throw error if `step` is 0. If `step` is any falsy value it uses default values 1 or -1 depends on `start` and `end` values. 
 
 
-#### Infinite iterators
-
 #####`Iter.count(start = 0, step = 1)`
 
 Creates new `Iter` instance, that generates evenly spaced values starting with `start`. Often used as an argument to `zipMap()` to generate consecutive data points. Also, used with `zip()` to add sequence numbers.
@@ -294,26 +292,12 @@ Creates new `Iter` instance, that generates `val` over and over again. Runs inde
 Iter.repeat(10, 3); // 10 10 10
 ```
 
+#### Prototype Methods
 
-#####`toArray(...iterables)`
-
-Consumes each `iterable` argument and returns array with the values. 
-
-```javascript
-toArray([1, 2, 3], 'ABC', new Set([1, 2, 3])); 
-// [ 1, 2, 3, 'A', 'B', 'C', 1, 2, 3 ] 
-```
-
-It does not consume recursively `iterable`.
-
-```javascript
-toArray([[0, 'A'],  [1, 'B'], [2, 'C']])); 
-// [[0, 'A'],  [1, 'B'], [2, 'C']] 
-```
 
 #####`zip(...iterables)`
 
-Make a generator that aggregates elements from each of the iterables. On each iteration it yields array in form of `[it1i, it2i, it3i, ..., itni]`.
+Creates new `Iter` instance, that aggregates elements from each of the iterables. On each iteration it yields array.
 Used for lock-step iteration over several iterables at a time. When no iterables are specified, returns a zero length generator.
 
 The left-to-right evaluation order of the iterables is guaranteed.
@@ -321,44 +305,44 @@ The left-to-right evaluation order of the iterables is guaranteed.
 Should only be used with unequal length inputs when you don't care about trailing, unmatched values from the longer iterables. If those values are important, use `longestZip()` instead.
 
 ```javascript
-zip('ABCD', 'xy'); 
+new Iter('ABCD').zip('xy'); 
 // [ 'A', 'x' ] [ 'B', 'y' ]
 
-zip(range(10), [1, 2, 3, 4, 5]); 
+Iter.range(10).zip([1, 2, 3, 4, 5]); 
 // [ 0, 1 ] [ 1, 2 ] [ 2, 3 ] [ 3, 4 ] [ 4, 5 ]
 ```
 
 #####`longestZip(...iterables)`
 
-Make a generator that aggregates elements from each of the iterables. On each iteration it yields array in form of `[it1i, it2i, it3i, ..., itni]`. If the iterables are of uneven length, missing values are filled-in with `undefined`. Iteration continues until the longest iterable is exhausted.
+Creates new `Iter` instance, that aggregates elements from each of the iterables. On each iteration it yields array. If the iterables are of uneven length, missing values are filled-in with `undefined`. Iteration continues until the longest iterable is exhausted.
 
 ```javascript
-longestZip('ABCD', 'xy'); 
+new Iter('ABCD').longestZip('xy'); 
 // [ 'A', 'x' ] [ 'B', 'y' ] [ 'C', undefined ] [ 'D', undefined ]
 
-longestZip(range(10), [1, 2, 3, 4, 5]); 
+Iter.range(10).longestZip([1, 2, 3, 4, 5]); 
 // [ 0, 1 ] [ 1, 2 ] [ 2, 3 ] [ 3, 4 ] [ 4, 5 ] [ 5, undefined ] [ 6, undefined ] [ 7, undefined ] [ 8, undefined ] [ 9, undefined ]
 ```
 
-**Note**: If one of the iterables is potentially infinite, then the `longestZip()` function should be wrapped with something that limits the number of calls (for example `take()` or `takeWhile()`).
+**Note**: If one of the iterables is potentially infinite, then the `longestZip()` function should be used with something that limits the number of calls (for example `take()` or `takeWhile()`).
 
-#####`enumerate(iterable, start)`
+#####`enumerate(start)`
 
-Make a generator that on each iteration returns an array containing a count (from start which defaults to 0) and the values obtained from iterating over iterable.
+Creates new `Iter` instance, that on each iteration returns an array containing a count (from start which defaults to 0) and the values obtained from iterating over `this`.
 
 ```javascript
-enumerate([1, 2, 3, 4]); 
+new Iter([1, 2, 3, 4]).enumerate(); 
 // [ 0, 1 ] [ 1, 2 ] [ 2, 3 ] [ 3, 4 ]
 
-enumerate('ABC');        
+new Iter('ABC').enumerate();        
 // [ 0, 'A' ] [ 1, 'B' ] [ 2, 'C' ]
 ```
 
 ```javascript
-enumerate([1, 2, 3, 4], 1); 
+new Iter([1, 2, 3, 4]).enumerate(1); 
 // [ 1, 1 ] [ 2, 2 ] [ 3, 3 ] [ 4, 4 ]
 
-enumerate('ABC', 1);        
+new Iter('ABC').enumerate(1);        
 // [ 1, 'A' ] [ 2, 'B' ] [ 3, 'C' ]
 ```
 
@@ -484,8 +468,6 @@ Make a generator that filters elements from `iterable` returning only those for 
 filterFalse(range(10), (x) => x % 2); // 0 2 4 6 8
 ```
 
-#### Combinatoric generators
-
 #####`product(a = [], b = [], ...iterables)`
 
 Cartesian product of `a`, `b` and `iterables`.
@@ -539,6 +521,17 @@ combinations('ABCD', 2);
 ```javascript
 combinations(range(4), 3);
 // [ 0, 1, 2 ] [ 0, 1, 3 ] [ 0, 2, 3 ] [ 1, 2, 3 ]
+```
+
+#####`toIterator()`
+
+```javascript
+```
+
+#####`toArray()`
+
+```javascript
+
 ```
 
 ##Author
