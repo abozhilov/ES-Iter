@@ -52,6 +52,37 @@ export default class Iter {
         }
     }
     
+    static keys (obj) {
+        if (Iter.isIterable(obj) && typeof obj.keys === 'function') {
+            return new Iter(obj.keys());
+        }
+        return new Iter(Object.keys(obj));
+    }
+    
+    static values (obj) {
+        if (Iter.isIterable(obj)) {
+            return new Iter(obj);
+        }
+        let keys = Object.keys(obj);
+        return new Iter(function* () {
+            for (let k of keys) {
+                yield obj[k];
+            }
+        });            
+    }
+    
+    static entries (obj) {
+        if (Iter.isIterable(obj) && typeof obj.entries === 'function') {
+            return new Iter(obj.entries());
+        }
+        let keys = Object.keys(obj);
+        return new Iter(function* () {
+            for (let k of keys) {
+                yield [k, obj[k]];
+            }
+        });        
+    }
+    
     static range (start, end, step) {
         return new Iter(function* () {
             let s = toInteger(start),
