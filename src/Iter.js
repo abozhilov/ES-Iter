@@ -110,6 +110,28 @@ export default class Iter {
         });
     }
     
+    static match (regex, str) {
+        return new Iter(function* () {
+            let index = 0;
+            let pos = -1;
+            let match;
+            
+            do {
+                let preLastIndex = regex.lastIndex;
+                regex.lastIndex = index;
+                match = regex.exec(str);
+                index = regex.lastIndex; 
+                regex.lastIndex = preLastIndex;
+                
+                if (!match || pos === match.index) {
+                    break;
+                } 
+                pos = match.index;
+                yield match;
+            } while (true);            
+        });
+    }
+    
     static count (start, step) {
         return new Iter(function* () {
             let s = toInteger(start) || 0,
