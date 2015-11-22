@@ -110,25 +110,15 @@ export default class Iter {
         });
     }
     
-    static match (regex, str) {
+    static matchAll (regex, str, start) {
+        let reg = new RegExp(regex, regex.flags + (!regex.global ? 'g' : ''));
+        reg.lastIndex = toPositiveInteger(start);        
+        
         return new Iter(function* () {
-            let index = 0;
-            let pos = -1;
             let match;
-            
-            do {
-                let preLastIndex = regex.lastIndex;
-                regex.lastIndex = index;
-                match = regex.exec(str);
-                index = regex.lastIndex; 
-                regex.lastIndex = preLastIndex;
-                
-                if (!match || pos === match.index) {
-                    break;
-                } 
-                pos = match.index;
+            while (match = reg.exec(str)) {
                 yield match;
-            } while (true);            
+            }
         });
     }
     
