@@ -75,7 +75,7 @@ describe('range', () => {
     it('throws TypeError if step is not a number', () => {
         let err = {};
         try {
-            Iter.range(0, 10, 'NaN');
+            Iter.range(1, 10, 'NaN');
         } catch(e) {
             err = e;
         }
