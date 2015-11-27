@@ -2,7 +2,7 @@ import './auto_mock_off';
 import 'babel/polyfill';
 import Iter from '../src/Iter';
 
-describe('longestZip', () => {
+describe('longZip', () => {
     function* gen(n) {
         for (let i = 0; i < n; i++) {
             yield n;
@@ -10,20 +10,20 @@ describe('longestZip', () => {
     }
     
     it('packs array with length equal to number of iterables', () => {
-        let arr = [...new Iter([1]).longestZip([2], [3])];
+        let arr = [...new Iter([1]).longZip([2], [3])];
         
         expect(Array.isArray(arr[0])).toBe(true);
         expect(arr[0].length).toBe(3);
     })
     
     it('stops when longest iterable is exhausted', () => {
-        let arr = [...new Iter(gen(3)).longestZip(gen(10))];
+        let arr = [...new Iter(gen(3)).longZip(gen(10))];
         
         expect(arr.length).toBe(10);
     })
     
     it('yields undefined if shorter iterator is exhausted', () => {
-        for (let [i, v] of new Iter(gen(0)).longestZip(gen(10))) {
+        for (let [i, v] of new Iter(gen(0)).longZip(gen(10))) {
             expect(i).toBe(undefined);
         }
     })
@@ -32,7 +32,7 @@ describe('longestZip', () => {
         let iter1 = gen(4),
             iter2 = gen(20);
         
-        for (let [i, j] of new Iter(iter1).longestZip(iter2)) {
+        for (let [i, j] of new Iter(iter1).longZip(iter2)) {
             break;
         }
         
@@ -47,7 +47,7 @@ describe('longestZip', () => {
         var err = {};
         
         try {
-            new Iter([]).longestZip(null, 1234)
+            new Iter([]).longZip(null, 1234)
         } catch (e) {
             err = e;
         }

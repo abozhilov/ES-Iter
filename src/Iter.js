@@ -88,13 +88,10 @@ export default class Iter {
             end = start;
             start = 0;
         }
-        start = toInteger(start);
-        end = toInteger(end);
-        step = toInteger(step);
         
-        if (Number.isNaN(start) || Number.isNaN(end) || Number.isNaN(step)) {
-            throw TypeError('Arguments must be numbers and not NaN');
-        }
+        start = toInteger(start);
+        end   = toInteger(end);
+        step  = toInteger(step);
         
         return new Iter(function* () {
             if (step > 0) {
@@ -115,15 +112,8 @@ export default class Iter {
         })
     }
     
-    static count (start, step) {
-        return new Iter(function* () {
-            let s = toInteger(start) || 0,
-                k = toInteger(step) || 1;
-            while (true) {
-                yield s;
-                s += k;
-            }
-        });
+    static count (start, step = 1) {
+        return Iter.range(start, Infinity, step);
     }
 
     static cycle (iterable) {
@@ -183,7 +173,7 @@ export default class Iter {
         });
     }
     
-    longestZip (...iterables) {
+    longZip (...iterables) {
         let iterators = [this, ...iterables].map(Iter.getIterator),
             map       = new Map(new Iter(iterators).zip(Iter.repeat(false))),
             count     = 0,
@@ -306,14 +296,14 @@ export default class Iter {
         }
     }
     
-    longestZipMap (...iterables) {
+    longZipMap (...iterables) {
         let callback = iterables[iterables.length - 1];
         
         if (typeof callback != 'function') {
-            return this.longestZip(...iterables);
+            return this.longZip(...iterables);
         }
         else {    
-            let iterator = this.longestZip(...iterables.slice(0, -1));
+            let iterator = this.longZip(...iterables.slice(0, -1));
             return new Iter(function* () {
                 for (let arr of iterator) {
                     yield callback(...arr);
@@ -431,22 +421,18 @@ export default class Iter {
         });
     }
     
-    permutations (r) {
+    permutations (r = Infinity) {
         let arr = this.toArray(),
             map = new Map(),
             res = [],
             len =  Math.min(toPositiveInteger(r), arr.length);
-            
-        if (Number.isNaN(len)) {
-            len = arr.length;
-        }
         
         return new Iter(function* gen(idx = 0) {
             if (idx >= len) {
                 yield res.slice();
                 return;
             }
-            for (let [i, v] of new Iter(arr).enumerate(arr)) {
+            for (let [i, v] of new Iter(arr).enumerate()) {
                 if (!map.has(i)) {
                     map.set(i, true);
                     res[idx] = v;

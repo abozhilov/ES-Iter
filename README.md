@@ -295,7 +295,7 @@ Used for lock-step iteration over several iterables at a time. When no iterables
 
 The left-to-right evaluation order of the iterables is guaranteed.
 
-Should only be used with unequal length inputs when you don't care about trailing, unmatched values from the longer iterables. If those values are important, use `longestZip()` instead.
+Should only be used with unequal length inputs when you don't care about trailing, unmatched values from the longer iterables. If those values are important, use `longZip()` instead.
 
 ```javascript
 new Iter('ABCD').zip('xy'); 
@@ -305,21 +305,21 @@ Iter.range(10).zip([1, 2, 3, 4, 5]);
 // [ 0, 1 ] [ 1, 2 ] [ 2, 3 ] [ 3, 4 ] [ 4, 5 ]
 ```
 
-#####`longestZip(...iterables)`
+#####`longZip(...iterables)`
 
 Creates new `Iter` instance, that aggregates elements from each of the iterables. On each iteration it yields array. If the iterables are of uneven length, missing values are filled-in with `undefined`. Iteration continues until the longest iterable is exhausted.
 
 ```javascript
-new Iter('ABCD').longestZip('xy'); 
+new Iter('ABCD').longZip('xy'); 
 // [ 'A', 'x' ] [ 'B', 'y' ] [ 'C', undefined ] [ 'D', undefined ]
 
-Iter.range(10).longestZip([1, 2, 3, 4, 5]); 
+Iter.range(10).longZip([1, 2, 3, 4, 5]); 
 // [ 0, 1 ] [ 1, 2 ] [ 2, 3 ] [ 3, 4 ] [ 4, 5 ] [ 5, undefined ] [ 6, undefined ] [ 7, undefined ] [ 8, undefined ] [ 9, undefined ]
 ```
 
-**Note**: If one of the iterables is potentially infinite, then the `longestZip()` function should be used with something that limits the number of calls (for example `take()` or `takeWhile()`).
+**Note**: If one of the iterables is potentially infinite, then the `longZip()` function should be used with something that limits the number of calls (for example `take()` or `takeWhile()`).
 
-#####`enumerate(start)`
+#####`enumerate(start = 0)`
 
 Creates new `Iter` instance, that on each iteration returns an array containing a count (from start which defaults to 0) and the values obtained from iterating over `this`.
 
@@ -404,12 +404,12 @@ new Iter([1, 2, 3]).zipMap([1, 2, 3], Math.pow);
 // 1 4 27
 ```
 
-#####`longestZipMap(...iterables[, callback])`
+#####`longZipMap(...iterables[, callback])`
 
-Creates new `Iter` instance, that computes the `callback` using arguments from each of the `iterables`. If `callback` is not specified, then `longestZipMap()` returns same result as `longestZip`. It stops when the longest `iterable` is exhausted, filling in `undefined` for shorter iterables.
+Creates new `Iter` instance, that computes the `callback` using arguments from each of the `iterables`. If `callback` is not specified, then `longZipMap()` returns same result as `longZip`. It stops when the longest `iterable` is exhausted, filling in `undefined` for shorter iterables.
 
 ```javascript
-new Iter([1, 2, 3]).longestZipMap([1, 2, 3, 4, 5], (x = 1, y) => Math.pow(x, y)); 
+new Iter([1, 2, 3]).longZipMap([1, 2, 3, 4, 5], (x = 1, y) => Math.pow(x, y)); 
 // 1 4 27 1 1
 ```
 
