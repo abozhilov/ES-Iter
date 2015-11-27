@@ -83,43 +83,36 @@ export default class Iter {
         });        
     }
     
-    static range (start, end, step) {
+    static range (start = 0, end, step = 1) {
+        if (typeof end === 'undefined') {
+            end = start;
+            start = 0;
+        }
+        start = toInteger(start);
+        end = toInteger(end);
+        step = toInteger(step);
+        
+        if (Number.isNaN(start) || Number.isNaN(end) || Number.isNaN(step)) {
+            throw TypeError('Arguments must be numbers and not NaN');
+        }
+        
         return new Iter(function* () {
-            let s = toInteger(start),
-                e = toInteger(end);
-                
-            if (typeof end == 'undefined') {
-                e = s;
-                s = 0;
+            if (step > 0) {
+                while (start < end) {
+                    yield start;
+                    start += step;
+                }
             }
-            
-            let k = toInteger(step) || (s < e ? 1 : -1)
-            
-            if (k > 0) {
-                while (s < e) {
-                    yield s;
-                    s += k;
+            else if (step < 0) {
+                while (start > end) {
+                    yield start;
+                    start += step;
                 }
             }
             else {
-                while (s > e) {
-                    yield s;
-                    s += k;
-                }        
+                yield* Iter.repeat(start, Math.abs(end - start));
             }
-        });
-    }
-    
-    static matchAll (regex, str, start) {
-        let reg = new RegExp(regex, regex.flags + (!regex.global ? 'g' : ''));
-        reg.lastIndex = toPositiveInteger(start);        
-        
-        return new Iter(function* () {
-            let match;
-            while (match = reg.exec(str)) {
-                yield match;
-            }
-        });
+        })
     }
     
     static count (start, step) {

@@ -235,29 +235,22 @@ let iterator3 = new Set([1, 2, 3]).entries();
 Iter.closeAllIterators(iterator1, iterator2, iterator3);
 ```
 
-#####`Iter.range(end)`
-#####`Iter.range(start, end[, step])`
+#####`Iter.range(start = 0, end, step = 1)`
 
 Creates new `Iter` instance which generates arithmetic progressions. The arguments must be plain integers.
 With single argument, `start` is 0 and `end` is equal to passed value.
-If the `step` argument is omitted, it defaults to 1 or -1 depends on `start` and `end` values.
 
 
 ```javascript
 Iter.range(10); // 0, 1, 2, 3, 4, 5, 6, 7, 8, 9
-Iter.range(-10); // 0, -1, -2, -3, -4, -5, -6, -7, -8, -9
 
 Iter.range(1, 11); // 1, 2, 3, 4, 5, 6, 7, 8, 9, 10
-Iter.range(11, 1); // 11, 10, 9, 8, 7, 6, 5, 4, 3, 2
 
 Iter.range(0, 30, 5); // 0, 5, 10, 15, 20, 25
 Iter.range(30, 0, -5); // 30, 25, 20, 15, 10, 5
 
-Iter.range(20, 10, 2); //No output 
-Iter.range(10, 20, -2); //No output
+Iter.range(1, 5, 0); // 1 1 1 1
 ```
-
-**Note**: Unlike Python version of `range` it does not throw error if `step` is 0. If `step` is any falsy value it uses default values 1 or -1 depends on `start` and `end` values. 
 
 
 #####`Iter.count(start = 0, step = 1)`
@@ -284,7 +277,7 @@ Iter.cycle('ABCD'); // A B C D A B C D A B C D ...
 
 **Note**: It may require significant auxiliary storage (depending on the length of the `iterable`).
 
-#####`Iter.repeat(val, times = Infinity)`
+#####`Iter.repeat(value, times = Infinity)`
 
 Creates new `Iter` instance, that generates `val` over and over again. Runs indefinitely unless the `times` argument is specified. Used as argument to `zipMap()` for invariant function parameters. Also used with `zip()` to create constant fields in returned array.
 
