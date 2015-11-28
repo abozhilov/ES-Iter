@@ -93,6 +93,11 @@ export default class Iter {
         end   = toInteger(end);
         step  = toInteger(step);
         
+        let errArg = (start !== start && 'start') || (end !== end && 'end') || (step !== step && 'step');
+        if (errArg) {
+            throw TypeError('Expected number as ' + errArg + ' argument'); 
+        }
+        
         return new Iter(function* () {
             if (step > 0) {
                 while (start < end) {
