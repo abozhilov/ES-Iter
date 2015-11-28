@@ -1,15 +1,49 @@
-function toInteger(n) {
+function toInteger (n) {
     if (n < 0) {
         return Math.ceil(n);
     }
     return Math.floor(n);
 }
 
-function toPositiveInteger(n) {
+function toPositiveInteger (n) {
     if (n < 0) {
         return 0;
     }
     return Math.floor(n);
+}
+
+function rangeGen (start, end, step, reverse) {
+    start = toInteger(start);
+    end   = toInteger(end);
+    step  = toInteger(step);
+    
+    let errArg = (start !== start && 'start') || (end !== end && 'end') || (step !== step && 'step');
+    if (errArg) {
+        throw TypeError('Expected number as ' + errArg + ' argument'); 
+    }
+    if (step < 0) {
+        throw RangeError('step cannot be negative');
+    }
+    
+    step = reverse ? -step : step;
+    
+    return function* () {
+        if (step > 0) {
+            while (start < end) {
+                yield start;
+                start += step;
+            }
+        }
+        else if (step < 0) {
+            while (start > end) {
+                yield start;
+                start += step;
+            }
+        }
+        else {
+            yield* Iter.repeat(start, Math.abs(end - start));
+        }
+    }
 }
 
 export default class Iter {
@@ -83,39 +117,31 @@ export default class Iter {
         });        
     }
     
+    static reverse (arrayLike) {        
+        return new Iter(function* () {
+            for (let i = toPositiveInteger(arrayLike.length); i--;) {
+                yield arrayLike[i];
+            }
+        })
+    }
+    
     static range (start = 0, end, step = 1) {
         if (typeof end === 'undefined') {
             end = start;
             start = 0;
         }
-        
-        start = toInteger(start);
-        end   = toInteger(end);
-        step  = toInteger(step);
-        
-        let errArg = (start !== start && 'start') || (end !== end && 'end') || (step !== step && 'step');
-        if (errArg) {
-            throw TypeError('Expected number as ' + errArg + ' argument'); 
+    
+        return new Iter(rangeGen(start, end, step))
+    }
+    
+    static rangeRight (start = 0, end, step = 1) {
+        if (typeof end === 'undefined') {
+            end = start;
+            start = 0;
         }
         
-        return new Iter(function* () {
-            if (step > 0) {
-                while (start < end) {
-                    yield start;
-                    start += step;
-                }
-            }
-            else if (step < 0) {
-                while (start > end) {
-                    yield start;
-                    start += step;
-                }
-            }
-            else {
-                yield* Iter.repeat(start, Math.abs(end - start));
-            }
-        })
-    }
+        return new Iter(rangeGen(end - 1, start - 1, step, true))        
+    } 
     
     static count (start, step = 1) {
         return Iter.range(start, Infinity, step);
@@ -283,6 +309,28 @@ export default class Iter {
                 yield callback(v);
             }
         })
+    }
+    
+    flatMap(callback = (x) => x) {
+        let iterator = Iter.getIterator(this);
+        let usedMap  = new Map();
+        
+        return new Iter(function* flatten(iterable) {
+            if (usedMap.has(iterable)) {
+                return;
+            }
+            
+            usedMap.set(iterable, true); 
+            for (let i of iterable) {
+                if (Iter.isIterable(i)) {
+                    yield* flatten(i);
+                }
+                else {
+                    yield callback(i);
+                }
+            }
+            usedMap.delete(iterable, true);
+        }(iterator)) 
     }
     
     zipMap (...iterables) {
