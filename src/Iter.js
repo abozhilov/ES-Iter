@@ -87,15 +87,15 @@ export default class Iter {
     }
     
     static keys (obj) {
-        if (Iter.isIterable(obj) && typeof obj.keys === 'function') {
+        if (typeof obj.keys === 'function') {
             return new Iter(obj.keys());
         }
         return new Iter(Object.keys(obj));
     }
     
     static values (obj) {
-        if (Iter.isIterable(obj)) {
-            return new Iter(obj);
+        if (typeof obj.values === 'function') {
+            return new Iter(obj.values());
         }
         let keys = Object.keys(obj);
         return new Iter(function* () {
@@ -106,7 +106,7 @@ export default class Iter {
     }
     
     static entries (obj) {
-        if (Iter.isIterable(obj) && typeof obj.entries === 'function') {
+        if (typeof obj.entries === 'function') {
             return new Iter(obj.entries());
         }
         let keys = Object.keys(obj);
@@ -117,12 +117,14 @@ export default class Iter {
         });        
     }
     
-    static reverse (arrayLike) {        
+    static reverse (arrayLike) {
+        let len = toPositiveInteger(arrayLike.length);
+                
         return new Iter(function* () {
-            for (let i = toPositiveInteger(arrayLike.length); i--;) {
+            for (let i = len; i--;) {
                 yield arrayLike[i];
             }
-        })
+        });
     }
     
     static range (start = 0, end, step = 1) {
@@ -131,7 +133,7 @@ export default class Iter {
             start = 0;
         }
     
-        return new Iter(rangeGen(start, end, step))
+        return new Iter(rangeGen(start, end, step));
     }
     
     static rangeRight (start = 0, end, step = 1) {
@@ -140,7 +142,7 @@ export default class Iter {
             start = 0;
         }
         
-        return new Iter(rangeGen(end - 1, start - 1, step, true))        
+        return new Iter(rangeGen(end - 1, start - 1, step, true));        
     } 
     
     static count (start, step = 1) {
@@ -313,14 +315,14 @@ export default class Iter {
     
     flatMap(callback = (x) => x) {
         let iterator = Iter.getIterator(this);
-        let usedMap  = new Map();
+        let used  = new Set();
         
         return new Iter(function* flatten(iterable) {
-            if (usedMap.has(iterable)) {
+            if (used.has(iterable)) {
                 return;
             }
             
-            usedMap.set(iterable, true); 
+            used.add(iterable); 
             for (let i of iterable) {
                 if (Iter.isIterable(i)) {
                     yield* flatten(i);
@@ -329,7 +331,7 @@ export default class Iter {
                     yield callback(i);
                 }
             }
-            usedMap.delete(iterable, true);
+            used.delete(iterable);
         }(iterator)) 
     }
     
