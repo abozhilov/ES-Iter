@@ -235,6 +235,36 @@ let iterator3 = new Set([1, 2, 3]).entries();
 Iter.closeAllIterators(iterator1, iterator2, iterator3);
 ```
 
+#####`Iter.keys(obj)`
+
+Creates new `Iter` instance which can be used to iterate over the `obj` keys. If `obj` has `keys` method it is used, otherwise `Object.keys`.
+
+```javascript
+```
+
+#####`Iter.entries(obj)`
+
+Creates new `Iter` instance which can be used to iterate over the `obj` entries. If `obj` has `entries` method it is used, otherwise generates pair of `[key, value]`.
+
+```javascript
+```
+
+#####`Iter.values(obj)`
+
+Creates new `Iter` instance which can be used to iterate over the `obj` values. If `obj` has `values` method it is used.
+
+```javascript
+```
+
+#####`Iter.reverse(arrayLike)`
+
+Creates new `Iter` instance which iterates the `arrayLike` obj in reverse order from right to left. 
+
+```javascript
+Iter.reverse([1, 2, 3]); // 3 2 1
+Iter.reverse('ABC'); // C B A
+```
+
 #####`Iter.range(start = 0, end, step = 1)`
 
 Creates new `Iter` instance which generates arithmetic progressions. The arguments must be plain integers.
@@ -247,11 +277,20 @@ Iter.range(10); // 0, 1, 2, 3, 4, 5, 6, 7, 8, 9
 Iter.range(1, 11); // 1, 2, 3, 4, 5, 6, 7, 8, 9, 10
 
 Iter.range(0, 30, 5); // 0, 5, 10, 15, 20, 25
-Iter.range(30, 0, -5); // 30, 25, 20, 15, 10, 5
 
 Iter.range(1, 5, 0); // 1 1 1 1
 ```
 
+Unlike Python's version it throws `RangeError` with negative numbers as `step` argument. If you need to iterate `range` in reverse order, use `Iter.rangeRight` instead.   
+
+
+#####`Iter.rangeRight(start = 0, end, step = 1)`
+
+Same as `Iter.range` but generates the `range` in reverse order. 
+
+```javascript
+
+```
 
 #####`Iter.count(start = 0, step = 1)`
 
@@ -395,7 +434,14 @@ new Iter([1, 2, 3]).map((x) => x * x);
 // 1 4 9
 ```
 
-#####`zipMap(...iterables[, callback])`
+#####`flatMap(callback = (x) => x)`
+
+Flattens recursively and apply `callback` for each value. 
+
+```javascript
+```
+
+#####`zipMap(...iterables, callback?)`
 
 Creates new `Iter` instance, that computes the `callback` using arguments from each of the `iterables`. If `callback` is not specified, then `zipMap()` returns same result as `zip`. It stops when the shortest `iterable` is exhausted.
 
@@ -404,7 +450,7 @@ new Iter([1, 2, 3]).zipMap([1, 2, 3], Math.pow);
 // 1 4 27
 ```
 
-#####`longZipMap(...iterables[, callback])`
+#####`longZipMap(...iterables, callback?)`
 
 Creates new `Iter` instance, that computes the `callback` using arguments from each of the `iterables`. If `callback` is not specified, then `longZipMap()` returns same result as `longZip`. It stops when the longest `iterable` is exhausted, filling in `undefined` for shorter iterables.
 
@@ -422,7 +468,7 @@ new Iter([[2, 5], [3, 2], [10, 3]]).spreadMap(Math.pow);
 // 32 9 1000
 ```
 
-#####`take(iterable, n = Infinity)`
+#####`take(n = Infinity)`
 
 Creates new `Iter` instance, that takes `n` elements.
 
@@ -482,11 +528,11 @@ new Iter([1, 2, 3]).product('AB');
  
 ```
 
-#####`permutations(r)`
+#####`permutations(r = Infinity)`
 
 Creates new `Iter` instance, that returns successive `r` length permutations.
 
-If `r` is not specified or is `undefined`, then `r` defaults to the length of the `this` and all possible full-length permutations are generated.
+If `r` is not specified or is `undefined`, then all possible full-length permutations are generated.
 
 Permutations are emitted in lexicographic sort order. So, if the `this` is sorted, the permutation arrays will be produced in sorted order.
 

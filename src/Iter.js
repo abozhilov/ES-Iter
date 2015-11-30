@@ -93,18 +93,6 @@ export default class Iter {
         return new Iter(Object.keys(obj));
     }
     
-    static values (obj) {
-        if (typeof obj.values === 'function') {
-            return new Iter(obj.values());
-        }
-        let keys = Object.keys(obj);
-        return new Iter(function* () {
-            for (let k of keys) {
-                yield obj[k];
-            }
-        });            
-    }
-    
     static entries (obj) {
         if (typeof obj.entries === 'function') {
             return new Iter(obj.entries());
@@ -115,6 +103,18 @@ export default class Iter {
                 yield [k, obj[k]];
             }
         });        
+    }
+    
+    static values (obj) {
+        if (typeof obj.values === 'function') {
+            return new Iter(obj.values());
+        }
+        let keys = Object.keys(obj);
+        return new Iter(function* () {
+            for (let k of keys) {
+                yield obj[k];
+            }
+        });            
     }
     
     static reverse (arrayLike) {
