@@ -45,6 +45,13 @@ describe('rangeRight', () => {
         }            
     })
     
+    it('always generates the reverse result of `Iter.range`', () => {
+        expect([...Iter.range(1, 9, 4)].reverse().join()).toBe([...Iter.rangeRight(1, 9, 4)].join());
+        expect([...Iter.range(10)].reverse().join()).toBe([...Iter.rangeRight(10)].join());
+        expect([...Iter.range(1, 90, 13)].reverse().join()).toBe([...Iter.rangeRight(1, 90, 13)].join());
+        expect([...Iter.range(10, 9, 4)].reverse().join()).toBe([...Iter.rangeRight(10, 9, 4)].join());
+    })
+    
     it('throws RangeError if step is negative integer', () => {
         let err = {};
         try {

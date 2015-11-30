@@ -142,7 +142,11 @@ export default class Iter {
             start = 0;
         }
         
-        return new Iter(rangeGen(end - 1, start - 1, step, true));        
+        let k = 0;
+        if (start < end) {
+            k = ((end - start) % step) || step || 1;
+        }
+        return new Iter(rangeGen(end - k, start - 1, step, true));        
     } 
     
     static count (start, step = 1) {

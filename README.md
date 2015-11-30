@@ -207,7 +207,7 @@ let iterator = {
     }
 }
 
-Iter.closeIterator(iterator) //true
+Iter.closeIterator(iterator); //true
 ```
 
 ```javascript
@@ -220,7 +220,7 @@ let iterator = {
     }
 }
 
-Iter.closeIterator(iterator) //false
+Iter.closeIterator(iterator); //false
 ```
 
 #####`Iter.closeAllIterators(...iterators)`
@@ -240,6 +240,27 @@ Iter.closeAllIterators(iterator1, iterator2, iterator3);
 Creates new `Iter` instance which can be used to iterate over the `obj` keys. If `obj` has `keys` method it is used, otherwise `Object.keys`.
 
 ```javascript
+Iter.keys({
+    foo : 1,
+    bar : 2
+});
+
+// 'foo' 'bar'
+```
+
+```javascript
+Iter.keys(new Map([
+    ['foo', 1],
+    ['bar', 2]
+]));
+
+// 'foo' 'bar'
+```
+
+```javascript
+Iter.keys([1, 2, 3]);
+
+// 0 1 2
 ```
 
 #####`Iter.entries(obj)`
@@ -247,6 +268,12 @@ Creates new `Iter` instance which can be used to iterate over the `obj` keys. If
 Creates new `Iter` instance which can be used to iterate over the `obj` entries. If `obj` has `entries` method it is used, otherwise generates pair of `[key, value]`.
 
 ```javascript
+Iter.entries({
+    foo : 1,
+    bar : 2
+});
+
+// ['foo', 1] ['bar', 2]
 ```
 
 #####`Iter.values(obj)`
@@ -254,6 +281,12 @@ Creates new `Iter` instance which can be used to iterate over the `obj` entries.
 Creates new `Iter` instance which can be used to iterate over the `obj` values. If `obj` has `values` method it is used.
 
 ```javascript
+Iter.values({
+    foo : 1,
+    bar : 2
+});
+
+// 1 2
 ```
 
 #####`Iter.reverse(arrayLike)`
@@ -289,7 +322,13 @@ Unlike Python's version it throws `RangeError` with negative numbers as `step` a
 Same as `Iter.range` but generates the `range` in reverse order. 
 
 ```javascript
+Iter.rangeRight(10); // 9 8 7 6 5 4 3 2 1 0
 
+Iter.rangeRight(1, 11); // 10 9 8 7 6 5 4 3 2 1
+
+Iter.rangeRight(0, 30, 5); // 25 20 15 10 5 0
+
+Iter.rangeRight(1, 5, 0); // 4 4 4 4
 ```
 
 #####`Iter.count(start = 0, step = 1)`
@@ -439,6 +478,13 @@ new Iter([1, 2, 3]).map((x) => x * x);
 Flattens recursively and apply `callback` for each value. 
 
 ```javascript
+let arr = [[1, [2, 3, 4], 5], 6, 7, [[[8, 9]]], 10];
+
+new Iter(arr).flatMap(); 
+// 1 2 3 4 5 6 7 8 9 10
+
+new Iter(arr).flatMap(x => x * x); 
+// 1 4 9 16 25 36 49 64 81 100
 ```
 
 #####`zipMap(...iterables, callback?)`
