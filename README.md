@@ -291,7 +291,7 @@ Iter.values({
 
 #####`Iter.reverse(arrayLike)`
 
-Creates new `Iter` instance which iterates the `arrayLike` obj in reverse order from right to left. 
+Creates new `Iter` instance which iterates the `arrayLike` obj in reverse order - from right to left. 
 
 ```javascript
 Iter.reverse([1, 2, 3]); // 3 2 1
