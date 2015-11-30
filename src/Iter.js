@@ -1,15 +1,49 @@
-function toInteger(n) {
+function toInteger (n) {
     if (n < 0) {
         return Math.ceil(n);
     }
     return Math.floor(n);
 }
 
-function toPositiveInteger(n) {
+function toPositiveInteger (n) {
     if (n < 0) {
         return 0;
     }
     return Math.floor(n);
+}
+
+function rangeGen (start, end, step, reverse) {
+    start = toInteger(start);
+    end   = toInteger(end);
+    step  = toInteger(step);
+    
+    let errArg = (start !== start && 'start') || (end !== end && 'end') || (step !== step && 'step');
+    if (errArg) {
+        throw TypeError('Expected number as ' + errArg + ' argument'); 
+    }
+    if (step < 0) {
+        throw RangeError('step cannot be negative');
+    }
+    
+    step = reverse ? -step : step;
+    
+    return function* () {
+        if (step > 0) {
+            while (start < end) {
+                yield start;
+                start += step;
+            }
+        }
+        else if (step < 0) {
+            while (start > end) {
+                yield start;
+                start += step;
+            }
+        }
+        else {
+            yield* Iter.repeat(start, Math.abs(end - start));
+        }
+    }
 }
 
 export default class Iter {
@@ -52,42 +86,71 @@ export default class Iter {
         }
     }
     
-    static range (start, end, step) {
+    static keys (obj) {
+        if (typeof obj.keys === 'function') {
+            return new Iter(obj.keys());
+        }
+        return new Iter(Object.keys(obj));
+    }
+    
+    static entries (obj) {
+        if (typeof obj.entries === 'function') {
+            return new Iter(obj.entries());
+        }
+        let keys = Object.keys(obj);
         return new Iter(function* () {
-            let s = toInteger(start),
-                e = toInteger(end);
+            for (let k of keys) {
+                yield [k, obj[k]];
+            }
+        });        
+    }
+    
+    static values (obj) {
+        if (typeof obj.values === 'function') {
+            return new Iter(obj.values());
+        }
+        let keys = Object.keys(obj);
+        return new Iter(function* () {
+            for (let k of keys) {
+                yield obj[k];
+            }
+        });            
+    }
+    
+    static reverse (arrayLike) {
+        let len = toPositiveInteger(arrayLike.length);
                 
-            if (typeof end == 'undefined') {
-                e = s;
-                s = 0;
-            }
-            
-            let k = toInteger(step) || (s < e ? 1 : -1)
-            
-            if (k > 0) {
-                while (s < e) {
-                    yield s;
-                    s += k;
-                }
-            }
-            else {
-                while (s > e) {
-                    yield s;
-                    s += k;
-                }        
+        return new Iter(function* () {
+            for (let i = len; i--;) {
+                yield arrayLike[i];
             }
         });
     }
     
-    static count (start, step) {
-        return new Iter(function* () {
-            let s = toInteger(start) || 0,
-                k = toInteger(step) || 1;
-            while (true) {
-                yield s;
-                s += k;
-            }
-        });
+    static range (start = 0, end, step = 1) {
+        if (typeof end === 'undefined') {
+            end = start;
+            start = 0;
+        }
+    
+        return new Iter(rangeGen(start, end, step));
+    }
+    
+    static rangeRight (start = 0, end, step = 1) {
+        if (typeof end === 'undefined') {
+            end = start;
+            start = 0;
+        }
+        
+        let k = 0;
+        if (start < end) {
+            k = ((end - start) % step) || step || 1;
+        }
+        return new Iter(rangeGen(end - k, start - 1, step, true));        
+    } 
+    
+    static count (start, step = 1) {
+        return Iter.range(start, Infinity, step);
     }
 
     static cycle (iterable) {
@@ -147,7 +210,7 @@ export default class Iter {
         });
     }
     
-    longestZip (...iterables) {
+    longZip (...iterables) {
         let iterators = [this, ...iterables].map(Iter.getIterator),
             map       = new Map(new Iter(iterators).zip(Iter.repeat(false))),
             count     = 0,
@@ -254,6 +317,28 @@ export default class Iter {
         })
     }
     
+    flatMap(callback = (x) => x) {
+        let iterator = Iter.getIterator(this);
+        let used  = new Set();
+        
+        return new Iter(function* flatten(iterable) {
+            if (used.has(iterable)) {
+                return;
+            }
+            
+            used.add(iterable); 
+            for (let i of iterable) {
+                if (Iter.isIterable(i)) {
+                    yield* flatten(i);
+                }
+                else {
+                    yield callback(i);
+                }
+            }
+            used.delete(iterable);
+        }(iterator)) 
+    }
+    
     zipMap (...iterables) {
         let callback = iterables[iterables.length - 1];
         
@@ -270,14 +355,14 @@ export default class Iter {
         }
     }
     
-    longestZipMap (...iterables) {
+    longZipMap (...iterables) {
         let callback = iterables[iterables.length - 1];
         
         if (typeof callback != 'function') {
-            return this.longestZip(...iterables);
+            return this.longZip(...iterables);
         }
         else {    
-            let iterator = this.longestZip(...iterables.slice(0, -1));
+            let iterator = this.longZip(...iterables.slice(0, -1));
             return new Iter(function* () {
                 for (let arr of iterator) {
                     yield callback(...arr);
@@ -395,22 +480,18 @@ export default class Iter {
         });
     }
     
-    permutations (r) {
+    permutations (r = Infinity) {
         let arr = this.toArray(),
             map = new Map(),
             res = [],
             len =  Math.min(toPositiveInteger(r), arr.length);
-            
-        if (Number.isNaN(len)) {
-            len = arr.length;
-        }
         
         return new Iter(function* gen(idx = 0) {
             if (idx >= len) {
                 yield res.slice();
                 return;
             }
-            for (let [i, v] of new Iter(arr).enumerate(arr)) {
+            for (let [i, v] of new Iter(arr).enumerate()) {
                 if (!map.has(i)) {
                     map.set(i, true);
                     res[idx] = v;

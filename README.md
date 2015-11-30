@@ -207,7 +207,7 @@ let iterator = {
     }
 }
 
-Iter.closeIterator(iterator) //true
+Iter.closeIterator(iterator); //true
 ```
 
 ```javascript
@@ -220,7 +220,7 @@ let iterator = {
     }
 }
 
-Iter.closeIterator(iterator) //false
+Iter.closeIterator(iterator); //false
 ```
 
 #####`Iter.closeAllIterators(...iterators)`
@@ -235,30 +235,101 @@ let iterator3 = new Set([1, 2, 3]).entries();
 Iter.closeAllIterators(iterator1, iterator2, iterator3);
 ```
 
-#####`Iter.range(end)`
-#####`Iter.range(start, end[, step])`
+#####`Iter.keys(obj)`
+
+Creates new `Iter` instance which can be used to iterate over the `obj` keys. If `obj` has `keys` method it is used, otherwise `Object.keys`.
+
+```javascript
+Iter.keys({
+    foo : 1,
+    bar : 2
+});
+
+// 'foo' 'bar'
+```
+
+```javascript
+Iter.keys(new Map([
+    ['foo', 1],
+    ['bar', 2]
+]));
+
+// 'foo' 'bar'
+```
+
+```javascript
+Iter.keys([1, 2, 3]);
+
+// 0 1 2
+```
+
+#####`Iter.entries(obj)`
+
+Creates new `Iter` instance which can be used to iterate over the `obj` entries. If `obj` has `entries` method it is used, otherwise generates pair of `[key, value]`.
+
+```javascript
+Iter.entries({
+    foo : 1,
+    bar : 2
+});
+
+// ['foo', 1] ['bar', 2]
+```
+
+#####`Iter.values(obj)`
+
+Creates new `Iter` instance which can be used to iterate over the `obj` values. If `obj` has `values` method it is used.
+
+```javascript
+Iter.values({
+    foo : 1,
+    bar : 2
+});
+
+// 1 2
+```
+
+#####`Iter.reverse(arrayLike)`
+
+Creates new `Iter` instance which iterates the `arrayLike` obj in reverse order from right to left. 
+
+```javascript
+Iter.reverse([1, 2, 3]); // 3 2 1
+Iter.reverse('ABC'); // C B A
+```
+
+#####`Iter.range(start = 0, end, step = 1)`
 
 Creates new `Iter` instance which generates arithmetic progressions. The arguments must be plain integers.
 With single argument, `start` is 0 and `end` is equal to passed value.
-If the `step` argument is omitted, it defaults to 1 or -1 depends on `start` and `end` values.
 
 
 ```javascript
 Iter.range(10); // 0, 1, 2, 3, 4, 5, 6, 7, 8, 9
-Iter.range(-10); // 0, -1, -2, -3, -4, -5, -6, -7, -8, -9
 
 Iter.range(1, 11); // 1, 2, 3, 4, 5, 6, 7, 8, 9, 10
-Iter.range(11, 1); // 11, 10, 9, 8, 7, 6, 5, 4, 3, 2
 
 Iter.range(0, 30, 5); // 0, 5, 10, 15, 20, 25
-Iter.range(30, 0, -5); // 30, 25, 20, 15, 10, 5
 
-Iter.range(20, 10, 2); //No output 
-Iter.range(10, 20, -2); //No output
+Iter.range(1, 5, 0); // 1 1 1 1
 ```
 
-**Note**: Unlike Python version of `range` it does not throw error if `step` is 0. If `step` is any falsy value it uses default values 1 or -1 depends on `start` and `end` values. 
+Unlike Python's version it throws `RangeError` with negative numbers as `step` argument. If you need to iterate `range` in reverse order, use `Iter.rangeRight` instead.   
 
+
+#####`Iter.rangeRight(start = 0, end, step = 1)`
+
+Same as `Iter.range` but generates the `range` in reverse order. 
+
+```javascript
+Iter.rangeRight(10); // 9 8 7 6 5 4 3 2 1 0
+
+Iter.rangeRight(1, 11); // 10 9 8 7 6 5 4 3 2 1
+
+Iter.rangeRight(0, 30, 5); // 25 20 15 10 5 0
+
+Iter.rangeRight(1, 5, 0); // 4 4 4 4
+```
 
 #####`Iter.count(start = 0, step = 1)`
 
@@ -284,7 +355,7 @@ Iter.cycle('ABCD'); // A B C D A B C D A B C D ...
 
 **Note**: It may require significant auxiliary storage (depending on the length of the `iterable`).
 
-#####`Iter.repeat(val, times = Infinity)`
+#####`Iter.repeat(value, times = Infinity)`
 
 Creates new `Iter` instance, that generates `val` over and over again. Runs indefinitely unless the `times` argument is specified. Used as argument to `zipMap()` for invariant function parameters. Also used with `zip()` to create constant fields in returned array.
 
@@ -302,7 +373,7 @@ Used for lock-step iteration over several iterables at a time. When no iterables
 
 The left-to-right evaluation order of the iterables is guaranteed.
 
-Should only be used with unequal length inputs when you don't care about trailing, unmatched values from the longer iterables. If those values are important, use `longestZip()` instead.
+Should only be used with unequal length inputs when you don't care about trailing, unmatched values from the longer iterables. If those values are important, use `longZip()` instead.
 
 ```javascript
 new Iter('ABCD').zip('xy'); 
@@ -312,21 +383,21 @@ Iter.range(10).zip([1, 2, 3, 4, 5]);
 // [ 0, 1 ] [ 1, 2 ] [ 2, 3 ] [ 3, 4 ] [ 4, 5 ]
 ```
 
-#####`longestZip(...iterables)`
+#####`longZip(...iterables)`
 
 Creates new `Iter` instance, that aggregates elements from each of the iterables. On each iteration it yields array. If the iterables are of uneven length, missing values are filled-in with `undefined`. Iteration continues until the longest iterable is exhausted.
 
 ```javascript
-new Iter('ABCD').longestZip('xy'); 
+new Iter('ABCD').longZip('xy'); 
 // [ 'A', 'x' ] [ 'B', 'y' ] [ 'C', undefined ] [ 'D', undefined ]
 
-Iter.range(10).longestZip([1, 2, 3, 4, 5]); 
+Iter.range(10).longZip([1, 2, 3, 4, 5]); 
 // [ 0, 1 ] [ 1, 2 ] [ 2, 3 ] [ 3, 4 ] [ 4, 5 ] [ 5, undefined ] [ 6, undefined ] [ 7, undefined ] [ 8, undefined ] [ 9, undefined ]
 ```
 
-**Note**: If one of the iterables is potentially infinite, then the `longestZip()` function should be used with something that limits the number of calls (for example `take()` or `takeWhile()`).
+**Note**: If one of the iterables is potentially infinite, then the `longZip()` function should be used with something that limits the number of calls (for example `take()` or `takeWhile()`).
 
-#####`enumerate(start)`
+#####`enumerate(start = 0)`
 
 Creates new `Iter` instance, that on each iteration returns an array containing a count (from start which defaults to 0) and the values obtained from iterating over `this`.
 
@@ -402,7 +473,21 @@ new Iter([1, 2, 3]).map((x) => x * x);
 // 1 4 9
 ```
 
-#####`zipMap(...iterables[, callback])`
+#####`flatMap(callback = (x) => x)`
+
+Flattens recursively and apply `callback` for each value. 
+
+```javascript
+let arr = [[1, [2, 3, 4], 5], 6, 7, [[[8, 9]]], 10];
+
+new Iter(arr).flatMap(); 
+// 1 2 3 4 5 6 7 8 9 10
+
+new Iter(arr).flatMap(x => x * x); 
+// 1 4 9 16 25 36 49 64 81 100
+```
+
+#####`zipMap(...iterables, callback?)`
 
 Creates new `Iter` instance, that computes the `callback` using arguments from each of the `iterables`. If `callback` is not specified, then `zipMap()` returns same result as `zip`. It stops when the shortest `iterable` is exhausted.
 
@@ -411,12 +496,12 @@ new Iter([1, 2, 3]).zipMap([1, 2, 3], Math.pow);
 // 1 4 27
 ```
 
-#####`longestZipMap(...iterables[, callback])`
+#####`longZipMap(...iterables, callback?)`
 
-Creates new `Iter` instance, that computes the `callback` using arguments from each of the `iterables`. If `callback` is not specified, then `longestZipMap()` returns same result as `longestZip`. It stops when the longest `iterable` is exhausted, filling in `undefined` for shorter iterables.
+Creates new `Iter` instance, that computes the `callback` using arguments from each of the `iterables`. If `callback` is not specified, then `longZipMap()` returns same result as `longZip`. It stops when the longest `iterable` is exhausted, filling in `undefined` for shorter iterables.
 
 ```javascript
-new Iter([1, 2, 3]).longestZipMap([1, 2, 3, 4, 5], (x = 1, y) => Math.pow(x, y)); 
+new Iter([1, 2, 3]).longZipMap([1, 2, 3, 4, 5], (x = 1, y) => Math.pow(x, y)); 
 // 1 4 27 1 1
 ```
 
@@ -429,7 +514,7 @@ new Iter([[2, 5], [3, 2], [10, 3]]).spreadMap(Math.pow);
 // 32 9 1000
 ```
 
-#####`take(iterable, n = Infinity)`
+#####`take(n = Infinity)`
 
 Creates new `Iter` instance, that takes `n` elements.
 
@@ -489,11 +574,11 @@ new Iter([1, 2, 3]).product('AB');
  
 ```
 
-#####`permutations(r)`
+#####`permutations(r = Infinity)`
 
 Creates new `Iter` instance, that returns successive `r` length permutations.
 
-If `r` is not specified or is `undefined`, then `r` defaults to the length of the `this` and all possible full-length permutations are generated.
+If `r` is not specified or is `undefined`, then all possible full-length permutations are generated.
 
 Permutations are emitted in lexicographic sort order. So, if the `this` is sorted, the permutation arrays will be produced in sorted order.
 

@@ -46,21 +46,14 @@ describe('enumerate', () => {
         }         
     })
     
-    it('starts from 0 if toInteger(start) is falsy value', () => {
-        for (let [i, j] of new Iter([0, 1, 2]).enumerate('Test')) {
-            expect(i).toBe(j);
+    it('throws TypeError with non number start', () => {
+        let err = {};
+        
+        try {
+            new Iter([0, 1, 2]).enumerate(NaN)
+        } catch (e) {
+            err = e;
         }
-        
-        for (let [i, j] of new Iter([0, 1, 2]).enumerate(NaN)) {
-            expect(i).toBe(j);
-        }
-        
-        for (let [i, j] of new Iter([0, 1, 2]).enumerate(false)) {
-            expect(i).toBe(j);
-        }  
-        
-        for (let [i, j] of new Iter([0, 1, 2]).enumerate({})) {
-            expect(i).toBe(j);
-        }              
+        expect(err instanceof TypeError);
     })  
 })
