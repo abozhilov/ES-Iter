@@ -458,7 +458,7 @@ new Iter([1, 2, 3]).map((x) => x * x);
 // 1 4 9
 ```
 
-#####`flatMap(callback = (x) => x)`
+#####`flatMap(callback = (x) => x, deep = true)`
 
 Flattens recursively and apply `callback` for each value. 
 
