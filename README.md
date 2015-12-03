@@ -1,4 +1,4 @@
-#ES-Iter v.0.9.6
+#ES-Iter v.0.9.7
 
 `Iter` is ES6 class which provides methods for efficient iteration within `for-of` loop or using external `Iterator`. It is inspired by Python's `itertools` module, but designed for JavaScript developers.  
 
@@ -225,7 +225,7 @@ Iter.closeIterator(iterator); //false
 
 #####`Iter.keys(obj)`
 
-Creates new `Iter` instance which can be used to iterate over the `obj` keys. If `obj` has `keys` method it is used, otherwise `Object.keys`.
+Creates new `Iter` instance which can be used to iterate over the `obj` keys. If `obj` has `keys` method it is used, otherwise `Reflect.enumerate`.
 
 ```javascript
 Iter.keys({
@@ -253,7 +253,7 @@ Iter.keys([1, 2, 3]);
 
 #####`Iter.entries(obj)`
 
-Creates new `Iter` instance which can be used to iterate over the `obj` entries. If `obj` has `entries` method it is used, otherwise generates pair of `[key, value]`.
+Creates new `Iter` instance which can be used to iterate over the `obj` entries. If `obj` has `entries` method it is used, otherwise generates pairs of `[key, value]`.
 
 ```javascript
 Iter.entries({
@@ -279,7 +279,7 @@ Iter.values({
 
 #####`Iter.reverse(arrayLike)`
 
-Creates new `Iter` instance which iterates the `arrayLike` obj in reverse order from right to left. 
+Creates new `Iter` instance which iterates the `arrayLike` obj in reversed order from right to left. 
 
 ```javascript
 Iter.reverse([1, 2, 3]); // 3 2 1
@@ -289,34 +289,31 @@ Iter.reverse('ABC'); // C B A
 #####`Iter.range(start = 0, end, step = 1)`
 
 Creates new `Iter` instance which generates arithmetic progressions. The arguments must be plain integers.
-With single argument, `start` is 0 and `end` is equal to passed value.
 
 
 ```javascript
-Iter.range(10); // 0, 1, 2, 3, 4, 5, 6, 7, 8, 9
+Iter.range(5); // 0 1 2 3 4
 
-Iter.range(1, 11); // 1, 2, 3, 4, 5, 6, 7, 8, 9, 10
+Iter.range(1, 5); // 1 2 3 4
 
-Iter.range(0, 30, 5); // 0, 5, 10, 15, 20, 25
+Iter.range(0, 20, 6); // 0 6 12 18
 
-Iter.range(1, 5, 0); // 1 1 1 1
+Iter.range(0, -5, -1); // 0 -1 -2 -3 -4
 ```
-
-Unlike Python's version it throws `RangeError` with negative numbers as `step` argument. If you need to iterate `range` in reverse order, use `Iter.rangeRight` instead.   
 
 
 #####`Iter.rangeRight(start = 0, end, step = 1)`
 
-Same as `Iter.range` but generates the `range` in reverse order. 
+Same as `Iter.range` but generates the `range` in reversed order. 
 
 ```javascript
-Iter.rangeRight(10); // 9 8 7 6 5 4 3 2 1 0
+Iter.rangeRight(5); // 4 3 2 1 0
 
-Iter.rangeRight(1, 11); // 10 9 8 7 6 5 4 3 2 1
+Iter.rangeRight(1, 5); // 4 3 2 1
 
-Iter.rangeRight(0, 30, 5); // 25 20 15 10 5 0
+Iter.rangeRight(0, 20, 6); // 18 12 6 0
 
-Iter.rangeRight(1, 5, 0); // 4 4 4 4
+Iter.rangeRight(0, -5, -1); // -4 -3 -2 -1 0
 ```
 
 #####`Iter.zip(iterable, ...iterables?)`
