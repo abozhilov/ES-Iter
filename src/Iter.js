@@ -50,14 +50,24 @@ export default class Iter {
         if (typeof obj.keys === 'function') {
             return new Iter(obj.keys());
         }
-        return new Iter(Object.keys(obj));
+        
+        let iterator = Reflect.enumerate(obj);
+        let hasOwnP = {}.hasOwnProperty;
+        
+        return new Iter(function* () {
+            for (let k of iterator) {
+                if (hasOwnP.call(obj, k)) {
+                    yield k;
+                }
+            }
+        });
     }
     
     static entries (obj) {
         if (typeof obj.entries === 'function') {
             return new Iter(obj.entries());
         }
-        let keys = Object.keys(obj);
+        let keys = Iter.keys(obj);
         return new Iter(function* () {
             for (let k of keys) {
                 yield [k, obj[k]];
@@ -69,7 +79,7 @@ export default class Iter {
         if (typeof obj.values === 'function') {
             return new Iter(obj.values());
         }
-        let keys = Object.keys(obj);
+        let keys = Iter.keys(obj);
         return new Iter(function* () {
             for (let k of keys) {
                 yield obj[k];
