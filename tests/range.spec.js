@@ -1,5 +1,5 @@
 import './auto_mock_off';
-import 'babel/polyfill';
+import 'babel-polyfill';
 import Iter from '../src/Iter';
 
 describe('range', () => {
@@ -27,11 +27,6 @@ describe('range', () => {
         expect(res.length).toBe(0);    
     })
     
-    it('if step=0, repeat start', () => {
-        let res = [...Iter.range(0, 3, 0)];
-        expect(res.join('')).toBe('000');
-    })
-    
     it('if start > end and step is positive integer does not yield anything', () => {
         let res = [...Iter.range(5, 1, 2)];
         expect(res.length).toBe(0);        
@@ -45,10 +40,10 @@ describe('range', () => {
         }            
     })
     
-    it('throws RangeError if step is negative integer', () => {
+    it('throws RangeError if step is zero', () => {
         let err = {};
         try {
-            Iter.range(1, 5, -2)
+            Iter.range(1, 5, 0)
         } catch (e) {
             err = e;
         }

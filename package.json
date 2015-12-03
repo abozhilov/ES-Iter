@@ -5,6 +5,7 @@
   "main": "src/Iter.js",
   "devDependencies": {
     "babel-preset-es2015" : "*",
+    "babel-polyfill" : "*",
     "babel-jest": "*",
     "jest-cli": "*"
   },

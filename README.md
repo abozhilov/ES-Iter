@@ -331,9 +331,40 @@ Iter.rangeRight(0, 30, 5); // 25 20 15 10 5 0
 Iter.rangeRight(1, 5, 0); // 4 4 4 4
 ```
 
+#####`Iter.zip(iterable, ...iterables?)`
+
+Creates new `Iter` instance, that aggregates elements from each of the iterables. On each iteration it yields array.
+Used for lock-step iteration over several iterables at a time. When no iterables are specified, returns a zero length generator.
+
+The left-to-right evaluation order of the iterables is guaranteed.
+
+Should only be used with unequal length inputs when you don't care about trailing, unmatched values from the longer iterables. If those values are important, use `Iter.longZip()` instead.
+
+```javascript
+Iter.zip('ABCD', 'xy'); 
+// [ 'A', 'x' ] [ 'B', 'y' ]
+
+Iter.zip(Iter.range(10), [1, 2, 3, 4, 5]); 
+// [ 0, 1 ] [ 1, 2 ] [ 2, 3 ] [ 3, 4 ] [ 4, 5 ]
+```
+
+#####`Iter.longZip(iterable, ...iterables?)`
+
+Creates new `Iter` instance, that aggregates elements from each of the iterables. On each iteration it yields array. If the iterables are of uneven length, missing values are filled-in with `undefined`. Iteration continues until the longest iterable is exhausted.
+
+```javascript
+Iter.longZip('ABCD', 'xy'); 
+// [ 'A', 'x' ] [ 'B', 'y' ] [ 'C', undefined ] [ 'D', undefined ]
+
+Iter.longZip(Iter.range(10), [1, 2, 3, 4, 5]); 
+// [ 0, 1 ] [ 1, 2 ] [ 2, 3 ] [ 3, 4 ] [ 4, 5 ] [ 5, undefined ] [ 6, undefined ] [ 7, undefined ] [ 8, undefined ] [ 9, undefined ]
+```
+
+**Note**: If one of the iterables is potentially infinite, then the `Iter.longZip()` function should be used with something that limits the number of calls (for example `take()` or `takeWhile()`).
+
 #####`Iter.count(start = 0, step = 1)`
 
-Creates new `Iter` instance, that generates evenly spaced values starting with `start`. Often used as an argument to `zipMap()` to generate consecutive data points. Also, used with `zip()` to add sequence numbers.
+Creates new `Iter` instance, that generates evenly spaced values starting with `start`.
 
 ```javascript
 Iter.count(); // 0 1 2 3 4 ....
@@ -357,7 +388,7 @@ Iter.cycle('ABCD'); // A B C D A B C D A B C D ...
 
 #####`Iter.repeat(value, times = Infinity)`
 
-Creates new `Iter` instance, that generates `val` over and over again. Runs indefinitely unless the `times` argument is specified. Used as argument to `zipMap()` for invariant function parameters. Also used with `zip()` to create constant fields in returned array.
+Creates new `Iter` instance, that generates `val` over and over again. Runs indefinitely unless the `times` argument is specified. Often used with `Iter.zip()` to create constant fields in returned array.
 
 ```javascript
 Iter.repeat(10, 3); // 10 10 10
@@ -365,37 +396,6 @@ Iter.repeat(10, 3); // 10 10 10
 
 #### Prototype Methods
 
-
-#####`zip(...iterables)`
-
-Creates new `Iter` instance, that aggregates elements from each of the iterables. On each iteration it yields array.
-Used for lock-step iteration over several iterables at a time. When no iterables are specified, returns a zero length generator.
-
-The left-to-right evaluation order of the iterables is guaranteed.
-
-Should only be used with unequal length inputs when you don't care about trailing, unmatched values from the longer iterables. If those values are important, use `longZip()` instead.
-
-```javascript
-new Iter('ABCD').zip('xy'); 
-// [ 'A', 'x' ] [ 'B', 'y' ]
-
-Iter.range(10).zip([1, 2, 3, 4, 5]); 
-// [ 0, 1 ] [ 1, 2 ] [ 2, 3 ] [ 3, 4 ] [ 4, 5 ]
-```
-
-#####`longZip(...iterables)`
-
-Creates new `Iter` instance, that aggregates elements from each of the iterables. On each iteration it yields array. If the iterables are of uneven length, missing values are filled-in with `undefined`. Iteration continues until the longest iterable is exhausted.
-
-```javascript
-new Iter('ABCD').longZip('xy'); 
-// [ 'A', 'x' ] [ 'B', 'y' ] [ 'C', undefined ] [ 'D', undefined ]
-
-Iter.range(10).longZip([1, 2, 3, 4, 5]); 
-// [ 0, 1 ] [ 1, 2 ] [ 2, 3 ] [ 3, 4 ] [ 4, 5 ] [ 5, undefined ] [ 6, undefined ] [ 7, undefined ] [ 8, undefined ] [ 9, undefined ]
-```
-
-**Note**: If one of the iterables is potentially infinite, then the `longZip()` function should be used with something that limits the number of calls (for example `take()` or `takeWhile()`).
 
 #####`enumerate(start = 0)`
 
@@ -487,27 +487,9 @@ new Iter(arr).flatMap(x => x * x);
 // 1 4 9 16 25 36 49 64 81 100
 ```
 
-#####`zipMap(...iterables, callback?)`
-
-Creates new `Iter` instance, that computes the `callback` using arguments from each of the `iterables`. If `callback` is not specified, then `zipMap()` returns same result as `zip`. It stops when the shortest `iterable` is exhausted.
-
-```javascript
-new Iter([1, 2, 3]).zipMap([1, 2, 3], Math.pow); 
-// 1 4 27
-```
-
-#####`longZipMap(...iterables, callback?)`
-
-Creates new `Iter` instance, that computes the `callback` using arguments from each of the `iterables`. If `callback` is not specified, then `longZipMap()` returns same result as `longZip`. It stops when the longest `iterable` is exhausted, filling in `undefined` for shorter iterables.
-
-```javascript
-new Iter([1, 2, 3]).longZipMap([1, 2, 3, 4, 5], (x = 1, y) => Math.pow(x, y)); 
-// 1 4 27 1 1
-```
-
 #####`spreadMap(callback)`
 
-Creates new `Iter` instance, that computes the `callback` using arguments obtained from the `this`. Used instead of `zipMap()` when argument parameters are already grouped in a single iterable (the data has been "pre-zipped").
+Creates new `Iter` instance, that computes the `callback` using arguments obtained from the `this`. Used when argument parameters are already grouped in a single iterable (the data has been "pre-zipped").
 
 ```javascript
 new Iter([[2, 5], [3, 2], [10, 3]]).spreadMap(Math.pow); 

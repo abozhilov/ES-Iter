@@ -146,6 +146,59 @@ export default class Iter {
         return Iter.range(end, start, -step);
     } 
     
+    static zip (iterable, ...iterables) {
+        let iterators = [iterable, ...iterables].map(Iter.getIterator);
+        
+        return new Iter(function* () {
+            try {
+                while (true) {
+                    let res = [];
+                    for (let it of iterators) {
+                        let curr = it.next();
+                        if (curr.done) {
+                            for (let i of iterators) {
+                                if (i !== it) Iter.closeIterator(i);
+                            }
+                            return;
+                        }
+                        res.push(curr.value);
+                    }
+                    yield res;
+                }
+            } finally {
+                Iter.closeAllIterators(...iterators);
+            }
+        });
+    }
+    
+    static longZip (iterable, ...iterables) {
+        let iterators = [iterable, ...iterables].map(Iter.getIterator),
+            map       = new Map(Iter.zip(iterators, Iter.repeat(false))),
+            count     = 0;
+        
+        return new Iter(function* () {    
+            try {    
+                while (true) {
+                    let res = [];
+                    for (let it of iterators) {
+                        let curr = it.next();
+                        if (curr.done && !map.get(it)) {
+                            map.set(it, true);
+                            count++;
+                        }
+                        res.push(curr.value);
+                    }
+                    if (count >= iterators.length) {
+                        return;
+                    } 
+                    yield res;
+                }
+            } finally {
+                Iter.closeAllIterators(...iterators);
+            }
+        });
+    }
+    
     static count (start, step = 1) {
         return Iter.range(start, step * Infinity, step);
     }
@@ -173,71 +226,8 @@ export default class Iter {
         });
     }
     
-    toIterator () {
-        return Iter.getIterator(this);
-    } 
-    
-    toArray () {
-        return [...Iter.getIterator(this)];        
-    }
-    
-    zip (...iterables) {
-        let iterators = [this, ...iterables].map(Iter.getIterator),
-            done = iterables.length;
-        
-        return new Iter(function* () {
-            try {
-                while (done) {
-                    let res = [];
-                    for (let it of iterators) {
-                        let curr = it.next();
-                        if (curr.done) {
-                            for (let i of iterators) {
-                                if (i !== it) Iter.closeIterator(i);
-                            }
-                            return;
-                        }
-                        res.push(curr.value);
-                    }
-                    yield res;
-                }
-            } finally {
-                Iter.closeAllIterators(...iterators);
-            }
-        });
-    }
-    
-    longZip (...iterables) {
-        let iterators = [this, ...iterables].map(Iter.getIterator),
-            map       = new Map(new Iter(iterators).zip(Iter.repeat(false))),
-            count     = 0,
-            done      = iterators.length;
-        
-        return new Iter(function* () {    
-            try {    
-                while (done) {
-                    let res = [];
-                    for (let it of iterators) {
-                        let curr = it.next();
-                        if (curr.done && !map.get(it)) {
-                            map.set(it, true);
-                            count++;
-                        }
-                        res.push(curr.value);
-                    }
-                    if (count >= iterators.length) {
-                        return;
-                    } 
-                    yield res;
-                }
-            } finally {
-                Iter.closeAllIterators(...iterators);
-            }
-        });
-    }
-    
     enumerate (start = 0) {
-        return Iter.count(start).zip(this);
+        return Iter.zip(Iter.count(start), this);
     }
     
     accumulate (callback = (x, y) => x + y) {
@@ -271,7 +261,7 @@ export default class Iter {
     }
     
     compress (selectors) {
-        let iterator = this.zip(selectors);
+        let iterator = Iter.zip(this, selectors);
         
         return new Iter(function* () {
             for (let [v, s] of iterator) {
@@ -334,38 +324,6 @@ export default class Iter {
             }
             used.delete(iterable);
         }(iterator)) 
-    }
-    
-    zipMap (...iterables) {
-        let callback = iterables[iterables.length - 1];
-        
-        if (typeof callback != 'function') {
-            return this.zip(...iterables);
-        }
-        else {
-            let iterator = this.zip(...iterables.slice(0, -1));
-            return new Iter(function* (){
-                for (let arr of iterator) {
-                    yield callback(...arr);
-                }
-            });
-        }
-    }
-    
-    longZipMap (...iterables) {
-        let callback = iterables[iterables.length - 1];
-        
-        if (typeof callback != 'function') {
-            return this.longZip(...iterables);
-        }
-        else {    
-            let iterator = this.longZip(...iterables.slice(0, -1));
-            return new Iter(function* () {
-                for (let arr of iterator) {
-                    yield callback(...arr);
-                }
-            });
-        }
     }
     
     spreadMap (callback) {
@@ -514,6 +472,14 @@ export default class Iter {
                 yield* gen(idx + 1, i + 1);
             }
         });
+    }
+    
+    toIterator () {
+        return Iter.getIterator(this);
+    } 
+    
+    toArray () {
+        return [...Iter.getIterator(this)];        
     }
 }
 

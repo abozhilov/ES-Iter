@@ -1,5 +1,5 @@
 import './auto_mock_off';
-import 'babel/polyfill';
+import 'babel-polyfill';
 import Iter from '../src/Iter';
 
 describe('groupBy', () => {
@@ -9,7 +9,7 @@ describe('groupBy', () => {
         
         expect(res.length).toBe(6);
         
-        for (let [l, r] of new Iter(res).zip(out)) {
+        for (let [l, r] of Iter.zip(res, out)) {
             expect(l[0]).toBe(r[0])
             expect(l[1].join('')).toBe(r[1])
         }
