@@ -45,12 +45,6 @@ export default class Iter {
         }
         return false;
     }
-
-    static closeAllIterators (...iterators) {
-        for (let it of iterators) {
-            Iter.closeIterator(it);
-        }
-    }
     
     static keys (obj) {
         if (typeof obj.keys === 'function') {
@@ -166,7 +160,7 @@ export default class Iter {
                     yield res;
                 }
             } finally {
-                Iter.closeAllIterators(...iterators);
+                iterators.map(Iter.closeIterator);
             }
         });
     }
@@ -194,7 +188,7 @@ export default class Iter {
                     yield res;
                 }
             } finally {
-                Iter.closeAllIterators(...iterators);
+                iterators.map(Iter.closeIterator);
             }
         });
     }
@@ -304,26 +298,26 @@ export default class Iter {
         })
     }
     
-    flatMap(callback = (x) => x) {
+    flatMap(callback = (x) => x, deep = true) {
         let iterator = Iter.getIterator(this);
         let used  = new Set();
         
-        return new Iter(function* flatten(iterable) {
+        return new Iter(function* flatten(iterable = iterator, level = 0) {
             if (used.has(iterable)) {
                 return;
             }
             
             used.add(iterable); 
             for (let i of iterable) {
-                if (Iter.isIterable(i)) {
-                    yield* flatten(i);
+                if (Iter.isIterable(i) && (deep || level < 1)) {
+                    yield* flatten(i, level + 1);
                 }
                 else {
                     yield callback(i);
                 }
             }
             used.delete(iterable);
-        }(iterator)) 
+        }) 
     }
     
     spreadMap (callback) {

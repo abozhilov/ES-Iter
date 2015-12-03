@@ -223,18 +223,6 @@ let iterator = {
 Iter.closeIterator(iterator); //false
 ```
 
-#####`Iter.closeAllIterators(...iterators)`
-
-Calls `Iter.closeIterator` for each passed `iterator`.
-
-```javascript
-let iterator1 = [1, 2, 3].entries();
-let iterator2 = new Map().entries();
-let iterator3 = new Set([1, 2, 3]).entries();
-
-Iter.closeAllIterators(iterator1, iterator2, iterator3);
-```
-
 #####`Iter.keys(obj)`
 
 Creates new `Iter` instance which can be used to iterate over the `obj` keys. If `obj` has `keys` method it is used, otherwise `Object.keys`.
