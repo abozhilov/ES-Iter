@@ -27,6 +27,11 @@ describe('range', () => {
         expect(res.length).toBe(0);    
     })
     
+    it('if start > end and step is negative integer', () => {
+        expect([...Iter.range(5, 1, -1)].length).toBe(4);        
+        expect([...Iter.range(5, 0, -2)].length).toBe(3);        
+    })
+    
     it('if start > end and step is positive integer does not yield anything', () => {
         let res = [...Iter.range(5, 1, 2)];
         expect(res.length).toBe(0);        

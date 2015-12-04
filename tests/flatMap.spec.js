@@ -9,6 +9,10 @@ describe('flatMap', () => {
         expect([...new Iter(arr).flatMap()].join()).toBe([1, 2, 3, 4, 5].join());
     })
     
+    it('flattens only one level if deep=false', () => {
+        expect([...new Iter([[[1, 2]], [[3, 4]]]).flatMap(...[, false])].length).toBe(2);
+    })
+    
     it('calls callback for every element and yields the returned result', () => {
         let res = [1, 4, 9, 16];
         let arr = [[1, [2, [3]], [[[4]]]]];
