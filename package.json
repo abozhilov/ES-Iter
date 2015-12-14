@@ -1,5 +1,5 @@
 {
-  "name": "Iter",
+  "name": "es-iter",
   "version": "0.9.7",
   "description": "Itertools for JavaScript",
   "main": "src/Iter.js",
@@ -21,11 +21,11 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/abozhilov/IterJS.git"
+    "url": "https://github.com/abozhilov/ES-Iter.git"
   },
   "keywords": [
-    "Iter",
     "itertools",
+    "Iter",
     "iterator",
     "generator",
     "ES6"
@@ -33,7 +33,7 @@
   "author": "Asen Bozhilov <asen.bozhilov@gmail.com>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/abozhilov/IterJS/issues"
+    "url": "https://github.com/abozhilov/ES-Iter/issues"
   },
-  "homepage": "https://github.com/abozhilov/IterJS"
+  "homepage": "https://github.com/abozhilov/ES-Iter"
 }

@@ -1,8 +1,8 @@
-#Iter v.0.9.7
+# Iter v.0.9.7
 
 `Iter` is ES6 class which provides methods for efficient iteration within `for-of` loop or using external `Iterator`. It is inspired by Python's `itertools` module, but designed for JavaScript developers.  
 
-##API
+## API
 
 #### Glosary
 
@@ -41,7 +41,7 @@ let iterable = {
 
 #### Constructor
 
-#####`Iter(iterable)`
+##### `Iter(iterable)`
 
 Get `iterator` from `iterable` object and returns new `Iter` instance.
 
@@ -49,7 +49,7 @@ Get `iterator` from `iterable` object and returns new `Iter` instance.
 let iter = new Iter([1, 2, 3]); 
 ```
 
-#####`Iter(func)`
+##### `Iter(func)`
 
 Get `iterator` from `func` call and returns new `Iter` instance. 
 
@@ -72,7 +72,7 @@ for (let i of iter.take(10)) {
 
 #### Static Methods
 
-#####`Iter.getIterator(obj)`
+##### `Iter.getIterator(obj)`
 
 Return an [iterator](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Iteration_protocols#iterator) object.
 
@@ -92,7 +92,7 @@ Throws TypeError if object does not implement Iterator protocol (not iterable)
 Iter.getIterator(Object.create(null)) 
 ```
 
-#####`Iter.isIterator(obj)`
+##### `Iter.isIterator(obj)`
 
 Returns **true** if `obj` implements Iterator protocol.  If `obj` is not an Iterator, `null` or `undefined` returns **false**.
 
@@ -110,7 +110,7 @@ Iter.isIterator(null) //false
 ```
 
 
-#####`Iter.isIterable(obj)`
+##### `Iter.isIterable(obj)`
 
 Returns **true** if `obj` is iterable, otherwise **false**. Object is iterable if it implements method with key `Symbol.iterator`. 
 
@@ -126,7 +126,7 @@ Iter.isIterable({}) //false
 Iter.isIterable(456) //false
 ```
 
-#####`Iter.isMultiIterable(obj)` 
+##### `Iter.isMultiIterable(obj)` 
 
 Test if `obj` can be iterated multiple times using `for-of`. In other words `obj[Symbol.iterator]()` returns fresh Iterator on every call.
 
@@ -158,7 +158,7 @@ for (let v of iterArr) {
 ```
 
 
-#####`Iter.isClosable(iterator)`
+##### `Iter.isClosable(iterator)`
 Returns **true** if `iterator` implements the optional `return` method, otherwise if the object is not `Iterator` or does not implement `return` method returns **false**  
 
 ```javascript
@@ -190,7 +190,7 @@ let iterator = {
 Iter.isClosable(iterator) //false
 ```
 
-#####`Iter.closeIterator(iterator)`
+##### `Iter.closeIterator(iterator)`
 
 If the iteraror is closable calls its `return` method and returns `done` state of the iterator, otherwise returns **false**.
 
@@ -223,7 +223,7 @@ let iterator = {
 Iter.closeIterator(iterator); //false
 ```
 
-#####`Iter.keys(obj)`
+##### `Iter.keys(obj)`
 
 Creates new `Iter` instance which can be used to iterate over the `obj` keys. If `obj` has `keys` method it is used, otherwise `Reflect.enumerate`.
 
@@ -251,7 +251,7 @@ Iter.keys([1, 2, 3]);
 // 0 1 2
 ```
 
-#####`Iter.entries(obj)`
+##### `Iter.entries(obj)`
 
 Creates new `Iter` instance which can be used to iterate over the `obj` entries. If `obj` has `entries` method it is used, otherwise generates pairs of `[key, value]`.
 
@@ -264,7 +264,7 @@ Iter.entries({
 // ['foo', 1] ['bar', 2]
 ```
 
-#####`Iter.values(obj)`
+##### `Iter.values(obj)`
 
 Creates new `Iter` instance which can be used to iterate over the `obj` values. If `obj` has `values` method it is used.
 
@@ -277,7 +277,7 @@ Iter.values({
 // 1 2
 ```
 
-#####`Iter.reverse(arrayLike)`
+##### `Iter.reverse(arrayLike)`
 
 Creates new `Iter` instance which iterates the `arrayLike` obj in reversed order from right to left. 
 
@@ -286,7 +286,7 @@ Iter.reverse([1, 2, 3]); // 3 2 1
 Iter.reverse('ABC'); // C B A
 ```
 
-#####`Iter.range(start = 0, end, step = 1)`
+##### `Iter.range(start = 0, end, step = 1)`
 
 Creates new `Iter` instance which generates arithmetic progressions. The arguments must be plain integers.
 
@@ -302,7 +302,7 @@ Iter.range(0, -5, -1); // 0 -1 -2 -3 -4
 ```
 
 
-#####`Iter.rangeRight(start = 0, end, step = 1)`
+##### `Iter.rangeRight(start = 0, end, step = 1)`
 
 Same as `Iter.range` but generates the `range` in reversed order. 
 
@@ -316,7 +316,7 @@ Iter.rangeRight(0, 20, 6); // 18 12 6 0
 Iter.rangeRight(0, -5, -1); // -4 -3 -2 -1 0
 ```
 
-#####`Iter.zip(iterable, ...iterables?)`
+##### `Iter.zip(iterable, ...iterables?)`
 
 Creates new `Iter` instance, that aggregates elements from each of the iterables. On each iteration it yields array.
 Used for lock-step iteration over several iterables at a time. When no iterables are specified, returns a zero length generator.
@@ -333,7 +333,7 @@ Iter.zip(Iter.range(10), [1, 2, 3, 4, 5]);
 // [ 0, 1 ] [ 1, 2 ] [ 2, 3 ] [ 3, 4 ] [ 4, 5 ]
 ```
 
-#####`Iter.longZip(iterable, ...iterables?)`
+##### `Iter.longZip(iterable, ...iterables?)`
 
 Creates new `Iter` instance, that aggregates elements from each of the iterables. On each iteration it yields array. If the iterables are of uneven length, missing values are filled-in with `undefined`. Iteration continues until the longest iterable is exhausted.
 
@@ -347,7 +347,7 @@ Iter.longZip(Iter.range(10), [1, 2, 3, 4, 5]);
 
 **Note**: If one of the iterables is potentially infinite, then the `Iter.longZip()` function should be used with something that limits the number of calls (for example `take()` or `takeWhile()`).
 
-#####`Iter.count(start = 0, step = 1)`
+##### `Iter.count(start = 0, step = 1)`
 
 Creates new `Iter` instance, that generates evenly spaced values starting with `start`.
 
@@ -361,7 +361,7 @@ Iter.count(1, 2); // 1 3 5 7 9 ....
 
 **Note**: It always converts  arguments to integers.
 
-#####`Iter.cycle(iterable)`
+##### `Iter.cycle(iterable)`
 
 Creates new `Iter` instance, that generates elements from the `iterable` and saving a copy of each. When the `iterable` is exhausted, return elements from the saved copy. Repeats indefinitely.
 
@@ -371,7 +371,7 @@ Iter.cycle('ABCD'); // A B C D A B C D A B C D ...
 
 **Note**: It may require significant auxiliary storage (depending on the length of the `iterable`).
 
-#####`Iter.repeat(value, times = Infinity)`
+##### `Iter.repeat(value, times = Infinity)`
 
 Creates new `Iter` instance, that generates `val` over and over again. Runs indefinitely unless the `times` argument is specified. Often used with `Iter.zip()` to create constant fields in returned array.
 
@@ -382,7 +382,7 @@ Iter.repeat(10, 3); // 10 10 10
 #### Prototype Methods
 
 
-#####`enumerate(start = 0)`
+##### `enumerate(start = 0)`
 
 Creates new `Iter` instance, that on each iteration returns an array containing a count (from start which defaults to 0) and the values obtained from iterating over `this`.
 
@@ -402,7 +402,7 @@ new Iter('ABC').enumerate(1);
 // [ 1, 'A' ] [ 2, 'B' ] [ 3, 'C' ]
 ```
 
-#####`accumulate(callback = (x, y) => x + y)`
+##### `accumulate(callback = (x, y) => x + y)`
 
 Creates new `Iter` instance, that returns accumulated sums, or accumulated results of other binary functions (specified via the optional `callback` argument). If `callback` is supplied, it should be a function of two arguments.
 
@@ -417,7 +417,7 @@ new Iter(data).accumulate(Math.max);
 // running max 3 4 6 6 6 9 9 9 9 9
 ```
 
-#####`chain(...iterables)`
+##### `chain(...iterables)`
 
 Creates new `Iter` instance, that returns elements first from `this`, then first `iterable` until it is exhausted, then proceeds to the next `iterable`, until all of the `iterables` are exhausted. Used for treating consecutive sequences as a single sequence.
 
@@ -425,7 +425,7 @@ Creates new `Iter` instance, that returns elements first from `this`, then first
 new Iter('ABC').chain('DEF', 'GHI'); // A B C D E F G H I
 ```
 
-#####`compress(selectors)`
+##### `compress(selectors)`
 
 Creates new `Iter` instance, that filters elements returning only those that have a corresponding element in `selectors` that evaluates to `true`. Stops when either the `this` or `selectors` iterables has been exhausted.
 
@@ -433,7 +433,7 @@ Creates new `Iter` instance, that filters elements returning only those that hav
 new Iter('ABCDEF').compress([1, 0, 1, 0, 1, 1]); //A C E F
 ```
 
-#####`groupBy(key = (x) => x)`
+##### `groupBy(key = (x) => x)`
 
 Creates new `Iter` instance, that returns consecutive keys and groups. The `key` is a function computing a key value for each element. If not specified or `undefined`, `key` defaults to an identity and returns the element unchanged. Generally, the iterable needs to already be sorted on the same key function.
 
@@ -449,7 +449,7 @@ new Iter('AAABBBCDEE').groupBy((x) => x.charCodeAt());
 // [ 65, [ 'A', 'A', 'A' ] ] [ 66, [ 'B', 'B', 'B' ] ] [ 67, [ 'C' ] ] [ 68, [ 'D' ] ] [ 69, [ 'E', 'E' ] ] 
 ```
 
-#####`map(callback = (x) => x)`
+##### `map(callback = (x) => x)`
 
 Creates new `Iter` instance, that computes the `callback` using argument from `this`.
 
@@ -458,7 +458,7 @@ new Iter([1, 2, 3]).map((x) => x * x);
 // 1 4 9
 ```
 
-#####`flatMap(callback = (x) => x, deep = true)`
+##### `flatMap(callback = (x) => x, deep = true)`
 
 Flattens recursively and apply `callback` for each value. 
 
@@ -472,7 +472,7 @@ new Iter(arr).flatMap(x => x * x);
 // 1 4 9 16 25 36 49 64 81 100
 ```
 
-#####`spreadMap(callback)`
+##### `spreadMap(callback)`
 
 Creates new `Iter` instance, that computes the `callback` using arguments obtained from the `this`. Used when argument parameters are already grouped in a single iterable (the data has been "pre-zipped").
 
@@ -481,7 +481,7 @@ new Iter([[2, 5], [3, 2], [10, 3]]).spreadMap(Math.pow);
 // 32 9 1000
 ```
 
-#####`take(n = Infinity)`
+##### `take(n = Infinity)`
 
 Creates new `Iter` instance, that takes `n` elements.
 
@@ -489,7 +489,7 @@ Creates new `Iter` instance, that takes `n` elements.
 new Iter([1, 2, 3, 4, 5]).take(2); // 1 2
 ```
 
-#####`drop(n = Infinity)`
+##### `drop(n = Infinity)`
 
 Creates new `Iter` instance, that drops `n` elements.
 
@@ -497,7 +497,7 @@ Creates new `Iter` instance, that drops `n` elements.
 new Iter([1, 2, 3, 4, 5]).drop(2); // 3 4 5
 ```
 
-#####`dropWhile(callback = Boolean)`
+##### `dropWhile(callback = Boolean)`
 
 Creates new `Iter` instance, that drops elements as long as the `callback` is true; afterwards, returns every element. Note, it does not produce any output until the `callback` first becomes false, so it may have a lengthy start-up time.
 
@@ -505,7 +505,7 @@ Creates new `Iter` instance, that drops elements as long as the `callback` is tr
 new Iter([1, 2, 3, 4, 5, 6]).dropWhile((x) => x <= 3); // 4 5 6  
 ```
 
-#####`takeWhile(callback = Boolean)`
+##### `takeWhile(callback = Boolean)`
 
 Creates new `Iter` instance, that returns elements as long as the `callback` is true.
 
@@ -513,7 +513,7 @@ Creates new `Iter` instance, that returns elements as long as the `callback` is 
 new Iter([1, 2, 3, 4, 5, 6]).takeWhile((x) => x <= 3); // 1 2 3
 ```
 
-#####`filter(callback = Boolean)`
+##### `filter(callback = Boolean)`
 
 Creates new `Iter` instance, that filters elements returning only those for which the `callback` is `true`. If `callback` not specified or `undefined`, return the items that are evaluated to `true`.
 
@@ -521,7 +521,7 @@ Creates new `Iter` instance, that filters elements returning only those for whic
 Iter.range(10).filter((x) => x % 2); // 1 3 5 7 9
 ```
 
-#####`filterFalse(callback = Boolean)`
+##### `filterFalse(callback = Boolean)`
 
 Creates new `Iter` instance, that filters elements returning only those for which the `callback` is `false`. If `callback` not specified or `undefined`, return the items that are evaluated to `false`.
 
@@ -529,7 +529,7 @@ Creates new `Iter` instance, that filters elements returning only those for whic
 Iter.range(10).filterFalse((x) => x % 2); // 0 2 4 6 8
 ```
 
-#####`product(b = [], ...iterables)`
+##### `product(b = [], ...iterables)`
 
 Creates new `Iter` instance, that generates cartesian product of `this`, `b` and `iterables`.
 
@@ -541,7 +541,7 @@ new Iter([1, 2, 3]).product('AB');
  
 ```
 
-#####`permutations(r = Infinity)`
+##### `permutations(r = Infinity)`
 
 Creates new `Iter` instance, that returns successive `r` length permutations.
 
@@ -564,7 +564,7 @@ Iter.range(3).permutations();
 // [ 1, 2, 0 ] [ 2, 0, 1 ] [ 2, 1, 0 ]
 ```
 
-#####`combinations(r)`
+##### `combinations(r)`
 
 Creates new `Iter` instance, that returns `r` length subsequences of elements.
 
@@ -583,7 +583,7 @@ Iter.range(4).combinations(3);
 // [ 0, 1, 2 ] [ 0, 1, 3 ] [ 0, 2, 3 ] [ 1, 2, 3 ]
 ```
 
-#####`toIterator()`
+##### `toIterator()`
 
 Returns external `iterator` usefull for manual iteration. 
 
@@ -595,7 +595,7 @@ iterator.next(); // { value: 4, done: false }
 iterator.next(); // { value: undefined, done: true }
 ```
 
-#####`toArray()`
+##### `toArray()`
 
 ```javascript
 Iter.range(5).filter(x => x > 2).toArray(); // [ 3, 4 ]
@@ -605,15 +605,15 @@ Iter.range(5).filter(x => x > 2).toArray(); // [ 3, 4 ]
 
 Currently there is no browser with full support of ES6, but the library can be used with [Babel](https://babeljs.io/) transpiler.
 
-##Author
+## Author
 
 Asen Bozhilov - [@abozhilov](https://twitter.com/abozhilov)
 
-##Credits 
+## Credits 
 
 [Dr. Axel Rauschmayer](http://www.2ality.com/) and his excellent book [Exploring ES6](http://exploringjs.com/)
 
-##License
+## License
 
 **MIT**  
 
