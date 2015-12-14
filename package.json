@@ -1,6 +1,6 @@
 {
   "name": "es-iter",
-  "version": "0.9.8",
+  "version": "0.9.7",
   "description": "Itertools for JavaScript",
   "main": "src/Iter.js",
   "devDependencies": {

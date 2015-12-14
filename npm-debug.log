@@ -1,31 +1,105 @@
 0 info it worked if it ends with ok
-1 verbose cli [ '/usr/local/bin/node',
-1 verbose cli   '/usr/local/bin/npm',
-1 verbose cli   'version',
-1 verbose cli   'patch' ]
+1 verbose cli [ '/usr/local/bin/node', '/usr/local/bin/npm', 'publish' ]
 2 info using npm@3.5.2
 3 info using node@v4.2.1
-4 info git [ 'status', '--porcelain' ]
-5 verbose stack Error: Git working directory not clean.
-5 verbose stack M README.md
-5 verbose stack M package.json
-5 verbose stack     at /usr/local/lib/node_modules/npm/lib/version.js:172:21
-5 verbose stack     at ChildProcess.exithandler (child_process.js:194:7)
-5 verbose stack     at emitTwo (events.js:87:13)
-5 verbose stack     at ChildProcess.emit (events.js:172:7)
-5 verbose stack     at maybeClose (internal/child_process.js:818:16)
-5 verbose stack     at Socket.<anonymous> (internal/child_process.js:319:11)
-5 verbose stack     at emitOne (events.js:77:13)
-5 verbose stack     at Socket.emit (events.js:169:7)
-5 verbose stack     at Pipe._onclose (net.js:469:12)
-6 verbose cwd /home/abozhilov/Dev/IterJS
-7 error Linux 3.13.0-24-generic
-8 error argv "/usr/local/bin/node" "/usr/local/bin/npm" "version" "patch"
-9 error node v4.2.1
-10 error npm  v3.5.2
-11 error Git working directory not clean.
-11 error M README.md
-11 error M package.json
-12 error If you need help, you may report this error at:
-12 error     <https://github.com/npm/npm/issues>
-13 verbose exit [ 1, true ]
+4 verbose publish [ '.' ]
+5 silly cache add args [ '.', null ]
+6 verbose cache add spec .
+7 silly cache add parsed spec Result {
+7 silly cache add   raw: '.',
+7 silly cache add   scope: null,
+7 silly cache add   name: null,
+7 silly cache add   rawSpec: '.',
+7 silly cache add   spec: '/home/abozhilov/Dev/IterJS',
+7 silly cache add   type: 'directory' }
+8 verbose addLocalDirectory /home/abozhilov/.npm/es-iter/0.9.7/package.tgz not in flight; packing
+9 info lifecycle es-iter@0.9.7~prepublish: es-iter@0.9.7
+10 silly lifecycle es-iter@0.9.7~prepublish: no script for prepublish, continuing
+11 verbose tar pack [ '/home/abozhilov/.npm/es-iter/0.9.7/package.tgz',
+11 verbose tar pack   '/home/abozhilov/Dev/IterJS' ]
+12 verbose tarball /home/abozhilov/.npm/es-iter/0.9.7/package.tgz
+13 verbose folder /home/abozhilov/Dev/IterJS
+14 verbose addLocalTarball adding from inside cache /home/abozhilov/.npm/es-iter/0.9.7/package.tgz
+15 silly cache afterAdd es-iter@0.9.7
+16 verbose afterAdd /home/abozhilov/.npm/es-iter/0.9.7/package/package.json not in flight; writing
+17 verbose afterAdd /home/abozhilov/.npm/es-iter/0.9.7/package/package.json written
+18 silly publish { name: 'es-iter',
+18 silly publish   version: '0.9.7',
+18 silly publish   description: 'Itertools for JavaScript',
+18 silly publish   main: 'src/Iter.js',
+18 silly publish   devDependencies:
+18 silly publish    { 'babel-preset-es2015': '*',
+18 silly publish      'babel-polyfill': '*',
+18 silly publish      'babel-jest': '*',
+18 silly publish      'jest-cli': '*' },
+18 silly publish   jest:
+18 silly publish    { scriptPreprocessor: '<rootDir>/node_modules/babel-jest',
+18 silly publish      testFileExtensions: [ 'js' ],
+18 silly publish      moduleFileExtensions: [ 'js', 'json' ],
+18 silly publish      testPathIgnorePatterns: [ '/node_modules/', 'auto_mock_off.js' ],
+18 silly publish      testDirectoryName: 'tests' },
+18 silly publish   scripts: { test: 'jest' },
+18 silly publish   repository:
+18 silly publish    { type: 'git',
+18 silly publish      url: 'git+https://github.com/abozhilov/ES-Iter.git' },
+18 silly publish   keywords: [ 'itertools', 'Iter', 'iterator', 'generator', 'ES6' ],
+18 silly publish   author: { name: 'Asen Bozhilov', email: 'asen.bozhilov@gmail.com' },
+18 silly publish   license: 'MIT',
+18 silly publish   bugs: { url: 'https://github.com/abozhilov/ES-Iter/issues' },
+18 silly publish   homepage: 'https://github.com/abozhilov/ES-Iter',
+18 silly publish   readme: '# Iter v.0.9.7\n\n`Iter` is ES6 class which provides methods for efficient iteration within `for-of` loop or using external `Iterator`. It is inspired by Python\'s `itertools` module, but designed for JavaScript developers.  \n\n## API\n\n#### Glosary\n\n* **Iterable**\nAn iterable is a data structure that wants to make its elements accessible to the public. It does so by implementing a method whose key is Symbol.iterator. That method is a factory for iterators.\n\n* **Iterator**\nA pointer for traversing the elements of a data structure (think cursors in databases).\n\nNote: Following the built-in API every Iterator must be also and iterable. \n\nFollow this pattern for iterables: \n\n```javascript\nlet iterable = {\n    [Symbol.iterator]() {\n        let iterator = {\n            [Symbol.iterator]() {\n                return this;\n            },\n            \n            next() {\n                if(condition) {\n                    return {value: value, done: false}\n                }\n                else {\n                    return {done: true}\n                }\n            }\n        }\n        \n        return iterator;\n    }\n}\n```\n\n#### Constructor\n\n##### `Iter(iterable)`\n\nGet `iterator` from `iterable` object and returns new `Iter` instance.\n\n```javascript\nlet iter = new Iter([1, 2, 3]); \n```\n\n##### `Iter(func)`\n\nGet `iterator` from `func` call and returns new `Iter` instance. \n\n```javascript\nlet iter = new Iter(function* () {\n    let [a, b] = [0, 1];\n    while(true) {\n        yield a;\n        [a, b] = [b, a + b]\n    }\n}); \n\n// Takes first 10 fibbonacci numbers \nfor (let i of iter.take(10)) {\n    console.log(i);\n}\n```\n\n**Note**: `Iter` instances are not multi iterable. It means if it\'s exhausted or closed cannot be iterated again.   \n\n#### Static Methods\n\n##### `Iter.getIterator(obj)`\n\nReturn an [iterator](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Iteration_protocols#iterator) object.\n\n```javascript\nlet iterator = Iter.getIterator([1, 2, 3]);\n\niterator.next() //{ value: 1, done: false }\niterator.next() //{ value: 2, done: false }\niterator.next() //{ value: 3, done: false }\niterator.next() //{ value: undefined, done: true } \n```\n\nThrows TypeError if object does not implement Iterator protocol (not iterable)\n\n```javascript\n//TypeError: obj[Symbol.iterator] is not a function\nIter.getIterator(Object.create(null)) \n```\n\n##### `Iter.isIterator(obj)`\n\nReturns **true** if `obj` implements Iterator protocol.  If `obj` is not an Iterator, `null` or `undefined` returns **false**.\n\nNote: Iterator must be an **iterable**, otherwise `isIterator` returns **false**. It is in order to guarantee that every Iterator can be safely apply to `for-of` loop.\n\n```javascript\nlet arr = [1, 2, 3];\n\nIter.isIterator(Iter.getIterator(arr)) //true\nIter.isIterator(arr[Symbol.iterator]()) //true\n\nIter.isIterator(arr) //false \nIter.isIterator({}) //false\nIter.isIterator(null) //false\n```\n\n\n##### `Iter.isIterable(obj)`\n\nReturns **true** if `obj` is iterable, otherwise **false**. Object is iterable if it implements method with key `Symbol.iterator`. \n\nIf object is iterable safely can apply to `for-of` loops, `yield* iterable`, `...iterable`.\n\n```javascript\nIter.isIterable([1, 2, 3]) //true\nIter.isIterable(\'ABC\') //true\nIter.isIterable(new Map) //true\nIter.isIterable(new Set) //true\n\nIter.isIterable({}) //false\nIter.isIterable(456) //false\n```\n\n##### `Iter.isMultiIterable(obj)` \n\nTest if `obj` can be iterated multiple times using `for-of`. In other words `obj[Symbol.iterator]()` returns fresh Iterator on every call.\n\n```javascript\nlet arr = [1, 2, 3, 4]\nIter.isMultiIterable(arr) //true\n\nfor (let v of arr) {\n    console.log(v) //1 2 3 4\n}\n\nfor (let v of arr) { \n    console.log(v) //1 2 3 4\n}\n```\n\n```javascript\nlet iterArr = Iter.getIterator([1, 2, 3, 4]);\nIter.isMultiIterable(iterArr); //false\n\nfor (let v of iterArr) {\n    console.log(v) //1 2 3 4\n}\n\n//Does not output anything, the `Iterator` is exhausted.\nfor (let v of iterArr) { \n    console.log(v)  \n}\n```\n\n\n##### `Iter.isClosable(iterator)`\nReturns **true** if `iterator` implements the optional `return` method, otherwise if the object is not `Iterator` or does not implement `return` method returns **false**  \n\n```javascript\nlet iterator = {\n    [Symbol.iterator]() {\n        return this\n    },\n    next() {\n        return {value: true, done: false}\n    },\n    return() {\n        return {done: true}\n    }\n}\n\nIter.isClosable(iterator) //true\n```\n\n```javascript\nlet iterator = {\n    [Symbol.iterator]() {\n        return this\n    },\n    next() {\n        return {value: true, done: false}\n    }\n}\n\nIter.isClosable(iterator) //false\n```\n\n##### `Iter.closeIterator(iterator)`\n\nIf the iteraror is closable calls its `return` method and returns `done` state of the iterator, otherwise returns **false**.\n\n```javascript\nlet iterator = {\n    [Symbol.iterator]() {\n        return this\n    },\n    next() {\n        return {value: true, done: false}\n    },\n    return() {\n        return {done: true}\n    }\n}\n\nIter.closeIterator(iterator); //true\n```\n\n```javascript\nlet iterator = {\n    [Symbol.iterator]() {\n        return this\n    },\n    next() {\n        return {value: true, done: false}\n    }\n}\n\nIter.closeIterator(iterator); //false\n```\n\n##### `Iter.keys(obj)`\n\nCreates new `Iter` instance which can be used to iterate over the `obj` keys. If `obj` has `keys` method it is used, otherwise `Reflect.enumerate`.\n\n```javascript\nIter.keys({\n    foo : 1,\n    bar : 2\n});\n\n// \'foo\' \'bar\'\n```\n\n```javascript\nIter.keys(new Map([\n    [\'foo\', 1],\n    [\'bar\', 2]\n]));\n\n// \'foo\' \'bar\'\n```\n\n```javascript\nIter.keys([1, 2, 3]);\n\n// 0 1 2\n```\n\n##### `Iter.entries(obj)`\n\nCreates new `Iter` instance which can be used to iterate over the `obj` entries. If `obj` has `entries` method it is used, otherwise generates pairs of `[key, value]`.\n\n```javascript\nIter.entries({\n    foo : 1,\n    bar : 2\n});\n\n// [\'foo\', 1] [\'bar\', 2]\n```\n\n##### `Iter.values(obj)`\n\nCreates new `Iter` instance which can be used to iterate over the `obj` values. If `obj` has `values` method it is used.\n\n```javascript\nIter.values({\n    foo : 1,\n    bar : 2\n});\n\n// 1 2\n```\n\n##### `Iter.reverse(arrayLike)`\n\nCreates new `Iter` instance which iterates the `arrayLike` obj in reversed order from right to left. \n\n```javascript\nIter.reverse([1, 2, 3]); // 3 2 1\nIter.reverse(\'ABC\'); // C B A\n```\n\n##### `Iter.range(start = 0, end, step = 1)`\n\nCreates new `Iter` instance which generates arithmetic progressions. The arguments must be plain integers.\n\n\n```javascript\nIter.range(5); // 0 1 2 3 4\n\nIter.range(1, 5); // 1 2 3 4\n\nIter.range(0, 20, 6); // 0 6 12 18\n\nIter.range(0, -5, -1); // 0 -1 -2 -3 -4\n```\n\n\n##### `Iter.rangeRight(start = 0, end, step = 1)`\n\nSame as `Iter.range` but generates the `range` in reversed order. \n\n```javascript\nIter.rangeRight(5); // 4 3 2 1 0\n\nIter.rangeRight(1, 5); // 4 3 2 1\n\nIter.rangeRight(0, 20, 6); // 18 12 6 0\n\nIter.rangeRight(0, -5, -1); // -4 -3 -2 -1 0\n```\n\n##### `Iter.zip(iterable, ...iterables?)`\n\nCreates new `Iter` instance, that aggregates elements from each of the iterables. On each iteration it yields array.\nUsed for lock-step iteration over several iterables at a time. When no iterables are specified, returns a zero length generator.\n\nThe left-to-right evaluation order of the iterables is guaranteed.\n\nShould only be used with unequal length inputs when you don\'t care about trailing, unmatched values from the longer iterables. If those values are important, use `Iter.longZip()` instead.\n\n```javascript\nIter.zip(\'ABCD\', \'xy\'); \n// [ \'A\', \'x\' ] [ \'B\', \'y\' ]\n\nIter.zip(Iter.range(10), [1, 2, 3, 4, 5]); \n// [ 0, 1 ] [ 1, 2 ] [ 2, 3 ] [ 3, 4 ] [ 4, 5 ]\n```\n\n##### `Iter.longZip(iterable, ...iterables?)`\n\nCreates new `Iter` instance, that aggregates elements from each of the iterables. On each iteration it yields array. If the iterables are of uneven length, missing values are filled-in with `undefined`. Iteration continues until the longest iterable is exhausted.\n\n```javascript\nIter.longZip(\'ABCD\', \'xy\'); \n// [ \'A\', \'x\' ] [ \'B\', \'y\' ] [ \'C\', undefined ] [ \'D\', undefined ]\n\nIter.longZip(Iter.range(10), [1, 2, 3, 4, 5]); \n// [ 0, 1 ] [ 1, 2 ] [ 2, 3 ] [ 3, 4 ] [ 4, 5 ] [ 5, undefined ] [ 6, undefined ] [ 7, undefined ] [ 8, undefined ] [ 9, undefined ]\n```\n\n**Note**: If one of the iterables is potentially infinite, then the `Iter.longZip()` function should be used with something that limits the number of calls (for example `take()` or `takeWhile()`).\n\n##### `Iter.count(start = 0, step = 1)`\n\nCreates new `Iter` instance, that generates evenly spaced values starting with `start`.\n\n```javascript\nIter.count(); // 0 1 2 3 4 ....\n\nIter.count(10); // 10 11 12 13 14 ...\n\nIter.count(1, 2); // 1 3 5 7 9 ....\n```\n\n**Note**: It always converts  arguments to integers.\n\n##### `Iter.cycle(iterable)`\n\nCreates new `Iter` instance, that generates elements from the `iterable` and saving a copy of each. When the `iterable` is exhausted, return elements from the saved copy. Repeats indefinitely.\n\n```javascript\nIter.cycle(\'ABCD\'); // A B C D A B C D A B C D ...\n```\n\n**Note**: It may require significant auxiliary storage (depending on the length of the `iterable`).\n\n##### `Iter.repeat(value, times = Infinity)`\n\nCreates new `Iter` instance, that generates `val` over and over again. Runs indefinitely unless the `times` argument is specified. Often used with `Iter.zip()` to create constant fields in returned array.\n\n```javascript\nIter.repeat(10, 3); // 10 10 10\n```\n\n#### Prototype Methods\n\n\n##### `enumerate(start = 0)`\n\nCreates new `Iter` instance, that on each iteration returns an array containing a count (from start which defaults to 0) and the values obtained from iterating over `this`.\n\n```javascript\nnew Iter([1, 2, 3, 4]).enumerate(); \n// [ 0, 1 ] [ 1, 2 ] [ 2, 3 ] [ 3, 4 ]\n\nnew Iter(\'ABC\').enumerate();        \n// [ 0, \'A\' ] [ 1, \'B\' ] [ 2, \'C\' ]\n```\n\n```javascript\nnew Iter([1, 2, 3, 4]).enumerate(1); \n// [ 1, 1 ] [ 2, 2 ] [ 3, 3 ] [ 4, 4 ]\n\nnew Iter(\'ABC\').enumerate(1);        \n// [ 1, \'A\' ] [ 2, \'B\' ] [ 3, \'C\' ]\n```\n\n##### `accumulate(callback = (x, y) => x + y)`\n\nCreates new `Iter` instance, that returns accumulated sums, or accumulated results of other binary functions (specified via the optional `callback` argument). If `callback` is supplied, it should be a function of two arguments.\n\n```javascript\nlet data = [3, 4, 6, 2, 1, 9, 0, 7, 5, 8];\n\n\nnew Iter(data).accumulate();            \n// sum 3 7 13 15 16 25 25 32 37 45\n\nnew Iter(data).accumulate(Math.max); \n// running max 3 4 6 6 6 9 9 9 9 9\n```\n\n##### `chain(...iterables)`\n\nCreates new `Iter` instance, that returns elements first from `this`, then first `iterable` until it is exhausted, then proceeds to the next `iterable`, until all of the `iterables` are exhausted. Used for treating consecutive sequences as a single sequence.\n\n```javascript\nnew Iter(\'ABC\').chain(\'DEF\', \'GHI\'); // A B C D E F G H I\n```\n\n##### `compress(selectors)`\n\nCreates new `Iter` instance, that filters elements returning only those that have a corresponding element in `selectors` that evaluates to `true`. Stops when either the `this` or `selectors` iterables has been exhausted.\n\n```javascript\nnew Iter(\'ABCDEF\').compress([1, 0, 1, 0, 1, 1]); //A C E F\n```\n\n##### `groupBy(key = (x) => x)`\n\nCreates new `Iter` instance, that returns consecutive keys and groups. The `key` is a function computing a key value for each element. If not specified or `undefined`, `key` defaults to an identity and returns the element unchanged. Generally, the iterable needs to already be sorted on the same key function.\n\n```javascript\nlet arr = [1, 1, 1, 1, 2, 2, 3, 4, 4, 5, 5, 5, 5];\n\nnew Iter(arr).groupBy(); \n// [ 1, [ 1, 1, 1, 1 ] ] [ 2, [ 2, 2 ] ] [ 3, [ 3 ] ] [ 4, [ 4, 4 ] ] [ 5, [ 5, 5, 5, 5 ] ]\n```\n\n```javscript\nnew Iter(\'AAABBBCDEE\').groupBy((x) => x.charCodeAt());\n// [ 65, [ \'A\', \'A\', \'A\' ] ] [ 66, [ \'B\', \'B\', \'B\' ] ] [ 67, [ \'C\' ] ] [ 68, [ \'D\' ] ] [ 69, [ \'E\', \'E\' ] ] \n```\n\n##### `map(callback = (x) => x)`\n\nCreates new `Iter` instance, that computes the `callback` using argument from `this`.\n\n```javascript\nnew Iter([1, 2, 3]).map((x) => x * x); \n// 1 4 9\n```\n\n##### `flatMap(callback = (x) => x, deep = true)`\n\nFlattens recursively and apply `callback` for each value. \n\n```javascript\nlet arr = [[1, [2, 3, 4], 5], 6, 7, [[[8, 9]]], 10];\n\nnew Iter(arr).flatMap(); \n// 1 2 3 4 5 6 7 8 9 10\n\nnew Iter(arr).flatMap(x => x * x); \n// 1 4 9 16 25 36 49 64 81 100\n```\n\n##### `spreadMap(callback)`\n\nCreates new `Iter` instance, that computes the `callback` using arguments obtained from the `this`. Used when argument parameters are already grouped in a single iterable (the data has been "pre-zipped").\n\n```javascript\nnew Iter([[2, 5], [3, 2], [10, 3]]).spreadMap(Math.pow); \n// 32 9 1000\n```\n\n##### `take(n = Infinity)`\n\nCreates new `Iter` instance, that takes `n` elements.\n\n```javascript\nnew Iter([1, 2, 3, 4, 5]).take(2); // 1 2\n```\n\n##### `drop(n = Infinity)`\n\nCreates new `Iter` instance, that drops `n` elements.\n\n```javascript \nnew Iter([1, 2, 3, 4, 5]).drop(2); // 3 4 5\n```\n\n##### `dropWhile(callback = Boolean)`\n\nCreates new `Iter` instance, that drops elements as long as the `callback` is true; afterwards, returns every element. Note, it does not produce any output until the `callback` first becomes false, so it may have a lengthy start-up time.\n\n```javascript\nnew Iter([1, 2, 3, 4, 5, 6]).dropWhile((x) => x <= 3); // 4 5 6  \n```\n\n##### `takeWhile(callback = Boolean)`\n\nCreates new `Iter` instance, that returns elements as long as the `callback` is true.\n\n```javascript\nnew Iter([1, 2, 3, 4, 5, 6]).takeWhile((x) => x <= 3); // 1 2 3\n```\n\n##### `filter(callback = Boolean)`\n\nCreates new `Iter` instance, that filters elements returning only those for which the `callback` is `true`. If `callback` not specified or `undefined`, return the items that are evaluated to `true`.\n\n```javascript\nIter.range(10).filter((x) => x % 2); // 1 3 5 7 9\n```\n\n##### `filterFalse(callback = Boolean)`\n\nCreates new `Iter` instance, that filters elements returning only those for which the `callback` is `false`. If `callback` not specified or `undefined`, return the items that are evaluated to `false`.\n\n```javascript\nIter.range(10).filterFalse((x) => x % 2); // 0 2 4 6 8\n```\n\n##### `product(b = [], ...iterables)`\n\nCreates new `Iter` instance, that generates cartesian product of `this`, `b` and `iterables`.\n\n```javascript\nnew Iter([1, 2, 3]).product(); // [] product with empty set\n\nnew Iter([1, 2, 3]).product(\'AB\');\n// [ 1, \'A\' ] [ 1, \'B\' ] [ 2, \'A\' ] [ 2, \'B\' ] [ 3, \'A\' ] [ 3, \'B\' ]\n \n```\n\n##### `permutations(r = Infinity)`\n\nCreates new `Iter` instance, that returns successive `r` length permutations.\n\nIf `r` is not specified or is `undefined`, then all possible full-length permutations are generated.\n\nPermutations are emitted in lexicographic sort order. So, if the `this` is sorted, the permutation arrays will be produced in sorted order.\n\nElements are treated as unique based on their position, not on their value. So if the input elements are unique, there will be no repeat values in each permutation.\n\n```javascript\nnew Iter(\'ABCD\').permutations(2); \n// [ \'A\', \'B\' ] [ \'A\', \'C\' ] [ \'A\', \'D\' ] [ \'B\', \'A\' ] \n// [ \'B\', \'C\' ] [ \'B\', \'D\' ] [ \'C\', \'A\' ] [ \'C\', \'B\' ] \n// [ \'C\', \'D\' ] [ \'D\', \'A\' ] [ \'D\', \'B\' ] [ \'D\', \'C\' ]\n```\n\n```javascript  \nIter.range(3).permutations();\n// [ 0, 1, 2 ] [ 0, 2, 1 ] [ 1, 0, 2 ] \n// [ 1, 2, 0 ] [ 2, 0, 1 ] [ 2, 1, 0 ]\n```\n\n##### `combinations(r)`\n\nCreates new `Iter` instance, that returns `r` length subsequences of elements.\n\nCombinations are emitted in lexicographic sort order. So, if the `this` is sorted, the combination arrays will be produced in sorted order.\n\nElements are treated as unique based on their position, not on their value. So if the input elements are unique, there will be no repeat values in each combination.\n\n```javascript\nnew Iter(\'ABCD\').combinations(2); \n// [ \'A\', \'B\' ] [ \'A\', \'C\' ] [ \'A\', \'D\' ] \n// [ \'B\', \'C\' ] [ \'B\', \'D\' ] [ \'C\', \'D\' ]\n```\n\n```javascript\nIter.range(4).combinations(3);\n// [ 0, 1, 2 ] [ 0, 1, 3 ] [ 0, 2, 3 ] [ 1, 2, 3 ]\n```\n\n##### `toIterator()`\n\nReturns external `iterator` usefull for manual iteration. \n\n```javascript\nlet iterator = Iter.range(5).filter(x => x > 2).toIterator();\n\niterator.next(); // { value: 3, done: false }\niterator.next(); // { value: 4, done: false }\niterator.next(); // { value: undefined, done: true }\n```\n\n##### `toArray()`\n\n```javascript\nIter.range(5).filter(x => x > 2).toArray(); // [ 3, 4 ]\n```\n\n## Browsers Support\n\nCurrently there is no browser with full support of ES6, but the library can be used with [Babel](https://babeljs.io/) transpiler.\n\n## Author\n\nAsen Bozhilov - [@abozhilov](https://twitter.com/abozhilov)\n\n## Credits \n\n[Dr. Axel Rauschmayer](http://www.2ality.com/) and his excellent book [Exploring ES6](http://exploringjs.com/)\n\n## License\n\n**MIT**  \n\n',
+18 silly publish   readmeFilename: 'README.md',
+18 silly publish   gitHead: '6eeec23aba095000cff6af835d0bdf688c26d27a',
+18 silly publish   _id: 'es-iter@0.9.7',
+18 silly publish   _shasum: '4828c34976c05bb392d925c1777f9a10f3e366da',
+18 silly publish   _from: '.' }
+19 verbose getPublishConfig undefined
+20 silly mapToRegistry name es-iter
+21 silly mapToRegistry using default registry
+22 silly mapToRegistry registry https://registry.npmjs.org/
+23 silly mapToRegistry uri https://registry.npmjs.org/es-iter
+24 verbose publish registryBase https://registry.npmjs.org/
+25 silly publish uploading /home/abozhilov/.npm/es-iter/0.9.7/package.tgz
+26 verbose request uri https://registry.npmjs.org/es-iter
+27 verbose request sending authorization for write operation
+28 info attempt registry request try #1 at 7:45:00 PM
+29 verbose request using bearer token for auth
+30 verbose request id e24950ab2c07c66f
+31 http request PUT https://registry.npmjs.org/es-iter
+32 http 403 https://registry.npmjs.org/es-iter
+33 verbose headers { 'content-type': 'application/json',
+33 verbose headers   'cache-control': 'max-age=300',
+33 verbose headers   'content-length': '128',
+33 verbose headers   'accept-ranges': 'bytes',
+33 verbose headers   date: 'Mon, 14 Dec 2015 17:45:02 GMT',
+33 verbose headers   via: '1.1 varnish',
+33 verbose headers   connection: 'keep-alive',
+33 verbose headers   'x-served-by': 'cache-ams4129-AMS',
+33 verbose headers   'x-cache': 'MISS',
+33 verbose headers   'x-cache-hits': '0',
+33 verbose headers   'x-timer': 'S1450115100.648940,VS0,VE2050' }
+34 verbose request invalidating /home/abozhilov/.npm/registry.npmjs.org/es-iter on PUT
+35 error publish Failed PUT 403
+36 verbose stack Error: "You cannot publish over the previously published version 0.9.7. Try bumping the version to 1.0.0" : es-iter
+36 verbose stack     at makeError (/usr/local/lib/node_modules/npm/node_modules/npm-registry-client/lib/request.js:264:12)
+36 verbose stack     at CachingRegistryClient.<anonymous> (/usr/local/lib/node_modules/npm/node_modules/npm-registry-client/lib/request.js:252:14)
+36 verbose stack     at Request._callback (/usr/local/lib/node_modules/npm/node_modules/npm-registry-client/lib/request.js:172:14)
+36 verbose stack     at Request.self.callback (/usr/local/lib/node_modules/npm/node_modules/request/request.js:198:22)
+36 verbose stack     at emitTwo (events.js:87:13)
+36 verbose stack     at Request.emit (events.js:172:7)
+36 verbose stack     at Request.<anonymous> (/usr/local/lib/node_modules/npm/node_modules/request/request.js:1082:10)
+36 verbose stack     at emitOne (events.js:82:20)
+36 verbose stack     at Request.emit (events.js:169:7)
+36 verbose stack     at IncomingMessage.<anonymous> (/usr/local/lib/node_modules/npm/node_modules/request/request.js:1009:12)
+37 verbose statusCode 403
+38 verbose pkgid es-iter
+39 verbose cwd /home/abozhilov/Dev/IterJS
+40 error Linux 3.13.0-24-generic
+41 error argv "/usr/local/bin/node" "/usr/local/bin/npm" "publish"
+42 error node v4.2.1
+43 error npm  v3.5.2
+44 error code E403
+45 error "You cannot publish over the previously published version 0.9.7. Try bumping the version to 1.0.0" : es-iter
+46 error If you need help, you may report this error at:
+46 error     <https://github.com/npm/npm/issues>
+47 verbose exit [ 1, true ]
