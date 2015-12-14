@@ -279,7 +279,11 @@ Iter.values({
 
 ##### `Iter.reverse(arrayLike)`
 
+<<<<<<< HEAD
 Creates new `Iter` instance which iterates the `arrayLike` obj in reversed order from right to left. 
+=======
+Creates new `Iter` instance which iterates the `arrayLike` obj in reverse order - from right to left. 
+>>>>>>> f3291d4ebe180be7e5b9e00cf5c4a1b18613bc8b
 
 ```javascript
 Iter.reverse([1, 2, 3]); // 3 2 1
@@ -292,11 +296,19 @@ Creates new `Iter` instance which generates arithmetic progressions. The argumen
 
 
 ```javascript
+<<<<<<< HEAD
 Iter.range(5); // 0 1 2 3 4
 
 Iter.range(1, 5); // 1 2 3 4
 
 Iter.range(0, 20, 6); // 0 6 12 18
+=======
+Iter.range(10); // 0 1 2 3 4 5 6 7 8 9
+
+Iter.range(1, 11); // 1 2 3 4 5 6 7 8 9 10
+
+Iter.range(0, 30, 5); // 0 5 10 15 20 25
+>>>>>>> f3291d4ebe180be7e5b9e00cf5c4a1b18613bc8b
 
 Iter.range(0, -5, -1); // 0 -1 -2 -3 -4
 ```
