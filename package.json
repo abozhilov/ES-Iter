@@ -1,5 +1,5 @@
 {
-  "name": "ES-Iter",
+  "name": "Iter",
   "version": "0.9.7",
   "description": "Itertools for JavaScript",
   "main": "src/Iter.js",

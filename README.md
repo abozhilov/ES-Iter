@@ -1,4 +1,4 @@
-#ES-Iter v.0.9.7
+#Iter v.0.9.7
 
 `Iter` is ES6 class which provides methods for efficient iteration within `for-of` loop or using external `Iterator`. It is inspired by Python's `itertools` module, but designed for JavaScript developers.  
 
