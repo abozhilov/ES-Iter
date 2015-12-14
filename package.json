@@ -1,19 +1,27 @@
 {
   "name": "es-iter",
-  "version": "0.9.7",
+  "version": "0.9.8",
   "description": "Itertools for JavaScript",
   "main": "src/Iter.js",
   "devDependencies": {
-    "babel-preset-es2015" : "*",
-    "babel-polyfill" : "*",
+    "babel-preset-es2015": "*",
+    "babel-polyfill": "*",
     "babel-jest": "*",
     "jest-cli": "*"
   },
   "jest": {
     "scriptPreprocessor": "<rootDir>/node_modules/babel-jest",
-    "testFileExtensions": ["js"],
-    "moduleFileExtensions": ["js", "json"],
-    "testPathIgnorePatterns": ["/node_modules/", "auto_mock_off.js"],
+    "testFileExtensions": [
+      "js"
+    ],
+    "moduleFileExtensions": [
+      "js",
+      "json"
+    ],
+    "testPathIgnorePatterns": [
+      "/node_modules/",
+      "auto_mock_off.js"
+    ],
     "testDirectoryName": "tests"
   },
   "scripts": {
