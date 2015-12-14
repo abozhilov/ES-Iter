@@ -1,5 +1,5 @@
 import './auto_mock_off';
-import 'babel/polyfill';
+import 'babel-polyfill';
 import Iter from '../src/Iter';
 
 describe('longZip', () => {
@@ -10,20 +10,20 @@ describe('longZip', () => {
     }
     
     it('packs array with length equal to number of iterables', () => {
-        let arr = [...new Iter([1]).longZip([2], [3])];
+        let arr = [...Iter.longZip([1], [2], [3])];
         
         expect(Array.isArray(arr[0])).toBe(true);
         expect(arr[0].length).toBe(3);
     })
     
     it('stops when longest iterable is exhausted', () => {
-        let arr = [...new Iter(gen(3)).longZip(gen(10))];
+        let arr = [...Iter.longZip(gen(3), gen(10))];
         
         expect(arr.length).toBe(10);
     })
     
     it('yields undefined if shorter iterator is exhausted', () => {
-        for (let [i, v] of new Iter(gen(0)).longZip(gen(10))) {
+        for (let [i, v] of Iter.longZip(gen(0), gen(10))) {
             expect(i).toBe(undefined);
         }
     })
@@ -32,7 +32,7 @@ describe('longZip', () => {
         let iter1 = gen(4),
             iter2 = gen(20);
         
-        for (let [i, j] of new Iter(iter1).longZip(iter2)) {
+        for (let [i, j] of Iter.longZip(iter1, iter2)) {
             break;
         }
         
@@ -43,11 +43,22 @@ describe('longZip', () => {
         expect(res2.length).toBe(0);        
     })
     
+    it('throws TypeError without arguments', () => {
+        var err = {};
+        
+        try {
+            Iter.longZip()
+        } catch (e) {
+            err = e;
+        }
+        expect(err instanceof TypeError).toBe(true);
+    })
+    
     it('throws TypeError if argument is not iterable', () => {
         var err = {};
         
         try {
-            new Iter([]).longZip(null, 1234)
+            Iter.longZip([], null, 1234)
         } catch (e) {
             err = e;
         }

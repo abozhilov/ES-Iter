@@ -1,10 +1,10 @@
 import './auto_mock_off';
-import 'babel/polyfill';
+import 'babel-polyfill';
 import Iter from '../src/Iter';
 
 describe('cycle', () => {
     it('indefinitely yields all of the elements of iterable', () => {
-        let iter = Iter.cycle(Iter.range(5)).zip(Iter.range(25));
+        let iter = Iter.zip(Iter.cycle(Iter.range(5)), Iter.range(25));
         
         let j = 0;
         for (let [i, v] of iter) {

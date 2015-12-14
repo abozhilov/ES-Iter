@@ -1,5 +1,5 @@
 import './auto_mock_off';
-import 'babel/polyfill';
+import 'babel-polyfill';
 import Iter from '../src/Iter';
 
 describe('flatMap', () => {
@@ -7,6 +7,10 @@ describe('flatMap', () => {
         let arr = [[1, [2, [3]], [[[4]], 5]]];
         
         expect([...new Iter(arr).flatMap()].join()).toBe([1, 2, 3, 4, 5].join());
+    })
+    
+    it('flattens only one level if deep=false', () => {
+        expect([...new Iter([[[1, 2]], [[3, 4]]]).flatMap(...[, false])].length).toBe(2);
     })
     
     it('calls callback for every element and yields the returned result', () => {

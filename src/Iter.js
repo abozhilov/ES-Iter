@@ -12,40 +12,6 @@ function toPositiveInteger (n) {
     return Math.floor(n);
 }
 
-function rangeGen (start, end, step, reverse) {
-    start = toInteger(start);
-    end   = toInteger(end);
-    step  = toInteger(step);
-    
-    let errArg = (start !== start && 'start') || (end !== end && 'end') || (step !== step && 'step');
-    if (errArg) {
-        throw TypeError('Expected number as ' + errArg + ' argument'); 
-    }
-    if (step < 0) {
-        throw RangeError('step cannot be negative');
-    }
-    
-    step = reverse ? -step : step;
-    
-    return function* () {
-        if (step > 0) {
-            while (start < end) {
-                yield start;
-                start += step;
-            }
-        }
-        else if (step < 0) {
-            while (start > end) {
-                yield start;
-                start += step;
-            }
-        }
-        else {
-            yield* Iter.repeat(start, Math.abs(end - start));
-        }
-    }
-}
-
 export default class Iter {
     constructor (iterable) {
         let iterator = Iter.getIterator(typeof iterable === 'function' ? iterable() : iterable);
@@ -79,25 +45,29 @@ export default class Iter {
         }
         return false;
     }
-
-    static closeAllIterators (...iterators) {
-        for (let it of iterators) {
-            Iter.closeIterator(it);
-        }
-    }
     
     static keys (obj) {
         if (typeof obj.keys === 'function') {
             return new Iter(obj.keys());
         }
-        return new Iter(Object.keys(obj));
+        
+        let iterator = Reflect.enumerate(obj);
+        let hasOwnP = {}.hasOwnProperty;
+        
+        return new Iter(function* () {
+            for (let k of iterator) {
+                if (hasOwnP.call(obj, k)) {
+                    yield k;
+                }
+            }
+        });
     }
     
     static entries (obj) {
         if (typeof obj.entries === 'function') {
             return new Iter(obj.entries());
         }
-        let keys = Object.keys(obj);
+        let keys = Iter.keys(obj);
         return new Iter(function* () {
             for (let k of keys) {
                 yield [k, obj[k]];
@@ -109,7 +79,7 @@ export default class Iter {
         if (typeof obj.values === 'function') {
             return new Iter(obj.values());
         }
-        let keys = Object.keys(obj);
+        let keys = Iter.keys(obj);
         return new Iter(function* () {
             for (let k of keys) {
                 yield obj[k];
@@ -132,8 +102,33 @@ export default class Iter {
             end = start;
             start = 0;
         }
-    
-        return new Iter(rangeGen(start, end, step));
+        
+        start = toInteger(start);
+        end   = toInteger(end);
+        step  = toInteger(step);
+        
+        let errArg = (start !== start && 'start') || (end !== end && 'end') || (step !== step && 'step');
+        if (errArg) {
+            throw TypeError('Expected number as ' + errArg + ' argument'); 
+        }
+        if (step == 0) {
+            throw RangeError('step cannot be zero');
+        }
+        
+        return new Iter(function* () {
+            if (step > 0) {
+                while (start < end) {
+                    yield start;
+                    start += step;
+                }
+            }
+            else if (step < 0) {
+                while (start > end) {
+                    yield start;
+                    start += step;
+                }
+            }
+        })
     }
     
     static rangeRight (start = 0, end, step = 1) {
@@ -142,15 +137,74 @@ export default class Iter {
             start = 0;
         }
         
-        let k = 0;
-        if (start < end) {
-            k = ((end - start) % step) || step || 1;
+        let k = Math.abs((start - end) % step || step);
+        if (start > end) {
+            end += k;
+            start++;
         }
-        return new Iter(rangeGen(end - k, start - 1, step, true));        
+        else {
+            end -= k;
+            start--; 
+        }
+        
+        return Iter.range(end, start, -step);
     } 
     
+    static zip (iterable, ...iterables) {
+        let iterators = [iterable, ...iterables].map(Iter.getIterator);
+        
+        return new Iter(function* () {
+            try {
+                while (true) {
+                    let res = [];
+                    for (let it of iterators) {
+                        let curr = it.next();
+                        if (curr.done) {
+                            for (let i of iterators) {
+                                if (i !== it) Iter.closeIterator(i);
+                            }
+                            return;
+                        }
+                        res.push(curr.value);
+                    }
+                    yield res;
+                }
+            } finally {
+                iterators.map(Iter.closeIterator);
+            }
+        });
+    }
+    
+    static longZip (iterable, ...iterables) {
+        let iterators = [iterable, ...iterables].map(Iter.getIterator),
+            map       = new Map(Iter.zip(iterators, Iter.repeat(false))),
+            count     = 0;
+        
+        return new Iter(function* () {    
+            try {    
+                while (true) {
+                    let res = [];
+                    for (let it of iterators) {
+                        let curr = it.next();
+                        if (curr.done && !map.get(it)) {
+                            map.set(it, true);
+                            count++;
+                        }
+                        res.push(curr.value);
+                    }
+                    if (count >= iterators.length) {
+                        return;
+                    } 
+                    yield res;
+                }
+            } finally {
+                iterators.map(Iter.closeIterator);
+            }
+        });
+    }
+    
     static count (start, step = 1) {
-        return Iter.range(start, Infinity, step);
+        return Iter.range(start, step * Infinity, step);
     }
 
     static cycle (iterable) {
@@ -176,71 +230,8 @@ export default class Iter {
         });
     }
     
-    toIterator () {
-        return Iter.getIterator(this);
-    } 
-    
-    toArray () {
-        return [...Iter.getIterator(this)];        
-    }
-    
-    zip (...iterables) {
-        let iterators = [this, ...iterables].map(Iter.getIterator),
-            done = iterables.length;
-        
-        return new Iter(function* () {
-            try {
-                while (done) {
-                    let res = [];
-                    for (let it of iterators) {
-                        let curr = it.next();
-                        if (curr.done) {
-                            for (let i of iterators) {
-                                if (i !== it) Iter.closeIterator(i);
-                            }
-                            return;
-                        }
-                        res.push(curr.value);
-                    }
-                    yield res;
-                }
-            } finally {
-                Iter.closeAllIterators(...iterators);
-            }
-        });
-    }
-    
-    longZip (...iterables) {
-        let iterators = [this, ...iterables].map(Iter.getIterator),
-            map       = new Map(new Iter(iterators).zip(Iter.repeat(false))),
-            count     = 0,
-            done      = iterators.length;
-        
-        return new Iter(function* () {    
-            try {    
-                while (done) {
-                    let res = [];
-                    for (let it of iterators) {
-                        let curr = it.next();
-                        if (curr.done && !map.get(it)) {
-                            map.set(it, true);
-                            count++;
-                        }
-                        res.push(curr.value);
-                    }
-                    if (count >= iterators.length) {
-                        return;
-                    } 
-                    yield res;
-                }
-            } finally {
-                Iter.closeAllIterators(...iterators);
-            }
-        });
-    }
-    
     enumerate (start = 0) {
-        return Iter.count(start).zip(this);
+        return Iter.zip(Iter.count(start), this);
     }
     
     accumulate (callback = (x, y) => x + y) {
@@ -274,7 +265,7 @@ export default class Iter {
     }
     
     compress (selectors) {
-        let iterator = this.zip(selectors);
+        let iterator = Iter.zip(this, selectors);
         
         return new Iter(function* () {
             for (let [v, s] of iterator) {
@@ -317,58 +308,26 @@ export default class Iter {
         })
     }
     
-    flatMap(callback = (x) => x) {
+    flatMap(callback = (x) => x, deep = true) {
         let iterator = Iter.getIterator(this);
         let used  = new Set();
         
-        return new Iter(function* flatten(iterable) {
+        return new Iter(function* flatten(iterable = iterator, level = 0) {
             if (used.has(iterable)) {
                 return;
             }
             
             used.add(iterable); 
             for (let i of iterable) {
-                if (Iter.isIterable(i)) {
-                    yield* flatten(i);
+                if (Iter.isIterable(i) && (deep || level < 1)) {
+                    yield* flatten(i, level + 1);
                 }
                 else {
                     yield callback(i);
                 }
             }
             used.delete(iterable);
-        }(iterator)) 
-    }
-    
-    zipMap (...iterables) {
-        let callback = iterables[iterables.length - 1];
-        
-        if (typeof callback != 'function') {
-            return this.zip(...iterables);
-        }
-        else {
-            let iterator = this.zip(...iterables.slice(0, -1));
-            return new Iter(function* (){
-                for (let arr of iterator) {
-                    yield callback(...arr);
-                }
-            });
-        }
-    }
-    
-    longZipMap (...iterables) {
-        let callback = iterables[iterables.length - 1];
-        
-        if (typeof callback != 'function') {
-            return this.longZip(...iterables);
-        }
-        else {    
-            let iterator = this.longZip(...iterables.slice(0, -1));
-            return new Iter(function* () {
-                for (let arr of iterator) {
-                    yield callback(...arr);
-                }
-            });
-        }
+        }) 
     }
     
     spreadMap (callback) {
@@ -517,6 +476,14 @@ export default class Iter {
                 yield* gen(idx + 1, i + 1);
             }
         });
+    }
+    
+    toIterator () {
+        return Iter.getIterator(this);
+    } 
+    
+    toArray () {
+        return [...Iter.getIterator(this)];        
     }
 }
 

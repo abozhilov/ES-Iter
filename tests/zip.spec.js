@@ -1,5 +1,5 @@
 import './auto_mock_off';
-import 'babel/polyfill';
+import 'babel-polyfill';
 import Iter from '../src/Iter';
 
 describe('zip', () => {
@@ -10,24 +10,21 @@ describe('zip', () => {
     }
     
     it('packs array with length equal to number of iterables', () => {
-        let arr = [...new Iter([1]).zip([2], [3])];
+        let arr = [...Iter.zip([1], [2], [3])];
+        
+        expect([...Iter.zip([1])][0].length).toBe(1);
         
         expect(Array.isArray(arr[0])).toBe(true);
         expect(arr[0].length).toBe(3);
     })
     
-    it('does not yield anything with no arguments', () => {
-        let arr = [...new Iter([1]).zip()];
-        expect(arr.length).toBe(0);        
-    })
-    
     it('does not yield anything with zero length iterable', () => {
-        let arr = [...Iter.range(10).zip([])];
+        let arr = [...Iter.zip([])];
         expect(arr.length).toBe(0);
     })
     
     it('stops when shortest iterable is exhausted', () => {
-        let arr = [...new Iter(gen(3)).zip(gen(10))];
+        let arr = [...Iter.zip(gen(3), gen(10))];
         
         expect(arr.length).toBe(3);
     }) 
@@ -35,7 +32,7 @@ describe('zip', () => {
     it('closes all closable iterators when is determinated shortest iterable', () => {
         let iter1 = gen(4),
             iter2 = gen(20),
-            zipRes = [...new Iter(iter1).zip(iter2)],
+            zipRes = [...Iter.zip(iter1, iter2)],
             res1 = [...iter1],
             res2 = [...iter2];
             
@@ -47,7 +44,7 @@ describe('zip', () => {
         let iter1 = gen(4),
             iter2 = gen(20);
         
-        for (let [i, j] of new Iter(iter1).zip(iter2)) {
+        for (let [i, j] of Iter.zip(iter1, iter2)) {
             break;
         }
         
@@ -58,11 +55,22 @@ describe('zip', () => {
         expect(res2.length).toBe(0);        
     })
     
+    it('throws TypeError without arguments', () => {
+        var err = {};
+        
+        try {
+            Iter.zip()
+        } catch (e) {
+            err = e;
+        }
+        expect(err instanceof TypeError).toBe(true);
+    })
+    
     it('throws TypeError if argument is not iterable', () => {
         var err = {};
         
         try {
-            new Iter([]).zip(null, 1234)
+            Iter.zip([], null, 1234)
         } catch (e) {
             err = e;
         }

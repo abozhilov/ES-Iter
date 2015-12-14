@@ -1,18 +1,27 @@
 {
-  "name": "ES-Iter",
-  "version": "0.9.6",
+  "name": "es-iter",
+  "version": "0.9.7",
   "description": "Itertools for JavaScript",
   "main": "src/Iter.js",
   "devDependencies": {
-    "babel-preset-es2015" : "*",
+    "babel-preset-es2015": "*",
+    "babel-polyfill": "*",
     "babel-jest": "*",
     "jest-cli": "*"
   },
   "jest": {
     "scriptPreprocessor": "<rootDir>/node_modules/babel-jest",
-    "testFileExtensions": ["js"],
-    "moduleFileExtensions": ["js", "json"],
-    "testPathIgnorePatterns": ["/node_modules/", "auto_mock_off.js"],
+    "testFileExtensions": [
+      "js"
+    ],
+    "moduleFileExtensions": [
+      "js",
+      "json"
+    ],
+    "testPathIgnorePatterns": [
+      "/node_modules/",
+      "auto_mock_off.js"
+    ],
     "testDirectoryName": "tests"
   },
   "scripts": {
@@ -20,11 +29,11 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/abozhilov/IterJS.git"
+    "url": "https://github.com/abozhilov/ES-Iter.git"
   },
   "keywords": [
-    "Iter",
     "itertools",
+    "Iter",
     "iterator",
     "generator",
     "ES6"
@@ -32,7 +41,7 @@
   "author": "Asen Bozhilov <asen.bozhilov@gmail.com>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/abozhilov/IterJS/issues"
+    "url": "https://github.com/abozhilov/ES-Iter/issues"
   },
-  "homepage": "https://github.com/abozhilov/IterJS"
+  "homepage": "https://github.com/abozhilov/ES-Iter"
 }

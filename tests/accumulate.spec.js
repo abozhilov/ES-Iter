@@ -1,5 +1,5 @@
 import './auto_mock_off';
-import 'babel/polyfill';
+import 'babel-polyfill';
 import Iter from '../src/Iter';
 
 describe('accumulate', () => {
@@ -24,7 +24,7 @@ describe('accumulate', () => {
     it('yields sum of elements without specified callback', () => {
         let res = [1, 3, 6, 10, 15];
             
-        for (let [i, j] of Iter.range(1, 6).accumulate().zip(res)) {
+        for (let [i, j] of Iter.zip(Iter.range(1, 6).accumulate(), res)) {
             expect(i).toBe(j);
         }
     })
@@ -32,7 +32,7 @@ describe('accumulate', () => {
     it('yields factorial with specified callback', () => {
         let res = [1, 2, 6, 24, 120];
         
-        for (let [i, j] of Iter.range(1, 6).accumulate((acc, x) => acc * x).zip(res)) {
+        for (let [i, j] of Iter.zip(Iter.range(1, 6).accumulate((acc, x) => acc * x), res)) {
             expect(i).toBe(j);
         }
     })
