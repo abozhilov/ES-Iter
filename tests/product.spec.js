@@ -15,14 +15,14 @@ describe('product', () => {
     
     it('yields tupple with number of items equal to passed iterables', () => {
         for (let [i, v] of Iter.range(1, 5).product(Iter.range(1, 5))) {
-            expect(i).toNotBe(undefined);
-            expect(v).toNotBe(undefined);
+            expect(i).not.toBe(undefined);
+            expect(v).not.toBe(undefined);
         }
         
         for (let [i, v, j] of Iter.range(1, 5).product(Iter.range(1, 5), Iter.range(1, 5))) {
-            expect(i).toNotBe(undefined);
-            expect(v).toNotBe(undefined);
-            expect(j).toNotBe(undefined);
+            expect(i).not.toBe(undefined);
+            expect(v).not.toBe(undefined);
+            expect(j).not.toBe(undefined);
         }
     })
     
