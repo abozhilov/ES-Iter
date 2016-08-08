@@ -1,9 +1,11 @@
 {
   "name": "es-iter",
-  "version": "0.9.11",
+  "version": "0.9.12",
   "description": "Itertools for JavaScript",
-  "main": "src/Iter.js",
+  "main": "build/Iter.js",
+  "jsnext:main" : "src/Iter.js",
   "devDependencies": {
+    "babel-cli" : "*",
     "babel-preset-es2015": "*",
     "babel-polyfill": "*",
     "babel-jest": "*",
@@ -25,7 +27,8 @@
     "testDirectoryName": "tests"
   },
   "scripts": {
-    "test": "jest"
+    "test": "jest",
+    "build": "babel --presets=es2015 src -d build"
   },
   "repository": {
     "type": "git",
