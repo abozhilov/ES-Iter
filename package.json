@@ -28,7 +28,7 @@
   },
   "scripts": {
     "test": "jest",
-    "build": "babel --presets=es2015 src -d build"
+    "build": "babel --source-maps  --presets=es2015 src -d build"
   },
   "repository": {
     "type": "git",
