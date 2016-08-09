@@ -1,6 +1,5 @@
-import './auto_mock_off';
-import 'babel-polyfill';
-import Iter from '../src/Iter';
+require('./auto_mock_off');
+let Iter = require('../src/Iter');
 
 describe('values', () => {
     it('it yields values using Object.keys if obj has not `values` method', () => {
@@ -24,7 +23,7 @@ describe('values', () => {
         let map = new Map([[1, 1], [2, 2]]);
         let set = new Set([1, 2, 3]);
         
-        expect([...Iter.values(arr)].join()).toBe([...arr.values()].join());
+        expect([...Iter.values(arr)].join()).toBe([...arr].join());
         expect([...Iter.values(map)].join()).toBe([...map.values()].join());
         expect([...Iter.values(set)].join()).toBe([...set.values()].join());
     })

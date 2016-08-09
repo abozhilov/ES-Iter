@@ -12,7 +12,7 @@ function toPositiveInteger (n) {
     return Math.floor(n);
 }
 
-export default class Iter {
+module.exports = class Iter {
     constructor (iterable) {
         let iterator = Iter.getIterator(typeof iterable === 'function' ? iterable() : iterable);
         
@@ -41,7 +41,8 @@ export default class Iter {
 
     static closeIterator (iterator) {
         if (Iter.isClosable(iterator)) {
-            return Boolean(iterator.return().done);
+            let retStatus = iterator.return();
+            return Boolean(retStatus && retStatus.done);
         }
         return false;
     }
@@ -51,15 +52,10 @@ export default class Iter {
             return new Iter(obj.keys());
         }
         
-        let iterator = Reflect.enumerate(obj);
-        let hasOwnP = {}.hasOwnProperty;
-        
+        let keys = Reflect.ownKeys(obj);
+
         return new Iter(function* () {
-            for (let k of iterator) {
-                if (hasOwnP.call(obj, k)) {
-                    yield k;
-                }
-            }
+            yield* keys;
         });
     }
     
@@ -160,9 +156,6 @@ export default class Iter {
                     for (let it of iterators) {
                         let curr = it.next();
                         if (curr.done) {
-                            for (let i of iterators) {
-                                if (i !== it) Iter.closeIterator(i);
-                            }
                             return;
                         }
                         res.push(curr.value);
@@ -486,4 +479,3 @@ export default class Iter {
         return [...Iter.getIterator(this)];        
     }
 }
-

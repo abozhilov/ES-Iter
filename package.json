@@ -1,50 +1,46 @@
 {
-  "name": "es-iter",
-  "version": "0.9.12",
-  "description": "Itertools for JavaScript",
-  "main": "build/Iter.js",
-  "jsnext:main" : "src/Iter.js",
-  "devDependencies": {
-    "babel-cli" : "*",
-    "babel-preset-es2015": "*",
-    "babel-polyfill": "*",
-    "babel-jest": "*",
-    "jest-cli": "*"
-  },
-  "jest": {
-    "scriptPreprocessor": "<rootDir>/node_modules/babel-jest",
-    "testFileExtensions": [
-      "js"
+    "name": "es-iter",
+    "version": "1.0.0",
+    "description": "Itertools for JavaScript",
+    "main": "src/Iter.js",
+    "engines": {
+        "node": ">=6.0.0"
+    },
+    "devDependencies": {
+        "jest-cli": "*"
+    },
+    "jest": {
+        "testFileExtensions": [
+            "js"
+        ],
+        "moduleFileExtensions": [
+            "js",
+            "json"
+        ],
+        "testPathIgnorePatterns": [
+            "/node_modules/",
+            "auto_mock_off.js"
+        ],
+        "testDirectoryName": "tests"
+    },
+    "scripts": {
+        "test": "jest"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/abozhilov/ES-Iter.git"
+    },
+    "keywords": [
+        "itertools",
+        "Iter",
+        "iterator",
+        "generator",
+        "ES6"
     ],
-    "moduleFileExtensions": [
-      "js",
-      "json"
-    ],
-    "testPathIgnorePatterns": [
-      "/node_modules/",
-      "auto_mock_off.js"
-    ],
-    "testDirectoryName": "tests"
-  },
-  "scripts": {
-    "test": "jest",
-    "build": "babel --source-maps  --presets=es2015 src -d build"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/abozhilov/ES-Iter.git"
-  },
-  "keywords": [
-    "itertools",
-    "Iter",
-    "iterator",
-    "generator",
-    "ES6"
-  ],
-  "author": "Asen Bozhilov <asen.bozhilov@gmail.com>",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/abozhilov/ES-Iter/issues"
-  },
-  "homepage": "https://github.com/abozhilov/ES-Iter"
+    "author": "Asen Bozhilov <asen.bozhilov@gmail.com>",
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/abozhilov/ES-Iter/issues"
+    },
+    "homepage": "https://github.com/abozhilov/ES-Iter"
 }
