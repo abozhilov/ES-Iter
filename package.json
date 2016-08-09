@@ -3,6 +3,7 @@
     "version": "1.0.0",
     "description": "Itertools for JavaScript",
     "main": "src/Iter.js",
+    "engineStrict" : true,
     "engines": {
         "node": ">=6.0.0"
     },
