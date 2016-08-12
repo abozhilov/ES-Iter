@@ -612,8 +612,8 @@ Asen Bozhilov - [@abozhilov](https://twitter.com/abozhilov)
 
 ## Credits 
 
-[Dr. Axel Rauschmayer](http://www.2ality.com/) and his excellent book [Exploring ES6](http://exploringjs.com/)
-[Benoît Zugmeyer](https://twitter.com/_AlK)
+- [Dr. Axel Rauschmayer](http://www.2ality.com/) and his excellent book [Exploring ES6](http://exploringjs.com/)
+- [Benoît Zugmeyer](https://twitter.com/_AlK)
 
 ## License
 
