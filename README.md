@@ -1,7 +1,12 @@
-# ES-Iter v.0.9.11
+# ES-Iter v.1.0.0
 
-`Iter` is ES6 class which provides methods for efficient iteration within `for-of` loop or using external `Iterator`. It is inspired by Python's `itertools` module, but designed for JavaScript developers.  
+`Iter` is ES6 class which provides methods for efficient iteration within `for-of` loop or using external `Iterator`. It is inspired by Python's `itertools` module, but designed for JavaScript developers. 
 
+## Compatibility
+
+- NodeJS version >= 6 
+- Babel transpiler
+ 
 ## API
 
 #### Glosary
@@ -601,10 +606,6 @@ iterator.next(); // { value: undefined, done: true }
 Iter.range(5).filter(x => x > 2).toArray(); // [ 3, 4 ]
 ```
 
-## Browsers Support
-
-Currently there is no browser with full support of ES6, but the library can be used with [Babel](https://babeljs.io/) transpiler.
-
 ## Author
 
 Asen Bozhilov - [@abozhilov](https://twitter.com/abozhilov)
@@ -612,6 +613,7 @@ Asen Bozhilov - [@abozhilov](https://twitter.com/abozhilov)
 ## Credits 
 
 [Dr. Axel Rauschmayer](http://www.2ality.com/) and his excellent book [Exploring ES6](http://exploringjs.com/)
+[Benoît Zugmeyer](https://twitter.com/_AlK)
 
 ## License
 

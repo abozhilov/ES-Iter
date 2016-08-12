@@ -1,6 +1,5 @@
-import './auto_mock_off';
-import 'babel-polyfill';
-import Iter from '../src/Iter';
+require('./auto_mock_off');
+let Iter = require('../src/Iter');
 
 describe('spreadMap', () => {
     it('spreads current iterable to arguments of callback', () => {
