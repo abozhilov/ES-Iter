@@ -1,10 +1,3 @@
-function toInteger (n) {
-    if (n < 0) {
-        return Math.ceil(n);
-    }
-    return Math.floor(n);
-}
-
 function toPositiveInteger (n) {
     if (n < 0) {
         return 0;
@@ -99,9 +92,9 @@ module.exports = class Iter {
             start = 0;
         }
         
-        start = toInteger(start);
-        end   = toInteger(end);
-        step  = toInteger(step);
+        start = Math.trunc(start);
+        end   = Math.trunc(end);
+        step  = Math.trunc(step);
         
         let errArg = (start !== start && 'start') || (end !== end && 'end') || (step !== step && 'step');
         if (errArg) {
@@ -195,6 +188,44 @@ module.exports = class Iter {
             }
         });
     }
+    
+    static merge (iterable1, iterable2, comparator = (a, b) => a <= b) {
+		let iterator1 = Iter.getIterator(iterable1);
+		let iterator2 = Iter.getIterator(iterable2);
+		
+		return new Iter(function* () {
+			let a = iterator1.next();
+			let b = iterator2.next();
+			let isFirst; 
+			
+			while(!a.done && !b.done) {
+				if (comparator(a.value, b.value)) {			
+					yield a.value;
+					isFirst = true;
+				}
+				else {
+					yield b.value;
+					isFirst = false;
+				}
+				
+				if (isFirst) {
+					a = iterator1.next();
+				}
+				else {
+					b = iterator2.next();
+				}
+			}
+			
+			if (!a.done) {
+				yield a.value;
+				yield* iterator1;
+			}
+			if (!b.done) {
+				yield b.value;
+				yield* iterator2;
+			}			
+		})
+	}
     
     static count (start, step = 1) {
         return Iter.range(start, step * Infinity, step);

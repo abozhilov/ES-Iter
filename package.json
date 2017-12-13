@@ -1,9 +1,9 @@
 {
     "name": "es-iter",
-    "version": "1.0.0",
+    "version": "1.1.0",
     "description": "Itertools for JavaScript",
     "main": "src/Iter.js",
-    "engineStrict" : true,
+    "engineStrict": true,
     "engines": {
         "node": ">=6.0.0"
     },
@@ -11,18 +11,10 @@
         "jest-cli": "*"
     },
     "jest": {
-        "testFileExtensions": [
-            "js"
-        ],
-        "moduleFileExtensions": [
-            "js",
-            "json"
-        ],
         "testPathIgnorePatterns": [
             "/node_modules/",
             "auto_mock_off.js"
-        ],
-        "testDirectoryName": "tests"
+        ]
     },
     "scripts": {
         "test": "jest"
