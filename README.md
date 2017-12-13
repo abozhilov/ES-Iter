@@ -1,4 +1,4 @@
-# ES-Iter v.1.1.0
+# ES-Iter v.1.1.1
 
 `Iter` is ES6 class which provides methods for efficient iteration within `for-of` loop or using external `Iterator`. It is inspired by Python's `itertools` module, but designed for JavaScript developers. 
 
@@ -372,7 +372,7 @@ Iter.longZip(Iter.range(10), [1, 2, 3, 4, 5]);
 
 **Note**: If one of the iterables is potentially infinite, then the `Iter.longZip()` function should be used with something that limits the number of calls (for example `take()` or `takeWhile()`).
 
-##### `merge (iterable1, iterable2, comparator = (a, b) => a <= b)`
+##### `Iter.merge(iterable1, iterable2, comparator = (a, b) => a <= b)`
 
 Creates new `Iter` instance, that merges sorted iterable1 and iterable2 using comparator function. 
 
